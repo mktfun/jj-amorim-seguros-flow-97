@@ -7,7 +7,7 @@ import InitialContactStep from './InitialContactStep';
 import DataChangeQuestion from './DataChangeQuestion';
 import QuickConfirmation from './QuickConfirmation';
 import ConditionalEditStep from './ConditionalEditStep';
-import { useFormValidation, validationPatterns } from '@/hooks/useFormValidation';
+import { useFormValidation, validationPatterns, validateCPF } from '@/hooks/useFormValidation';
 import { processAndSendData, UnifiedData } from '@/utils/dataProcessor';
 
 interface RenewalFlowProps {

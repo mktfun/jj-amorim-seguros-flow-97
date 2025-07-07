@@ -6,7 +6,7 @@ import ProgressIndicator from './ProgressIndicator';
 import PersonalDataStep from './PersonalDataStep';
 import VehicleDataStep from './VehicleDataStep';
 import RiskQuestionnaireStep from './RiskQuestionnaireStep';
-import { useFormValidation, validationPatterns } from '@/hooks/useFormValidation';
+import { useFormValidation, validationPatterns, validateCPF } from '@/hooks/useFormValidation';
 import { processAndSendData, UnifiedData } from '@/utils/dataProcessor';
 
 interface NewQuoteFlowProps {
