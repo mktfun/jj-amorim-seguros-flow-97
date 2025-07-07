@@ -40,6 +40,10 @@ interface VehicleData {
 
 interface RiskData {
   cep: string;
+  logradouro: string;
+  bairro: string;
+  localidade: string;
+  uf: string;
   garageType: string;
   residenceType: string;
   usesForWork: string;
@@ -77,6 +81,10 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
 
   const [riskData, setRiskData] = useState<RiskData>({
     cep: '',
+    logradouro: '',
+    bairro: '',
+    localidade: '',
+    uf: '',
     garageType: '',
     residenceType: '',
     usesForWork: '',
