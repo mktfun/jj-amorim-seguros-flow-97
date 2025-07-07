@@ -1,0 +1,132 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Importando fonte Google (Open Sans) para design profissional */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+
+/* Paleta de cores personalizada JJ & Amorim */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 13% 27%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 27%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 27%;
+
+    /* Cores primárias JJ & Amorim */
+    --primary: 213 100% 33%; /* #0d47a1 - Azul Escuro */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 195 100% 37%; /* #0277bd - Azul Médio */
+    --secondary-foreground: 0 0% 100%;
+
+    /* Cores de destaque */
+    --accent: 178 100% 94%; /* #e0f7fa - Ciano Claro */
+    --accent-foreground: 213 100% 33%;
+
+    --muted: 0 0% 94%; /* #f0f0f0 - Cinza Claro */
+    --muted-foreground: 220 13% 33%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 178 40% 80%; /* #80deea - Ciano Borda */
+    --input: 178 40% 80%;
+    --ring: 213 100% 33%;
+
+    --radius: 0.75rem;
+
+    /* Cores customizadas JJ & Amorim */
+    --jj-blue-dark: 213 100% 33%; /* #0d47a1 */
+    --jj-blue-medium: 195 100% 37%; /* #0277bd */
+    --jj-cyan-light: 178 100% 94%; /* #e0f7fa */
+    --jj-cyan-border: 178 40% 80%; /* #80deea */
+  }
+
+  .dark {
+    --background: 213 100% 6%;
+    --foreground: 0 0% 98%;
+    --card: 213 100% 8%;
+    --card-foreground: 0 0% 98%;
+    --popover: 213 100% 8%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 213 100% 33%;
+    --secondary: 195 100% 37%;
+    --secondary-foreground: 0 0% 98%;
+    --accent: 178 100% 15%;
+    --accent-foreground: 0 0% 98%;
+    --muted: 213 50% 15%;
+    --muted-foreground: 0 0% 65%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 213 50% 20%;
+    --input: 213 50% 20%;
+    --ring: 195 100% 37%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-['Open_Sans',_sans-serif];
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold;
+    line-height: 1.3;
+  }
+}
+
+/* Classes utilitárias customizadas JJ & Amorim */
+@layer utilities {
+  .jj-blue-dark {
+    color: hsl(var(--jj-blue-dark));
+  }
+  
+  .bg-jj-blue-dark {
+    background-color: hsl(var(--jj-blue-dark));
+  }
+  
+  .jj-blue-medium {
+    color: hsl(var(--jj-blue-medium));
+  }
+  
+  .bg-jj-blue-medium {
+    background-color: hsl(var(--jj-blue-medium));
+  }
+  
+  .jj-cyan-light {
+    color: hsl(var(--jj-cyan-light));
+  }
+  
+  .bg-jj-cyan-light {
+    background-color: hsl(var(--jj-cyan-light));
+  }
+  
+  .border-jj-cyan {
+    border-color: hsl(var(--jj-cyan-border));
+  }
+
+  /* Animações suaves */
+  .transition-all-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hover-lift {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+}
