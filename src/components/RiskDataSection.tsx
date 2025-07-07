@@ -1,12 +1,17 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Loader2, MapPin } from 'lucide-react';
+import { useViaCEP } from '@/hooks/useViaCEP';
 
 interface RiskData {
   cep: string;
+  logradouro: string;
+  bairro: string;
+  localidade: string;
+  uf: string;
   garageType: string;
   residenceType: string;
   usesForWork: string;
@@ -30,6 +35,8 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
   onFieldBlur,
   isOptional = false
 }) => {
+  const { fetchAddress, loading, error: cepError, clearError } = useViaCEP();
+
   const formatCEP = (value: string) => {
     const numbers = value.replace(/\D/g, '');
     if (numbers.length <= 8) {
@@ -41,6 +48,29 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
   const handleCepChange = (value: string) => {
     const formatted = formatCEP(value);
     onChange('cep', formatted);
+    clearError();
+  };
+
+  const handleCepBlur = async (value: string) => {
+    onFieldBlur('cep', value);
+    
+    // Only fetch address if CEP is complete (8 digits)
+    const cleanCep = value.replace(/\D/g, '');
+    if (cleanCep.length === 8) {
+      const addressData = await fetchAddress(cleanCep);
+      if (addressData) {
+        onChange('logradouro', addressData.logradouro);
+        onChange('bairro', addressData.bairro);
+        onChange('localidade', addressData.localidade);
+        onChange('uf', addressData.uf);
+      } else {
+        // Clear address fields if CEP is invalid
+        onChange('logradouro', '');
+        onChange('bairro', '');
+        onChange('localidade', '');
+        onChange('uf', '');
+      }
+    }
   };
 
   const RadioQuestion = ({ 
@@ -92,21 +122,102 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
           <Label htmlFor="cep" className="text-sm font-medium jj-blue-dark">
             CEP de pernoite do veículo{requiredLabel}
           </Label>
-          <Input
-            id="cep"
-            type="text"
-            value={data.cep}
-            onChange={(e) => handleCepChange(e.target.value)}
-            onBlur={(e) => onFieldBlur('cep', e.target.value)}
-            className={`mt-1 ${errors.cep ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
-            placeholder="00000-000"
-            maxLength={9}
-          />
-          {errors.cep && (
-            <p className="text-sm text-red-500 mt-1">{errors.cep}</p>
+          <div className="relative">
+            <Input
+              id="cep"
+              type="text"
+              value={data.cep}
+              onChange={(e) => handleCepChange(e.target.value)}
+              onBlur={(e) => handleCepBlur(e.target.value)}
+              className={`mt-1 ${(errors.cep || cepError) ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
+              placeholder="00000-000"
+              maxLength={9}
+            />
+            {loading && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              </div>
+            )}
+          </div>
+          {(errors.cep || cepError) && (
+            <p className="text-sm text-red-500 mt-1">{errors.cep || cepError}</p>
           )}
           <p className="text-xs text-muted-foreground mt-1">
             Local onde o veículo fica durante a noite
+          </p>
+        </div>
+
+        {/* Campos de Endereço */}
+        <div className="bg-accent p-4 rounded-lg border border-jj-cyan-border">
+          <div className="flex items-center mb-3">
+            <MapPin className="h-4 w-4 text-primary mr-2" />
+            <h4 className="text-sm font-medium jj-blue-dark">Endereço Completo</h4>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="logradouro" className="text-xs font-medium text-muted-foreground mb-1 block">
+                Logradouro (Rua)
+              </Label>
+              <Input
+                id="logradouro"
+                type="text"
+                value={data.logradouro}
+                onChange={(e) => onChange('logradouro', e.target.value)}
+                className="h-8 text-xs bg-white"
+                placeholder="Rua, Avenida..."
+                readOnly
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="bairro" className="text-xs font-medium text-muted-foreground mb-1 block">
+                Bairro
+              </Label>
+              <Input
+                id="bairro"
+                type="text"
+                value={data.bairro}
+                onChange={(e) => onChange('bairro', e.target.value)}
+                className="h-8 text-xs bg-white"
+                placeholder="Bairro"
+                readOnly
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="localidade" className="text-xs font-medium text-muted-foreground mb-1 block">
+                Cidade
+              </Label>
+              <Input
+                id="localidade"
+                type="text"
+                value={data.localidade}
+                onChange={(e) => onChange('localidade', e.target.value)}
+                className="h-8 text-xs bg-white"
+                placeholder="Cidade"
+                readOnly
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="uf" className="text-xs font-medium text-muted-foreground mb-1 block">
+                Estado (UF)
+              </Label>
+              <Input
+                id="uf"
+                type="text"
+                value={data.uf}
+                onChange={(e) => onChange('uf', e.target.value)}
+                className="h-8 text-xs bg-white"
+                placeholder="UF"
+                readOnly
+              />
+            </div>
+          </div>
+          
+          <p className="text-muted-foreground text-xs mt-2">
+            📍 Endereço preenchido automaticamente com base no CEP
           </p>
         </div>
 

@@ -1,13 +1,17 @@
-
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Shield, Target } from 'lucide-react';
+import { Shield, Target, Loader2, MapPin } from 'lucide-react';
+import { useViaCEP } from '@/hooks/useViaCEP';
 
 interface RiskData {
   cep: string;
+  logradouro: string;
+  bairro: string;
+  localidade: string;
+  uf: string;
   garageType: string;
   residenceType: string;
   usesForWork: string;
@@ -29,6 +33,8 @@ const RiskQuestionnaireStep: React.FC<RiskQuestionnaireStepProps> = ({
   errors, 
   onFieldBlur 
 }) => {
+  const { fetchAddress, loading, error: cepError, clearError } = useViaCEP();
+
   const formatCEP = (value: string) => {
     const numbers = value.replace(/\D/g, '');
     if (numbers.length <= 8) {
@@ -40,6 +46,29 @@ const RiskQuestionnaireStep: React.FC<RiskQuestionnaireStepProps> = ({
   const handleCepChange = (value: string) => {
     const formatted = formatCEP(value);
     onChange('cep', formatted);
+    clearError();
+  };
+
+  const handleCepBlur = async (value: string) => {
+    onFieldBlur('cep', value);
+    
+    // Only fetch address if CEP is complete (8 digits)
+    const cleanCep = value.replace(/\D/g, '');
+    if (cleanCep.length === 8) {
+      const addressData = await fetchAddress(cleanCep);
+      if (addressData) {
+        onChange('logradouro', addressData.logradouro);
+        onChange('bairro', addressData.bairro);
+        onChange('localidade', addressData.localidade);
+        onChange('uf', addressData.uf);
+      } else {
+        // Clear address fields if CEP is invalid
+        onChange('logradouro', '');
+        onChange('bairro', '');
+        onChange('localidade', '');
+        onChange('uf', '');
+      }
+    }
   };
 
   const CustomRadioOption = ({ value, label, field }: { value: string; label: string; field: string }) => (
@@ -114,28 +143,109 @@ const RiskQuestionnaireStep: React.FC<RiskQuestionnaireStepProps> = ({
             <Label htmlFor="cep" className="text-base font-semibold text-gray-700 mb-2 block">
               CEP de pernoite do veículo <span className="text-blue-600">*</span>
             </Label>
-            <Input
-              id="cep"
-              type="text"
-              value={data.cep}
-              onChange={(e) => handleCepChange(e.target.value)}
-              onBlur={(e) => onFieldBlur('cep', e.target.value)}
-              className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                errors.cep 
-                  ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                  : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-              }`}
-              placeholder="00000-000"
-              maxLength={9}
-            />
-            {errors.cep && (
+            <div className="relative">
+              <Input
+                id="cep"
+                type="text"
+                value={data.cep}
+                onChange={(e) => handleCepChange(e.target.value)}
+                onBlur={(e) => handleCepBlur(e.target.value)}
+                className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
+                  errors.cep || cepError
+                    ? 'border-red-400 focus:border-red-500 bg-red-50' 
+                    : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
+                }`}
+                placeholder="00000-000"
+                maxLength={9}
+              />
+              {loading && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+                </div>
+              )}
+            </div>
+            {(errors.cep || cepError) && (
               <p className="text-red-500 text-sm mt-2 flex items-center">
                 <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                {errors.cep}
+                {errors.cep || cepError}
               </p>
             )}
             <p className="text-gray-500 text-sm mt-2">
               Local onde o veículo fica durante a noite
+            </p>
+          </div>
+
+          {/* Campos de Endereço */}
+          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-xl border-l-4 border-blue-500">
+            <div className="flex items-center mb-4">
+              <MapPin className="h-5 w-5 text-blue-600 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-800">Endereço Completo</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="logradouro" className="text-sm font-medium text-gray-700 mb-2 block">
+                  Logradouro (Rua)
+                </Label>
+                <Input
+                  id="logradouro"
+                  type="text"
+                  value={data.logradouro}
+                  onChange={(e) => onChange('logradouro', e.target.value)}
+                  className="h-10 text-sm border-2 rounded-lg bg-white"
+                  placeholder="Rua, Avenida..."
+                  readOnly
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="bairro" className="text-sm font-medium text-gray-700 mb-2 block">
+                  Bairro
+                </Label>
+                <Input
+                  id="bairro"
+                  type="text"
+                  value={data.bairro}
+                  onChange={(e) => onChange('bairro', e.target.value)}
+                  className="h-10 text-sm border-2 rounded-lg bg-white"
+                  placeholder="Bairro"
+                  readOnly
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="localidade" className="text-sm font-medium text-gray-700 mb-2 block">
+                  Cidade
+                </Label>
+                <Input
+                  id="localidade"
+                  type="text"
+                  value={data.localidade}
+                  onChange={(e) => onChange('localidade', e.target.value)}
+                  className="h-10 text-sm border-2 rounded-lg bg-white"
+                  placeholder="Cidade"
+                  readOnly
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="uf" className="text-sm font-medium text-gray-700 mb-2 block">
+                  Estado (UF)
+                </Label>
+                <Input
+                  id="uf"
+                  type="text"
+                  value={data.uf}
+                  onChange={(e) => onChange('uf', e.target.value)}
+                  className="h-10 text-sm border-2 rounded-lg bg-white"
+                  placeholder="UF"
+                  readOnly
+                />
+              </div>
+            </div>
+            
+            <p className="text-gray-600 text-xs mt-3">
+              📍 Endereço preenchido automaticamente com base no CEP informado
             </p>
           </div>
 

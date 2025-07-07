@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 
 export interface ValidationRule {
@@ -78,7 +77,6 @@ export const useFormValidation = (rules: ValidationRules) => {
   };
 };
 
-// Validation patterns
 export const validationPatterns = {
   cpf: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,

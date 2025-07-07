@@ -40,6 +40,10 @@ interface FormData {
   };
   riskData: {
     cep: string;
+    logradouro: string;
+    bairro: string;
+    localidade: string;
+    uf: string;
     garageType: string;
     residenceType: string;
     usesForWork: string;
@@ -78,6 +82,10 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     },
     riskData: {
       cep: '',
+      logradouro: '',
+      bairro: '',
+      localidade: '',
+      uf: '',
       garageType: '',
       residenceType: '',
       usesForWork: '',
