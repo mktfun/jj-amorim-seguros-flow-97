@@ -16,6 +16,16 @@ export interface PersonalData {
   phone: string;
 }
 
+export interface MainDriverData {
+  isDifferentFromInsured: string;
+  fullName: string;
+  cpf: string;
+  birthDate: string;
+  maritalStatus: string;
+  email: string;
+  phone: string;
+}
+
 export interface VehicleData {
   model: string;
   plate: string;
@@ -37,6 +47,7 @@ export interface RiskData {
 export interface UnifiedData {
   contactData: ContactData;
   personalData?: PersonalData;
+  mainDriverData?: MainDriverData;
   vehicleData?: VehicleData;
   riskData?: RiskData;
   hasChanges?: boolean | null;
@@ -84,6 +95,10 @@ const translateValue = (field: string, value: string): string => {
     rideshareWork: {
       'sim': 'Sim',
       'nao': 'Não'
+    },
+    isDifferentFromInsured: {
+      'sim': 'Sim',
+      'nao': 'Não'
     }
   };
 
@@ -114,11 +129,37 @@ export const generateUnifiedJSON = (data: UnifiedData) => {
 
   // Para Nova Cotação: incluir TODOS os dados completos
   if (data.flowType === 'Nova Cotacao de Seguro') {
+    // Dados do segurado
     if (data.personalData) {
-      baseStructure.solicitacao.informacoes_auto_seguro.condutor = {
+      baseStructure.solicitacao.informacoes_auto_seguro.segurado = {
+        nome_completo: data.personalData.fullName || "",
+        cpf: data.personalData.cpf || "",
         data_nascimento: data.personalData.birthDate || "",
-        estado_civil: data.personalData.maritalStatus || ""
+        estado_civil: data.personalData.maritalStatus || "",
+        email: data.personalData.email || "",
+        telefone_whatsapp: data.personalData.phone || ""
       };
+    }
+
+    // Dados do principal condutor
+    if (data.mainDriverData) {
+      const isMainDriverDifferent = data.mainDriverData.isDifferentFromInsured === 'nao';
+      
+      baseStructure.solicitacao.informacoes_auto_seguro.principal_condutor = {
+        e_o_mesmo_segurado: isMainDriverDifferent ? 'nao' : 'sim'
+      };
+
+      if (isMainDriverDifferent) {
+        baseStructure.solicitacao.informacoes_auto_seguro.principal_condutor = {
+          ...baseStructure.solicitacao.informacoes_auto_seguro.principal_condutor,
+          nome_completo: data.mainDriverData.fullName || "",
+          cpf: data.mainDriverData.cpf || "",
+          data_nascimento: data.mainDriverData.birthDate || "",
+          estado_civil: data.mainDriverData.maritalStatus || "",
+          email: data.mainDriverData.email || "",
+          telefone_whatsapp: data.mainDriverData.phone || ""
+        };
+      }
     }
 
     if (data.vehicleData) {
@@ -141,6 +182,13 @@ export const generateUnifiedJSON = (data: UnifiedData) => {
         jovens_residentes: data.riskData.youngResidents || "",
         trabalho_aplicativo: data.riskData.rideshareWork || ""
       };
+    }
+
+    // Atualizar observação para incluir referência ao principal condutor
+    if (data.mainDriverData?.isDifferentFromInsured === 'nao') {
+      baseStructure.observacao_cliente = "Cliente foi informado sobre o envio de fotos da CNH e documento do veículo do Principal Condutor quando necessário";
+    } else {
+      baseStructure.observacao_cliente = "Cliente foi informado sobre o envio de fotos da CNH e documento do veículo do Principal Condutor (o próprio segurado) quando necessário";
     }
   }
 
@@ -281,9 +329,30 @@ export const generateWhatsAppMessage = (data: UnifiedData, jsonData: any): strin
   } else {
     // Nova Cotação - Mostrar todos os dados
     if (data.personalData) {
-      message += '👤 Principal Condutor:\n';
+      message += '👤 Dados do Segurado:\n';
+      message += `• Nome: ${data.personalData.fullName}\n`;
+      message += `• CPF: ${data.personalData.cpf}\n`;
       message += `• Data de Nascimento: ${data.personalData.birthDate}\n`;
-      message += `• Estado Civil: ${translateValue('maritalStatus', data.personalData.maritalStatus)}\n\n`;
+      message += `• Estado Civil: ${translateValue('maritalStatus', data.personalData.maritalStatus)}\n`;
+      message += `• Email: ${data.personalData.email}\n`;
+      message += `• Telefone: ${data.personalData.phone}\n\n`;
+    }
+
+    // Informações do Principal Condutor
+    if (data.mainDriverData) {
+      const isMainDriverDifferent = data.mainDriverData.isDifferentFromInsured === 'nao';
+      
+      if (isMainDriverDifferent) {
+        message += '🚗 Principal Condutor (diferente do segurado):\n';
+        message += `• Nome: ${data.mainDriverData.fullName}\n`;
+        message += `• CPF: ${data.mainDriverData.cpf}\n`;
+        message += `• Data de Nascimento: ${data.mainDriverData.birthDate}\n`;
+        message += `• Estado Civil: ${translateValue('maritalStatus', data.mainDriverData.maritalStatus)}\n`;
+        message += `• Email: ${data.mainDriverData.email}\n`;
+        message += `• Telefone: ${data.mainDriverData.phone}\n\n`;
+      } else {
+        message += '✅ Principal Condutor: O PRÓPRIO SEGURADO\n\n';
+      }
     }
 
     if (data.vehicleData) {
@@ -311,7 +380,14 @@ export const generateWhatsAppMessage = (data: UnifiedData, jsonData: any): strin
 
   message += '------------------------------\n';
   message += '📄 Observação para Agilizar:\n';
-  message += 'O cliente foi informado sobre a opção de enviar fotos da CNH e documento do veículo, caso deseje agilizar o processo.\n\n';
+  
+  // Observação adaptada para o principal condutor
+  if (data.mainDriverData?.isDifferentFromInsured === 'nao') {
+    message += 'O cliente foi informado sobre a opção de enviar fotos da CNH e documento do veículo do PRINCIPAL CONDUTOR, caso deseje agilizar o processo.\n\n';
+  } else {
+    message += 'O cliente foi informado sobre a opção de enviar fotos da CNH e documento do veículo, caso deseje agilizar o processo.\n\n';
+  }
+  
   message += 'O JSON completo com todos os dados está anexo no link. 😉';
 
   return message;
@@ -343,6 +419,18 @@ export const sendToRDStation = async (data: UnifiedData, jsonData: any): Promise
     if (data.personalData) {
       (rdStationData as any).cf_data_nascimento = data.personalData.birthDate;
       (rdStationData as any).cf_estado_civil = data.personalData.maritalStatus;
+    }
+
+    // Adicionar informações do principal condutor
+    if (data.mainDriverData) {
+      (rdStationData as any).cf_principal_condutor_diferente = data.mainDriverData.isDifferentFromInsured === 'nao' ? 'Sim' : 'Não';
+      
+      if (data.mainDriverData.isDifferentFromInsured === 'nao') {
+        (rdStationData as any).cf_principal_condutor_nome = data.mainDriverData.fullName;
+        (rdStationData as any).cf_principal_condutor_cpf = data.mainDriverData.cpf;
+        (rdStationData as any).cf_principal_condutor_data_nasc = data.mainDriverData.birthDate;
+        (rdStationData as any).cf_principal_condutor_estado_civil = data.mainDriverData.maritalStatus;
+      }
     }
 
     if (data.vehicleData) {

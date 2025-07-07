@@ -22,6 +22,15 @@ interface FormData {
     email: string;
     phone: string;
   };
+  mainDriverData: {
+    isDifferentFromInsured: string;
+    fullName: string;
+    cpf: string;
+    birthDate: string;
+    maritalStatus: string;
+    email: string;
+    phone: string;
+  };
   vehicleData: {
     model: string;
     plate: string;
@@ -44,6 +53,15 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     personalData: {
+      fullName: '',
+      cpf: '',
+      birthDate: '',
+      maritalStatus: '',
+      email: '',
+      phone: ''
+    },
+    mainDriverData: {
+      isDifferentFromInsured: '',
       fullName: '',
       cpf: '',
       birthDate: '',
@@ -94,6 +112,27 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       required: true, 
       pattern: validationPatterns.phone, 
       message: 'Telefone deve estar no formato (00) 00000-0000' 
+    },
+    // Validação condicional para o condutor principal
+    isDifferentFromInsured: { required: true, message: 'Selecione uma opção sobre o principal condutor' },
+    // Campos condicionais do condutor principal
+    mainDriverFullName: { required: false, message: 'Nome completo do principal condutor é obrigatório' },
+    mainDriverCpf: { 
+      required: false, 
+      pattern: validationPatterns.cpf, 
+      message: 'CPF deve estar no formato 000.000.000-00' 
+    },
+    mainDriverBirthDate: { required: false, message: 'Data de nascimento do principal condutor é obrigatória' },
+    mainDriverMaritalStatus: { required: false, message: 'Estado civil do principal condutor é obrigatório' },
+    mainDriverEmail: { 
+      required: false, 
+      pattern: validationPatterns.email, 
+      message: 'Email deve ter um formato válido' 
+    },
+    mainDriverPhone: { 
+      required: false, 
+      pattern: validationPatterns.phone, 
+      message: 'Telefone deve estar no formato (00) 00000-0000' 
     }
   });
 
@@ -130,6 +169,14 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     }));
   };
 
+  const updateMainDriverData = (field: keyof FormData['mainDriverData'], value: string) => {
+    console.log('Atualizando dados do condutor principal:', field, value);
+    setFormData(prev => ({
+      ...prev,
+      mainDriverData: { ...prev.mainDriverData, [field]: value }
+    }));
+  };
+
   const updateVehicleData = (field: keyof FormData['vehicleData'], value: string) => {
     console.log('Atualizando dados do veículo:', field, value);
     setFormData(prev => ({
@@ -157,7 +204,51 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
   const validateCurrentStep = (): boolean => {
     switch (currentStep) {
       case 1:
-        return personalDataValidation.validateAll(formData.personalData as { [key: string]: string });
+        // Validar dados pessoais básicos
+        const basicData = {
+          ...formData.personalData,
+          isDifferentFromInsured: formData.mainDriverData.isDifferentFromInsured
+        };
+        
+        // Se o principal condutor é diferente, validar também os dados dele
+        if (formData.mainDriverData.isDifferentFromInsured === 'nao') {
+          const mainDriverValidationData = {
+            ...basicData,
+            mainDriverFullName: formData.mainDriverData.fullName,
+            mainDriverCpf: formData.mainDriverData.cpf,
+            mainDriverBirthDate: formData.mainDriverData.birthDate,
+            mainDriverMaritalStatus: formData.mainDriverData.maritalStatus,
+            mainDriverEmail: formData.mainDriverData.email,
+            mainDriverPhone: formData.mainDriverData.phone
+          };
+          
+          // Temporariamente tornar os campos do condutor principal obrigatórios
+          const tempValidation = useFormValidation({
+            ...personalDataValidation.rules,
+            mainDriverFullName: { required: true, message: 'Nome completo do principal condutor é obrigatório' },
+            mainDriverCpf: { 
+              required: true, 
+              pattern: validationPatterns.cpf, 
+              message: 'CPF deve estar no formato 000.000.000-00' 
+            },
+            mainDriverBirthDate: { required: true, message: 'Data de nascimento do principal condutor é obrigatória' },
+            mainDriverMaritalStatus: { required: true, message: 'Estado civil do principal condutor é obrigatório' },
+            mainDriverEmail: { 
+              required: true, 
+              pattern: validationPatterns.email, 
+              message: 'Email deve ter um formato válido' 
+            },
+            mainDriverPhone: { 
+              required: true, 
+              pattern: validationPatterns.phone, 
+              message: 'Telefone deve estar no formato (00) 00000-0000' 
+            }
+          });
+          
+          return tempValidation.validateAll(mainDriverValidationData as { [key: string]: string });
+        }
+        
+        return personalDataValidation.validateAll(basicData as { [key: string]: string });
       case 2:
         return vehicleDataValidation.validateAll(formData.vehicleData as { [key: string]: string });
       case 3:
@@ -182,6 +273,9 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         try {
           console.log('Dados coletados completos:', formData);
           
+          // Estruturar dados com base no tipo de condutor
+          const isMainDriverDifferent = formData.mainDriverData.isDifferentFromInsured === 'nao';
+          
           const unifiedData: UnifiedData = {
             contactData: {
               fullName: formData.personalData.fullName,
@@ -192,6 +286,18 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
             personalData: formData.personalData,
             vehicleData: formData.vehicleData,
             riskData: formData.riskData,
+            mainDriverData: isMainDriverDifferent ? {
+              isDifferentFromInsured: formData.mainDriverData.isDifferentFromInsured,
+              ...formData.mainDriverData
+            } : {
+              isDifferentFromInsured: formData.mainDriverData.isDifferentFromInsured,
+              fullName: formData.personalData.fullName,
+              cpf: formData.personalData.cpf,
+              birthDate: formData.personalData.birthDate,
+              maritalStatus: formData.personalData.maritalStatus,
+              email: formData.personalData.email,
+              phone: formData.personalData.phone
+            },
             flowType: 'Nova Cotacao de Seguro'
           };
 
@@ -231,7 +337,9 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         return (
           <PersonalDataStep
             data={formData.personalData}
+            mainDriverData={formData.mainDriverData}
             onChange={updatePersonalData}
+            onMainDriverChange={updateMainDriverData}
             errors={validation.errors}
             onFieldBlur={validation.validate}
           />
