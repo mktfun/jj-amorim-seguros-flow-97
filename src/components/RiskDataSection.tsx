@@ -37,7 +37,6 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
   isOptional = false
 }) => {
   const { fetchAddress, loading, error: cepError, clearError } = useViaCEP();
-  const cepTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const formatCEP = useCallback((value: string) => {
     const numbers = value.replace(/\D/g, '');
@@ -47,41 +46,18 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
     return value;
   }, []);
 
-  const handleCepChange = useCallback((value: string) => {
+  const handleCepChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
     const formatted = formatCEP(value);
     onChange('cep', formatted);
     clearError();
+  }, [formatCEP, onChange, clearError]);
 
-    // Clear previous timeout
-    if (cepTimeoutRef.current) {
-      clearTimeout(cepTimeoutRef.current);
-    }
-
-    // Only auto-fetch if CEP is complete (8 digits)
-    const cleanCep = value.replace(/\D/g, '');
-    if (cleanCep.length === 8) {
-      // Set a small delay to avoid interrupting typing
-      cepTimeoutRef.current = setTimeout(async () => {
-        const addressData = await fetchAddress(cleanCep);
-        if (addressData) {
-          onChange('logradouro', addressData.logradouro);
-          onChange('bairro', addressData.bairro);
-          onChange('localidade', addressData.localidade);
-          onChange('uf', addressData.uf);
-        }
-      }, 500);
-    }
-  }, [formatCEP, onChange, clearError, fetchAddress]);
-
-  const handleCepBlur = useCallback(async (value: string) => {
+  const handleCepBlur = useCallback(async (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value;
     onFieldBlur('cep', value);
     
-    // Clear any pending timeout
-    if (cepTimeoutRef.current) {
-      clearTimeout(cepTimeoutRef.current);
-    }
-
-    // Fetch address immediately on blur if CEP is complete
+    // Only fetch address if CEP is complete (8 digits)
     const cleanCep = value.replace(/\D/g, '');
     if (cleanCep.length === 8) {
       const addressData = await fetchAddress(cleanCep);
@@ -154,8 +130,8 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
               id="cep"
               type="text"
               value={data.cep}
-              onChange={(e) => handleCepChange(e.target.value)}
-              onBlur={(e) => handleCepBlur(e.target.value)}
+              onChange={handleCepChange}
+              onBlur={handleCepBlur}
               className={`mt-1 ${(errors.cep || cepError) ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
               placeholder="00000-000"
               maxLength={9}
