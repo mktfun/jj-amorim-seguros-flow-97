@@ -50,7 +50,7 @@ export interface UnifiedData {
   mainDriverData?: MainDriverData;
   vehicleData?: VehicleData;
   riskData?: RiskData;
-  hasChanges?: boolean | null;
+  hasChanges?: boolean;
   flowType: 'Nova Cotacao de Seguro' | 'Renovacao Seguro Auto';
 }
 

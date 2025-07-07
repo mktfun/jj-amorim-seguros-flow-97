@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Send } from 'lucide-react';
@@ -222,27 +221,21 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
             mainDriverPhone: formData.mainDriverData.phone
           };
           
-          // Temporariamente tornar os campos do condutor principal obrigatórios
+          // Temporariamente criar validação com campos obrigatórios para condutor principal
           const tempValidation = useFormValidation({
-            ...personalDataValidation.rules,
+            fullName: { required: true, message: 'Nome completo é obrigatório' },
+            cpf: { required: true, pattern: validationPatterns.cpf, message: 'CPF deve estar no formato 000.000.000-00' },
+            birthDate: { required: true, message: 'Data de nascimento é obrigatória' },
+            maritalStatus: { required: true, message: 'Estado civil é obrigatório' },
+            email: { required: true, pattern: validationPatterns.email, message: 'Email deve ter um formato válido' },
+            phone: { required: true, pattern: validationPatterns.phone, message: 'Telefone deve estar no formato (00) 00000-0000' },
+            isDifferentFromInsured: { required: true, message: 'Selecione uma opção sobre o principal condutor' },
             mainDriverFullName: { required: true, message: 'Nome completo do principal condutor é obrigatório' },
-            mainDriverCpf: { 
-              required: true, 
-              pattern: validationPatterns.cpf, 
-              message: 'CPF deve estar no formato 000.000.000-00' 
-            },
+            mainDriverCpf: { required: true, pattern: validationPatterns.cpf, message: 'CPF deve estar no formato 000.000.000-00' },
             mainDriverBirthDate: { required: true, message: 'Data de nascimento do principal condutor é obrigatória' },
             mainDriverMaritalStatus: { required: true, message: 'Estado civil do principal condutor é obrigatório' },
-            mainDriverEmail: { 
-              required: true, 
-              pattern: validationPatterns.email, 
-              message: 'Email deve ter um formato válido' 
-            },
-            mainDriverPhone: { 
-              required: true, 
-              pattern: validationPatterns.phone, 
-              message: 'Telefone deve estar no formato (00) 00000-0000' 
-            }
+            mainDriverEmail: { required: true, pattern: validationPatterns.email, message: 'Email deve ter um formato válido' },
+            mainDriverPhone: { required: true, pattern: validationPatterns.phone, message: 'Telefone deve estar no formato (00) 00000-0000' }
           });
           
           return tempValidation.validateAll(mainDriverValidationData as { [key: string]: string });

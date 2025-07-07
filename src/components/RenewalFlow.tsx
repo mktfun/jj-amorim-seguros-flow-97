@@ -139,7 +139,7 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
   const validateCurrentStep = (): boolean => {
     switch (currentStep) {
       case 1:
-        return contactValidation.validateAll(contactData as { [key: string]: string });
+        return contactValidation.validateAll(contactData as unknown as { [key: string]: string });
       case 2:
         if (!hasChanges) {
           alert('Por favor, selecione uma opção.');
@@ -200,7 +200,7 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
         },
         vehicleData: vehicleData,
         riskData: riskData,
-        flowType: 'Renovacao de Seguro - Sem Alteracoes'
+        flowType: 'Renovacao Seguro Auto'
       };
 
       await processAndSendData(unifiedData);
@@ -225,7 +225,7 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
         personalData: personalData,
         vehicleData: vehicleData,
         riskData: riskData,
-        flowType: 'Renovacao de Seguro - Com Alteracoes'
+        flowType: 'Renovacao Seguro Auto'
       };
 
       await processAndSendData(unifiedData);
