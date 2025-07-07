@@ -84,11 +84,18 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({
               value={data.fullName}
               onChange={(e) => onChange('fullName', e.target.value)}
               onBlur={(e) => onFieldBlur('fullName', e.target.value)}
-              className={`mt-1 ${errors.fullName ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
+              className={`mt-1 transition-all duration-200 ${
+                errors.fullName 
+                  ? 'border-red-500 bg-red-50 focus:border-red-500' 
+                  : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
+              }`}
               placeholder={isOptional ? "Apenas se mudou" : "Seu nome completo"}
             />
             {errors.fullName && (
-              <p className="text-sm text-red-500 mt-1">{errors.fullName}</p>
+              <p className="text-sm text-red-500 mt-1 flex items-center">
+                <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
+                {errors.fullName}
+              </p>
             )}
           </div>
 
@@ -102,12 +109,19 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({
               value={data.cpf}
               onChange={(e) => handleCpfChange(e.target.value)}
               onBlur={(e) => onFieldBlur('cpf', e.target.value)}
-              className={`mt-1 ${errors.cpf ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
+              className={`mt-1 transition-all duration-200 ${
+                errors.cpf 
+                  ? 'border-red-500 bg-red-50 focus:border-red-500' 
+                  : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
+              }`}
               placeholder="000.000.000-00"
               maxLength={14}
             />
             {errors.cpf && (
-              <p className="text-sm text-red-500 mt-1">{errors.cpf}</p>
+              <p className="text-sm text-red-500 mt-1 flex items-center">
+                <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
+                {errors.cpf}
+              </p>
             )}
           </div>
         </div>
@@ -123,12 +137,19 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({
               value={data.birthDate}
               onChange={(e) => handleDateChange(e.target.value)}
               onBlur={(e) => onFieldBlur('birthDate', e.target.value)}
-              className={`mt-1 ${errors.birthDate ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
+              className={`mt-1 transition-all duration-200 ${
+                errors.birthDate 
+                  ? 'border-red-500 bg-red-50 focus:border-red-500' 
+                  : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
+              }`}
               placeholder="DD/MM/AAAA"
               maxLength={10}
             />
             {errors.birthDate && (
-              <p className="text-sm text-red-500 mt-1">{errors.birthDate}</p>
+              <p className="text-sm text-red-500 mt-1 flex items-center">
+                <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
+                {errors.birthDate}
+              </p>
             )}
           </div>
 
@@ -137,7 +158,11 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({
               Estado Civil{requiredLabel}
             </Label>
             <Select value={data.maritalStatus} onValueChange={(value) => onChange('maritalStatus', value)}>
-              <SelectTrigger className={`mt-1 ${errors.maritalStatus ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}>
+              <SelectTrigger className={`mt-1 transition-all duration-200 ${
+                errors.maritalStatus 
+                  ? 'border-red-500 bg-red-50 focus:border-red-500' 
+                  : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
+              }`}>
                 <SelectValue placeholder={isOptional ? "Apenas se mudou" : "Selecione"} />
               </SelectTrigger>
               <SelectContent>
@@ -149,7 +174,10 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({
               </SelectContent>
             </Select>
             {errors.maritalStatus && (
-              <p className="text-sm text-red-500 mt-1">{errors.maritalStatus}</p>
+              <p className="text-sm text-red-500 mt-1 flex items-center">
+                <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
+                {errors.maritalStatus}
+              </p>
             )}
           </div>
         </div>
@@ -165,11 +193,18 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({
               value={data.email}
               onChange={(e) => onChange('email', e.target.value)}
               onBlur={(e) => onFieldBlur('email', e.target.value)}
-              className={`mt-1 ${errors.email ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
+              className={`mt-1 transition-all duration-200 ${
+                errors.email 
+                  ? 'border-red-500 bg-red-50 focus:border-red-500' 
+                  : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
+              }`}
               placeholder={isOptional ? "Apenas se mudou" : "seu@email.com"}
             />
             {errors.email && (
-              <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+              <p className="text-sm text-red-500 mt-1 flex items-center">
+                <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
+                {errors.email}
+              </p>
             )}
           </div>
 
@@ -183,12 +218,19 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({
               value={data.phone}
               onChange={(e) => handlePhoneChange(e.target.value)}
               onBlur={(e) => onFieldBlur('phone', e.target.value)}
-              className={`mt-1 ${errors.phone ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
+              className={`mt-1 transition-all duration-200 ${
+                errors.phone 
+                  ? 'border-red-500 bg-red-50 focus:border-red-500' 
+                  : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
+              }`}
               placeholder="(00) 00000-0000"
               maxLength={15}
             />
             {errors.phone && (
-              <p className="text-sm text-red-500 mt-1">{errors.phone}</p>
+              <p className="text-sm text-red-500 mt-1 flex items-center">
+                <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
+                {errors.phone}
+              </p>
             )}
           </div>
         </div>

@@ -104,8 +104,9 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
     fullName: { required: true, message: 'Nome completo é obrigatório' },
     cpf: { 
       required: true, 
-      pattern: validationPatterns.cpf, 
-      message: 'CPF deve estar no formato 000.000.000-00' 
+      pattern: validationPatterns.cpf,
+      customValidator: validateCPF,
+      message: 'CPF inválido. Por favor, verifique o número.' 
     },
     email: { 
       required: true, 

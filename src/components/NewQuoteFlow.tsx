@@ -106,8 +106,9 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     fullName: { required: true, message: 'Nome completo é obrigatório' },
     cpf: { 
       required: true, 
-      pattern: validationPatterns.cpf, 
-      message: 'CPF deve estar no formato 000.000.000-00' 
+      pattern: validationPatterns.cpf,
+      customValidator: validateCPF,
+      message: 'CPF inválido. Por favor, verifique o número.' 
     },
     birthDate: { required: true, message: 'Data de nascimento é obrigatória' },
     maritalStatus: { required: true, message: 'Estado civil é obrigatório' },
@@ -127,8 +128,9 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     mainDriverFullName: { required: false, message: 'Nome completo do principal condutor é obrigatório' },
     mainDriverCpf: { 
       required: false, 
-      pattern: validationPatterns.cpf, 
-      message: 'CPF deve estar no formato 000.000.000-00' 
+      pattern: validationPatterns.cpf,
+      customValidator: validateCPF,
+      message: 'CPF inválido. Por favor, verifique o número.' 
     },
     mainDriverBirthDate: { required: false, message: 'Data de nascimento do principal condutor é obrigatória' },
     mainDriverMaritalStatus: { required: false, message: 'Estado civil do principal condutor é obrigatório' },
