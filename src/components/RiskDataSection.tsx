@@ -37,6 +37,7 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
   isOptional = false
 }) => {
   const { fetchAddress, loading, error: cepError, clearError } = useViaCEP();
+  const cepInputRef = useRef<HTMLInputElement>(null);
 
   const formatCEP = useCallback((value: string) => {
     const numbers = value.replace(/\D/g, '');
@@ -47,10 +48,32 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
   }, []);
 
   const handleCepChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    const input = e.target;
+    const value = input.value;
+    const cursorPosition = input.selectionStart || 0;
+    
+    // Format the CEP
     const formatted = formatCEP(value);
+    
+    // Calculate new cursor position after formatting
+    const digitsBeforeCursor = value.slice(0, cursorPosition).replace(/\D/g, '').length;
+    let newCursorPosition = digitsBeforeCursor;
+    
+    // Adjust for dash position
+    if (digitsBeforeCursor > 5) {
+      newCursorPosition = digitsBeforeCursor + 1; // +1 for the dash
+    }
+    
+    // Update the value
     onChange('cep', formatted);
     clearError();
+    
+    // Restore cursor position after React re-renders
+    setTimeout(() => {
+      if (cepInputRef.current) {
+        cepInputRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
+      }
+    }, 0);
   }, [formatCEP, onChange, clearError]);
 
   const handleCepBlur = useCallback(async (e: React.FocusEvent<HTMLInputElement>) => {
@@ -127,6 +150,7 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
           </Label>
           <div className="relative">
             <Input
+              ref={cepInputRef}
               id="cep"
               type="text"
               value={data.cep}
