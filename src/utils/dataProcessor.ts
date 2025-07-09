@@ -1,4 +1,3 @@
-
 // Tipos para os dados coletados
 export interface ContactData {
   fullName: string;
@@ -240,7 +239,7 @@ export const generateUnifiedJSON = (data: UnifiedData) => {
   return baseStructure;
 };
 
-// Geração da mensagem humanizada e legível para WhatsApp
+// Geração da mensagem humanizada e legível para WhatsApp (SEM JSON TÉCNICO)
 export const generateWhatsAppMessage = (data: UnifiedData, jsonData: any): string => {
   const isRenewal = data.flowType === 'Renovacao Seguro Auto';
   const hasChanges = data.hasChanges;
@@ -258,10 +257,10 @@ export const generateWhatsAppMessage = (data: UnifiedData, jsonData: any): strin
 
   // Dados do Cliente
   message += '👤 Dados do Cliente:\n';
-  message += `Nome: ${data.contactData.fullName}\n`;
+  message += `Nome Completo: ${data.contactData.fullName}\n`;
+  message += `CPF: ${data.contactData.cpf}\n`;
   message += `Email: ${data.contactData.email}\n`;
-  message += `Telefone: ${data.contactData.phone}\n`;
-  message += `CPF: ${data.contactData.cpf}\n\n`;
+  message += `Telefone/WhatsApp: ${data.contactData.phone}\n\n`;
 
   message += '------------------------------\n';
   message += '📋 Detalhes do Questionário:\n\n';
@@ -269,44 +268,45 @@ export const generateWhatsAppMessage = (data: UnifiedData, jsonData: any): strin
   // Conteúdo específico por fluxo
   if (isRenewal) {
     if (hasChanges === false) {
-      message += '✅ O cliente confirmou que NÃO HOUVE ALTERAÇÕES nos dados desde a última renovação.\n\n';
+      message += '✅ O cliente confirmou que NÃO HOUVE ALTERAÇÕES nos dados desde a última renovação.\n';
+      message += 'Por favor, dê prosseguimento com a renovação.\n\n';
     } else if (hasChanges === true) {
-      message += '📝 O cliente informou ALTERAÇÕES. Seguem os dados que foram atualizados:\n\n';
+      message += '📝 O cliente informou as seguintes ALTERAÇÕES para a renovação:\n\n';
       
       // Listar campos alterados de forma descritiva
       if (data.personalData) {
         if (data.personalData.birthDate) {
-          message += `• Nova Data de Nascimento: ${data.personalData.birthDate}\n`;
+          message += `• NOVA Data de Nascimento: ${data.personalData.birthDate}\n`;
         }
         if (data.personalData.maritalStatus) {
-          message += `• Estado Civil agora é: ${translateValue('maritalStatus', data.personalData.maritalStatus)}\n`;
+          message += `• Estado Civil ALTERADO para: ${translateValue('maritalStatus', data.personalData.maritalStatus)}\n`;
         }
       }
 
       if (data.vehicleData) {
         if (data.vehicleData.model) {
-          message += `• Novo Modelo do Veículo: ${data.vehicleData.model}\n`;
+          message += `• NOVO Modelo do Veículo: ${data.vehicleData.model}\n`;
         }
         if (data.vehicleData.plate) {
-          message += `• Nova Placa: ${data.vehicleData.plate}\n`;
+          message += `• NOVA Placa: ${data.vehicleData.plate}\n`;
         }
         if (data.vehicleData.chassis) {
-          message += `• Novo Chassis: ${data.vehicleData.chassis}\n`;
+          message += `• NOVO Chassis: ${data.vehicleData.chassis}\n`;
         }
         if (data.vehicleData.year) {
-          message += `• Novo Ano/Modelo: ${data.vehicleData.year}\n`;
+          message += `• NOVO Ano/Modelo: ${data.vehicleData.year}\n`;
         }
         if (data.vehicleData.isFinanced) {
-          message += `• Está financiado agora?: ${translateValue('isFinanced', data.vehicleData.isFinanced)}\n`;
+          message += `• Veículo está FINANCIADO?: ${translateValue('isFinanced', data.vehicleData.isFinanced)}\n`;
         }
       }
 
       if (data.riskData) {
         if (data.riskData.cep) {
-          message += `• Novo CEP de Pernoite: ${data.riskData.cep}\n`;
+          message += `• NOVO CEP de Pernoite: ${data.riskData.cep}\n`;
         }
         if (data.riskData.garageType) {
-          message += `• Portão da Garagem agora é: ${translateValue('garageType', data.riskData.garageType)}\n`;
+          message += `• Portão da Garagem ALTERADO para: ${translateValue('garageType', data.riskData.garageType)}\n`;
         }
         if (data.riskData.residenceType) {
           message += `• Tipo de Residência: ${translateValue('residenceType', data.riskData.residenceType)}\n`;
@@ -327,10 +327,10 @@ export const generateWhatsAppMessage = (data: UnifiedData, jsonData: any): strin
       message += '\n';
     }
   } else {
-    // Nova Cotação - Mostrar todos os dados
+    // Nova Cotação - Mostrar todos os dados de forma organizada
     if (data.personalData) {
       message += '👤 Dados do Segurado:\n';
-      message += `• Nome: ${data.personalData.fullName}\n`;
+      message += `• Nome Completo: ${data.personalData.fullName}\n`;
       message += `• CPF: ${data.personalData.cpf}\n`;
       message += `• Data de Nascimento: ${data.personalData.birthDate}\n`;
       message += `• Estado Civil: ${translateValue('maritalStatus', data.personalData.maritalStatus)}\n`;
@@ -344,7 +344,7 @@ export const generateWhatsAppMessage = (data: UnifiedData, jsonData: any): strin
       
       if (isMainDriverDifferent) {
         message += '🚗 Principal Condutor (diferente do segurado):\n';
-        message += `• Nome: ${data.mainDriverData.fullName}\n`;
+        message += `• Nome Completo: ${data.mainDriverData.fullName}\n`;
         message += `• CPF: ${data.mainDriverData.cpf}\n`;
         message += `• Data de Nascimento: ${data.mainDriverData.birthDate}\n`;
         message += `• Estado Civil: ${translateValue('maritalStatus', data.mainDriverData.maritalStatus)}\n`;
@@ -388,7 +388,7 @@ export const generateWhatsAppMessage = (data: UnifiedData, jsonData: any): strin
     message += 'O cliente foi informado sobre a opção de enviar fotos da CNH e documento do veículo, caso deseje agilizar o processo.\n\n';
   }
   
-  message += 'O JSON completo com todos os dados está anexo no link. 😉';
+  message += 'Aguardamos seu contato para prosseguirmos! 😉';
 
   return message;
 };
@@ -476,7 +476,7 @@ export const sendToRDStation = async (data: UnifiedData, jsonData: any): Promise
   }
 };
 
-// Função principal para processar e enviar dados
+// Função principal para processar e enviar dados (ATUALIZADA)
 export const processAndSendData = async (data: UnifiedData): Promise<void> => {
   try {
     console.log('Iniciando processamento de dados:', data);
@@ -485,9 +485,9 @@ export const processAndSendData = async (data: UnifiedData): Promise<void> => {
     const jsonData = generateUnifiedJSON(data);
     console.log('JSON gerado:', jsonData);
     
-    // Gerar mensagem humanizada e legível
+    // Gerar mensagem humanizada e legível (SEM JSON TÉCNICO)
     const whatsappMessage = generateWhatsAppMessage(data, jsonData);
-    console.log('Mensagem WhatsApp humanizada gerada');
+    console.log('Mensagem WhatsApp humanizada gerada (sem JSON técnico)');
     
     // Enviar para RD Station (assíncrono)
     sendToRDStation(data, jsonData).then(success => {
@@ -498,12 +498,11 @@ export const processAndSendData = async (data: UnifiedData): Promise<void> => {
       }
     });
     
-    // Construir URL do WhatsApp com mensagem legível + JSON codificado
+    // Construir URL do WhatsApp APENAS com mensagem humanizada
     const encodedMessage = encodeURIComponent(whatsappMessage);
-    const encodedJson = encodeURIComponent(JSON.stringify(jsonData, null, 2));
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=5511979699832&text=${encodedMessage}%0A%0A🔗%20DADOS%20TÉCNICOS%20(JSON):%20${encodedJson}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=5511979699832&text=${encodedMessage}`;
     
-    console.log('Redirecionando para WhatsApp com mensagem otimizada...');
+    console.log('Redirecionando para WhatsApp com mensagem 100% humanizada...');
     window.open(whatsappUrl, '_blank');
     
   } catch (error) {
