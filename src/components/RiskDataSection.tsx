@@ -40,6 +40,15 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = memo(({
   const handleCepChange = (value: string) => {
     onChange('cep', value);
     clearError();
+    
+    // Limpa o endereço se o CEP estiver incompleto
+    const cleanCep = value.replace(/\D/g, '');
+    if (cleanCep.length < 8) {
+      onChange('logradouro', '');
+      onChange('bairro', '');
+      onChange('localidade', '');
+      onChange('uf', '');
+    }
   };
 
   const handleCepBlur = async (value: string) => {

@@ -1,9 +1,9 @@
 
-import React, { memo } from 'react';
-import { Input } from '@/components/ui/input';
+import React, { memo, useCallback } from 'react';
+import InputMask from 'react-input-mask';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
-import { useInputMask, cepMask } from '@/hooks/useInputMask';
+import { cn } from '@/lib/utils';
 
 interface CEPInputProps {
   value: string;
@@ -22,18 +22,15 @@ const CEPInput: React.FC<CEPInputProps> = memo(({
   loading = false,
   isOptional = false 
 }) => {
-  const cepInput = useInputMask(
-    value,
-    onChange,
-    {
-      mask: cepMask,
-      placeholder: '00000-000',
-      maxLength: 9
-    },
-    onBlur
-  );
-
   const requiredLabel = isOptional ? '' : ' *';
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.target.value);
+  }, [onChange]);
+
+  const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+    onBlur(e.target.value);
+  }, [onBlur]);
 
   return (
     <div>
@@ -41,18 +38,28 @@ const CEPInput: React.FC<CEPInputProps> = memo(({
         CEP de pernoite do veículo{requiredLabel}
       </Label>
       <div className="relative">
-        <Input
-          ref={cepInput.inputRef}
-          id="cep"
-          type="text"
-          value={cepInput.value}
-          onChange={cepInput.onChange}
-          onBlur={cepInput.onBlur}
-          className={`mt-1 ${error ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
-          placeholder={cepInput.placeholder}
-          maxLength={cepInput.maxLength}
-          autoComplete="postal-code"
-        />
+        <InputMask
+          mask="99999-999"
+          value={value}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          maskChar={null}
+          alwaysShowMask={false}
+        >
+          {(inputProps: any) => (
+            <input
+              {...inputProps}
+              id="cep"
+              type="text"
+              className={cn(
+                "flex h-10 w-full rounded-md border bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm mt-1",
+                error ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'
+              )}
+              placeholder="00000-000"
+              autoComplete="postal-code"
+            />
+          )}
+        </InputMask>
         {loading && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
             <Loader2 className="h-4 w-4 animate-spin text-primary" />
