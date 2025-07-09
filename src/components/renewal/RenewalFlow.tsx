@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import ContactDataStep from './ContactDataStep';
+import RenewalOriginQuestion from './RenewalOriginQuestion';
+import PreviousPolicyData from './PreviousPolicyData';
 import DataChangeQuestion from './DataChangeQuestion';
 import QuickConfirmation from './QuickConfirmation';
 import EditDataStep from './EditDataStep';
@@ -19,6 +21,15 @@ interface ContactData {
   cpf: string;
   email: string;
   phone: string;
+}
+
+interface PreviousPolicyDataType {
+  seguradoraAnterior: string;
+  novoBonusPG: string;
+  codigoIdentificacao: string;
+  numeroApoliceAnterior: string;
+  vigFinalAnterior: string;
+  qtdSinistros: string;
 }
 
 interface EditableData {
@@ -58,12 +69,22 @@ interface EditableData {
 
 const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [origin, setOrigin] = useState('');
   const [hasChanges, setHasChanges] = useState('');
   const [contactData, setContactData] = useState<ContactData>({
     fullName: '',
     cpf: '',
     email: '',
     phone: ''
+  });
+
+  const [previousPolicyData, setPreviousPolicyData] = useState<PreviousPolicyDataType>({
+    seguradoraAnterior: '',
+    novoBonusPG: '',
+    codigoIdentificacao: '',
+    numeroApoliceAnterior: '',
+    vigFinalAnterior: '',
+    qtdSinistros: ''
   });
 
   const [editableData, setEditableData] = useState<EditableData>({
@@ -101,11 +122,23 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
     }
   });
 
-  const stepTitles = [
-    'Dados de Contato',
-    'Verificação de Alterações',
-    hasChanges === 'nao' ? 'Confirmação Final' : 'Edição de Dados'
-  ];
+  const getStepTitles = () => {
+    const titles = ['Dados de Contato', 'Origem da Renovação'];
+    
+    if (origin === 'outra_corretora') {
+      titles.push('Dados da Apólice Anterior');
+    }
+    
+    titles.push('Verificação de Alterações');
+    
+    if (hasChanges === 'nao') {
+      titles.push('Confirmação Final');
+    } else if (hasChanges === 'sim') {
+      titles.push('Edição de Dados');
+    }
+    
+    return titles;
+  };
 
   const contactValidation = useFormValidation({
     fullName: { required: true, message: 'Nome completo é obrigatório' },
@@ -127,8 +160,24 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
     }
   });
 
+  const previousPolicyValidation = useFormValidation({
+    seguradoraAnterior: { required: true, message: 'Nome da seguradora é obrigatório' },
+    novoBonusPG: { required: true, message: 'Novo bônus é obrigatório' },
+    numeroApoliceAnterior: { required: true, message: 'Número da apólice anterior é obrigatório' },
+    vigFinalAnterior: { 
+      required: true, 
+      pattern: /^\d{2}\/\d{2}\/\d{4}$/,
+      message: 'Data deve estar no formato dd/mm/aaaa' 
+    },
+    qtdSinistros: { required: true, message: 'Quantidade de sinistros é obrigatória' }
+  });
+
   const updateContactData = (field: keyof ContactData, value: string) => {
     setContactData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const updatePreviousPolicyData = (field: keyof PreviousPolicyDataType, value: string) => {
+    setPreviousPolicyData(prev => ({ ...prev, [field]: value }));
   };
 
   const updateEditableData = (section: keyof EditableData, field: string, value: string) => {
@@ -138,11 +187,36 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
     }));
   };
 
+  const getCurrentStepIndex = () => {
+    if (currentStep === 1) return 1; // Dados de Contato
+    if (currentStep === 2) return 2; // Origem da Renovação
+    if (currentStep === 3 && origin === 'outra_corretora') return 3; // Dados da Apólice Anterior
+    if (currentStep === 3 && origin === 'jj_amorim') return 3; // Verificação de Alterações
+    if (currentStep === 4) return origin === 'outra_corretora' ? 4 : 3; // Verificação de Alterações
+    if (currentStep === 5) return origin === 'outra_corretora' ? 5 : 4; // Confirmação Final ou Edição
+    return currentStep;
+  };
+
   const validateCurrentStep = (): boolean => {
     switch (currentStep) {
       case 1:
         return contactValidation.validateAll(contactData as unknown as { [key: string]: string });
       case 2:
+        if (!origin) {
+          alert('Por favor, selecione uma opção.');
+          return false;
+        }
+        return true;
+      case 3:
+        if (origin === 'outra_corretora') {
+          return previousPolicyValidation.validateAll(previousPolicyData as unknown as { [key: string]: string });
+        }
+        if (!hasChanges) {
+          alert('Por favor, selecione uma opção.');
+          return false;
+        }
+        return true;
+      case 4:
         if (!hasChanges) {
           alert('Por favor, selecione uma opção.');
           return false;
@@ -158,14 +232,26 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
       if (currentStep === 1) {
         setCurrentStep(2);
       } else if (currentStep === 2) {
-        setCurrentStep(3);
+        if (origin === 'outra_corretora') {
+          setCurrentStep(3);
+        } else {
+          setCurrentStep(4);
+        }
+      } else if (currentStep === 3) {
+        setCurrentStep(4);
+      } else if (currentStep === 4) {
+        setCurrentStep(5);
       }
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+      if (currentStep === 4 && origin === 'jj_amorim') {
+        setCurrentStep(2);
+      } else {
+        setCurrentStep(currentStep - 1);
+      }
     } else {
       onBack();
     }
@@ -208,7 +294,9 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
           rideshareWork: ''
         },
         hasChanges: false,
-        flowType: 'Renovacao Seguro Auto'
+        flowType: 'Renovacao Seguro Auto',
+        origem_renovacao: origin,
+        dados_apolice_anterior: origin === 'outra_corretora' ? previousPolicyData : undefined
       };
 
       await processAndSendData(unifiedData);
@@ -226,7 +314,9 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
         vehicleData: editableData.vehicleData,
         riskData: editableData.riskData,
         hasChanges: true,
-        flowType: 'Renovacao Seguro Auto'
+        flowType: 'Renovacao Seguro Auto',
+        origem_renovacao: origin,
+        dados_apolice_anterior: origin === 'outra_corretora' ? previousPolicyData : undefined
       };
 
       await processAndSendData(unifiedData);
@@ -249,13 +339,40 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
         );
       case 2:
         return (
-          <DataChangeQuestion
-            hasChanges={hasChanges}
-            onChange={setHasChanges}
-            error={!hasChanges && currentStep === 2 ? 'Por favor, selecione uma opção' : undefined}
+          <RenewalOriginQuestion
+            origin={origin}
+            onChange={setOrigin}
+            error={!origin && currentStep === 2 ? 'Por favor, selecione uma opção' : undefined}
           />
         );
       case 3:
+        if (origin === 'outra_corretora') {
+          return (
+            <PreviousPolicyData
+              data={previousPolicyData}
+              onChange={updatePreviousPolicyData}
+              errors={previousPolicyValidation.errors}
+              onFieldBlur={previousPolicyValidation.validate}
+            />
+          );
+        } else {
+          return (
+            <DataChangeQuestion
+              hasChanges={hasChanges}
+              onChange={setHasChanges}
+              error={!hasChanges && currentStep === 3 ? 'Por favor, selecione uma opção' : undefined}
+            />
+          );
+        }
+      case 4:
+        return (
+          <DataChangeQuestion
+            hasChanges={hasChanges}
+            onChange={setHasChanges}
+            error={!hasChanges && currentStep === 4 ? 'Por favor, selecione uma opção' : undefined}
+          />
+        );
+      case 5:
         if (hasChanges === 'nao') {
           return <QuickConfirmation onConfirm={handleQuickConfirmation} />;
         } else {
@@ -272,15 +389,15 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
     }
   };
 
-  const shouldShowNavigation = currentStep < 3 || (currentStep === 3 && hasChanges === 'sim');
+  const shouldShowNavigation = currentStep < 5 || (currentStep === 5 && hasChanges === 'sim');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12 px-4">
       <div className="w-full max-w-5xl mx-auto">
         <ProgressIndicator
-          currentStep={currentStep}
-          totalSteps={3}
-          stepTitles={stepTitles}
+          currentStep={getCurrentStepIndex()}
+          totalSteps={getStepTitles().length}
+          stepTitles={getStepTitles()}
         />
 
         {renderCurrentStep()}
