@@ -28,7 +28,7 @@ export interface MainDriverData {
 export interface VehicleData {
   model: string;
   plate: string;
-  chassis: string;
+  chassis?: string; // Made optional since not collected in current flows
   year: string;
   isFinanced: string;
 }
@@ -60,6 +60,8 @@ export interface UnifiedData {
   riskData?: RiskData;
   hasChanges?: boolean;
   flowType: 'Nova Cotacao de Seguro' | 'Renovacao Seguro Auto';
+  origem_renovacao?: string;
+  dados_apolice_anterior?: any;
 }
 
 // Função para traduzir valores técnicos para texto legível
