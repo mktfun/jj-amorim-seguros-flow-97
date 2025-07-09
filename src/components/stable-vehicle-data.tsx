@@ -8,7 +8,6 @@ import { StableFormField } from '@/components/ui/stable-form-field';
 interface VehicleData {
   model: string;
   plate: string;
-  chassis: string;
   year: string;
   isFinanced: string;
 }
@@ -72,19 +71,7 @@ const StableVehicleData = memo<StableVehicleDataProps>(({
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <StableFormField
-            id="chassis"
-            label="Chassis"
-            value={data.chassis}
-            onChange={handleFieldChange('chassis')}
-            onBlur={handleFieldBlur('chassis')}
-            error={errors.chassis}
-            placeholder="Número do chassis"
-            maxLength={17}
-            required={!isOptional}
-          />
-
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
           <StableFormField
             id="year"
             label="Ano/Modelo"

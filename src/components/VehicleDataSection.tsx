@@ -5,7 +5,6 @@ import StableVehicleData from '@/components/stable-vehicle-data';
 interface VehicleData {
   model: string;
   plate: string;
-  chassis: string;
   year: string;
   isFinanced: string;
 }

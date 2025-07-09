@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Send } from 'lucide-react';
@@ -34,7 +33,6 @@ interface FormData {
   vehicleData: {
     model: string;
     plate: string;
-    chassis: string;
     year: string;
     isFinanced: string;
   };
@@ -44,11 +42,16 @@ interface FormData {
     bairro: string;
     localidade: string;
     uf: string;
+    numero: string;
+    complemento: string;
     garageType: string;
     residenceType: string;
     usesForWork: string;
     workParking: string;
     youngResidents: string;
+    youngDriversUseVehicle: string;
+    youngDriverAge: string;
+    youngDriverGender: string;
     rideshareWork: string;
   };
 }
@@ -76,7 +79,6 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     vehicleData: {
       model: '',
       plate: '',
-      chassis: '',
       year: '',
       isFinanced: ''
     },
@@ -86,11 +88,16 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       bairro: '',
       localidade: '',
       uf: '',
+      numero: '',
+      complemento: '',
       garageType: '',
       residenceType: '',
       usesForWork: '',
       workParking: '',
       youngResidents: '',
+      youngDriversUseVehicle: '',
+      youngDriverAge: '',
+      youngDriverGender: '',
       rideshareWork: ''
     }
   });
@@ -153,7 +160,6 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       pattern: validationPatterns.plate, 
       message: 'Placa deve estar no formato ABC-1234 ou ABC1D23' 
     },
-    chassis: { required: true, message: 'Chassis é obrigatório' },
     year: { required: true, message: 'Ano/modelo é obrigatório' },
     isFinanced: { required: true, message: 'Selecione se o veículo está financiado' }
   });
@@ -164,6 +170,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       pattern: validationPatterns.cep, 
       message: 'CEP deve estar no formato 00000-000' 
     },
+    numero: { required: true, message: 'Número do endereço é obrigatório' },
     garageType: { required: true, message: 'Selecione o tipo de portão' },
     residenceType: { required: true, message: 'Selecione o tipo de residência' },
     usesForWork: { required: true, message: 'Selecione se usa o veículo para trabalho' },
@@ -207,6 +214,31 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       setFormData(prev => ({
         ...prev,
         riskData: { ...prev.riskData, workParking: '' }
+      }));
+    }
+
+    // Clear young driver fields if youngResidents is 'nao'
+    if (field === 'youngResidents' && value === 'nao') {
+      setFormData(prev => ({
+        ...prev,
+        riskData: { 
+          ...prev.riskData, 
+          youngDriversUseVehicle: '',
+          youngDriverAge: '',
+          youngDriverGender: ''
+        }
+      }));
+    }
+
+    // Clear young driver details if they don't use vehicle
+    if (field === 'youngDriversUseVehicle' && value === 'nao') {
+      setFormData(prev => ({
+        ...prev,
+        riskData: { 
+          ...prev.riskData, 
+          youngDriverAge: '',
+          youngDriverGender: ''
+        }
       }));
     }
   };
@@ -280,6 +312,15 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         // Only validate workParking if usesForWork is 'sim'
         if (formData.riskData.usesForWork !== 'sim') {
           delete riskValidationData.workParking;
+        }
+        // Only validate young driver fields if applicable
+        if (formData.riskData.youngResidents !== 'sim') {
+          delete riskValidationData.youngDriversUseVehicle;
+          delete riskValidationData.youngDriverAge;
+          delete riskValidationData.youngDriverGender;
+        } else if (formData.riskData.youngDriversUseVehicle !== 'sim') {
+          delete riskValidationData.youngDriverAge;
+          delete riskValidationData.youngDriverGender;
         }
         return riskDataValidation.validateAll(riskValidationData as { [key: string]: string });
       default:

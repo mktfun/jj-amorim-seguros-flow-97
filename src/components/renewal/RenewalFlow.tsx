@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -32,7 +33,6 @@ interface EditableData {
   vehicleData: {
     model: string;
     plate: string;
-    chassis: string;
     year: string;
     isFinanced: string;
   };
@@ -42,11 +42,16 @@ interface EditableData {
     bairro: string;
     localidade: string;
     uf: string;
+    numero: string;
+    complemento: string;
     garageType: string;
     residenceType: string;
     usesForWork: string;
     workParking: string;
     youngResidents: string;
+    youngDriversUseVehicle: string;
+    youngDriverAge: string;
+    youngDriverGender: string;
     rideshareWork: string;
   };
 }
@@ -73,7 +78,6 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
     vehicleData: {
       model: '',
       plate: '',
-      chassis: '',
       year: '',
       isFinanced: ''
     },
@@ -83,11 +87,16 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
       bairro: '',
       localidade: '',
       uf: '',
+      numero: '',
+      complemento: '',
       garageType: '',
       residenceType: '',
       usesForWork: '',
       workParking: '',
       youngResidents: '',
+      youngDriversUseVehicle: '',
+      youngDriverAge: '',
+      youngDriverGender: '',
       rideshareWork: ''
     }
   });
@@ -177,17 +186,25 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
         vehicleData: {
           model: '',
           plate: '',
-          chassis: '',
           year: '',
           isFinanced: ''
         },
         riskData: {
           cep: '',
+          logradouro: '',
+          bairro: '',
+          localidade: '',
+          uf: '',
+          numero: '',
+          complemento: '',
           garageType: '',
           residenceType: '',
           usesForWork: '',
           workParking: '',
           youngResidents: '',
+          youngDriversUseVehicle: '',
+          youngDriverAge: '',
+          youngDriverGender: '',
           rideshareWork: ''
         },
         hasChanges: false,

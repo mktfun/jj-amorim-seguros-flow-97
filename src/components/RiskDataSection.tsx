@@ -8,11 +8,16 @@ interface RiskData {
   bairro: string;
   localidade: string;
   uf: string;
+  numero: string;
+  complemento: string;
   garageType: string;
   residenceType: string;
   usesForWork: string;
   workParking: string;
   youngResidents: string;
+  youngDriversUseVehicle: string;
+  youngDriverAge: string;
+  youngDriverGender: string;
   rideshareWork: string;
 }
 

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,7 +11,6 @@ import { cn } from '@/lib/utils';
 interface VehicleData {
   model: string;
   plate: string;
-  chassis: string;
   year: string;
   isFinanced: string;
 }
@@ -151,33 +151,6 @@ const VehicleDataStep: React.FC<VehicleDataStepProps> = ({
                 </p>
               )}
             </div>
-          </div>
-
-          {/* Chassis */}
-          <div>
-            <Label htmlFor="chassis" className="text-base font-semibold text-gray-700 mb-2 block">
-              Chassis <span className="text-blue-600">*</span>
-            </Label>
-            <Input
-              id="chassis"
-              type="text"
-              value={data.chassis}
-              onChange={(e) => onChange('chassis', e.target.value.toUpperCase())}
-              onBlur={(e) => onFieldBlur('chassis', e.target.value)}
-              className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                errors.chassis 
-                  ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                  : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-              }`}
-              placeholder="Digite o número do chassis (17 dígitos)"
-              maxLength={17}
-            />
-            {errors.chassis && (
-              <p className="text-red-500 text-sm mt-2 flex items-center">
-                <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                {errors.chassis}
-              </p>
-            )}
           </div>
 
           {/* Financiado */}
