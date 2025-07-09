@@ -1,5 +1,5 @@
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,43 +38,33 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
 }) => {
   const { fetchAddress, loading, error: cepError, clearError } = useViaCEP();
   const cepInputRef = useRef<HTMLInputElement>(null);
+  const [isFormattingCep, setIsFormattingCep] = useState(false);
 
+  // Simple CEP formatting without cursor manipulation
   const formatCEP = useCallback((value: string) => {
     const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 8) {
-      return numbers.replace(/(\d{5})(\d{3})/, '$1-$2');
+    if (numbers.length <= 5) {
+      return numbers;
     }
-    return value;
+    return `${numbers.slice(0, 5)}-${numbers.slice(5, 8)}`;
   }, []);
 
   const handleCepChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target;
-    const value = input.value;
-    const cursorPosition = input.selectionStart || 0;
+    if (isFormattingCep) return; // Prevent recursive calls
     
-    // Format the CEP
+    const value = e.target.value;
     const formatted = formatCEP(value);
     
-    // Calculate new cursor position after formatting
-    const digitsBeforeCursor = value.slice(0, cursorPosition).replace(/\D/g, '').length;
-    let newCursorPosition = digitsBeforeCursor;
-    
-    // Adjust for dash position
-    if (digitsBeforeCursor > 5) {
-      newCursorPosition = digitsBeforeCursor + 1; // +1 for the dash
+    // Only format if we haven't exceeded 9 characters (including dash)
+    if (formatted.length <= 9) {
+      setIsFormattingCep(true);
+      onChange('cep', formatted);
+      clearError();
+      
+      // Reset formatting flag after state update
+      setTimeout(() => setIsFormattingCep(false), 0);
     }
-    
-    // Update the value
-    onChange('cep', formatted);
-    clearError();
-    
-    // Restore cursor position after React re-renders
-    setTimeout(() => {
-      if (cepInputRef.current) {
-        cepInputRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
-      }
-    }, 0);
-  }, [formatCEP, onChange, clearError]);
+  }, [formatCEP, onChange, clearError, isFormattingCep]);
 
   const handleCepBlur = useCallback(async (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -83,13 +73,16 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
     // Only fetch address if CEP is complete (8 digits)
     const cleanCep = value.replace(/\D/g, '');
     if (cleanCep.length === 8) {
+      console.log('Buscando endereço para CEP:', cleanCep);
       const addressData = await fetchAddress(cleanCep);
       if (addressData) {
+        console.log('Endereço encontrado:', addressData);
         onChange('logradouro', addressData.logradouro);
         onChange('bairro', addressData.bairro);
         onChange('localidade', addressData.localidade);
         onChange('uf', addressData.uf);
       } else {
+        console.log('CEP não encontrado, limpando campos de endereço');
         // Clear address fields if CEP is invalid
         onChange('logradouro', '');
         onChange('bairro', '');
