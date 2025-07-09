@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -101,10 +100,6 @@ const VehicleDataStep: React.FC<VehicleDataStepProps> = ({
                 onBlur={(e) => onFieldBlur('plate', e.target.value)}
                 maskChar={null}
                 alwaysShowMask={false}
-                formatChars={{
-                  'a': '[A-Za-z]',
-                  '9': '[0-9]'
-                }}
               >
                 {(inputProps: any) => (
                   <input

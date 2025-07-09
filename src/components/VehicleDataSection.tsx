@@ -1,4 +1,3 @@
-
 import React, { memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -65,10 +64,6 @@ const VehicleDataSection: React.FC<VehicleDataSectionProps> = memo(({
               onBlur={(e) => onFieldBlur('plate', e.target.value)}
               maskChar={null}
               alwaysShowMask={false}
-              formatChars={{
-                'a': '[A-Za-z]',
-                '9': '[0-9]'
-              }}
             >
               {(inputProps: any) => (
                 <input
