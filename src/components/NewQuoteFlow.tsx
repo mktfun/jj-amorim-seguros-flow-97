@@ -56,6 +56,13 @@ interface FormData {
   };
 }
 
+interface VehicleData {
+  model: string;
+  plate: string;
+  year: string;
+  isFinanced: string;
+}
+
 const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
