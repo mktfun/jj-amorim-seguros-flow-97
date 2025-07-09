@@ -16,6 +16,7 @@ interface RenewalEditableData {
     maritalStatus: string;
     email: string;
     phone: string;
+    profession: string;
   };
   vehicleData: {
     model: string;

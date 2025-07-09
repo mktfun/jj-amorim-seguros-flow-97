@@ -20,6 +20,7 @@ interface FormData {
     maritalStatus: string;
     email: string;
     phone: string;
+    profession: string;
   };
   mainDriverData: {
     isDifferentFromInsured: string;
@@ -29,6 +30,7 @@ interface FormData {
     maritalStatus: string;
     email: string;
     phone: string;
+    profession: string;
   };
   vehicleData: {
     model: string;
@@ -72,7 +74,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       birthDate: '',
       maritalStatus: '',
       email: '',
-      phone: ''
+      phone: '',
+      profession: ''
     },
     mainDriverData: {
       isDifferentFromInsured: '',
@@ -81,7 +84,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       birthDate: '',
       maritalStatus: '',
       email: '',
-      phone: ''
+      phone: '',
+      profession: ''
     },
     vehicleData: {
       model: '',
@@ -369,7 +373,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
               birthDate: formData.personalData.birthDate,
               maritalStatus: formData.personalData.maritalStatus,
               email: formData.personalData.email,
-              phone: formData.personalData.phone
+              phone: formData.personalData.phone,
+              profession: formData.personalData.profession
             },
             flowType: 'Nova Cotacao de Seguro'
           };

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -40,6 +39,7 @@ interface PersonalData {
   maritalStatus: string;
   email: string;
   phone: string;
+  profession: string;
 }
 
 interface VehicleData {
@@ -94,7 +94,8 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
     birthDate: '',
     maritalStatus: '',
     email: '',
-    phone: ''
+    phone: '',
+    profession: ''
   });
 
   const [vehicleData, setVehicleData] = useState<VehicleData>({

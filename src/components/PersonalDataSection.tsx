@@ -1,4 +1,3 @@
-
 import React, { memo } from 'react';
 import StablePersonalData from '@/components/stable-personal-data';
 
@@ -9,6 +8,7 @@ interface PersonalData {
   maritalStatus: string;
   email: string;
   phone: string;
+  profession: string;
 }
 
 interface PersonalDataSectionProps {
