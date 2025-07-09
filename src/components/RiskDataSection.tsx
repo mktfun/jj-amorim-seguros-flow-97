@@ -1,11 +1,10 @@
-import React, { useCallback, useRef, memo } from 'react';
+
+import React, { memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Loader2, MapPin } from 'lucide-react';
 import { useViaCEP } from '@/hooks/useViaCEP';
-import { useInputMask, cepMask } from '@/hooks/useInputMask';
+import RadioQuestion from './risk-data/RadioQuestion';
+import AddressDisplay from './risk-data/AddressDisplay';
+import CEPInput from './risk-data/CEPInput';
 
 interface RiskData {
   cep: string;
@@ -38,195 +37,64 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = memo(({
 }) => {
   const { fetchAddress, loading, error: cepError, clearError } = useViaCEP();
 
-  const cepInput = useInputMask(
-    data.cep,
-    (value) => {
-      onChange('cep', value);
-      clearError();
-    },
-    {
-      mask: cepMask,
-      placeholder: '00000-000',
-      maxLength: 9
-    },
-    async (value) => {
-      onFieldBlur('cep', value);
-      
-      // Only fetch address if CEP is complete (8 digits)
-      const cleanCep = value.replace(/\D/g, '');
-      if (cleanCep.length === 8) {
-        console.log('Buscando endereço para CEP:', cleanCep);
-        const addressData = await fetchAddress(cleanCep);
-        if (addressData) {
-          console.log('Endereço encontrado:', addressData);
-          onChange('logradouro', addressData.logradouro);
-          onChange('bairro', addressData.bairro);
-          onChange('localidade', addressData.localidade);
-          onChange('uf', addressData.uf);
-        } else {
-          console.log('CEP não encontrado, limpando campos de endereço');
-          onChange('logradouro', '');
-          onChange('bairro', '');
-          onChange('localidade', '');
-          onChange('uf', '');
-        }
+  const handleCepChange = (value: string) => {
+    onChange('cep', value);
+    clearError();
+  };
+
+  const handleCepBlur = async (value: string) => {
+    onFieldBlur('cep', value);
+    
+    // Only fetch address if CEP is complete (8 digits)
+    const cleanCep = value.replace(/\D/g, '');
+    if (cleanCep.length === 8) {
+      console.log('Buscando endereço para CEP:', cleanCep);
+      const addressData = await fetchAddress(cleanCep);
+      if (addressData) {
+        console.log('Endereço encontrado:', addressData);
+        onChange('logradouro', addressData.logradouro);
+        onChange('bairro', addressData.bairro);
+        onChange('localidade', addressData.localidade);
+        onChange('uf', addressData.uf);
+      } else {
+        console.log('CEP não encontrado, limpando campos de endereço');
+        onChange('logradouro', '');
+        onChange('bairro', '');
+        onChange('localidade', '');
+        onChange('uf', '');
       }
     }
-  );
-
-  const RadioQuestion = ({ 
-    title, 
-    field, 
-    options = [{ value: 'sim', label: 'Sim' }, { value: 'nao', label: 'Não' }] 
-  }: { 
-    title: string; 
-    field: keyof RiskData; 
-    options?: { value: string; label: string }[] 
-  }) => (
-    <div>
-      <Label className="text-sm font-medium jj-blue-dark mb-3 block">
-        {title}{isOptional ? '' : ' *'}
-      </Label>
-      <RadioGroup 
-        value={data[field]} 
-        onValueChange={(value) => onChange(field, value)}
-        className="flex space-x-6"
-      >
-        {options.map((option) => (
-          <div key={option.value} className="flex items-center space-x-2">
-            <RadioGroupItem 
-              value={option.value} 
-              id={`${field}-${option.value}`}
-              className="border-2 border-primary"
-            />
-            <Label 
-              htmlFor={`${field}-${option.value}`} 
-              className="cursor-pointer text-muted-foreground hover:jj-blue-dark"
-            >
-              {option.label}
-            </Label>
-          </div>
-        ))}
-      </RadioGroup>
-      {errors[field] && (
-        <p className="text-sm text-red-500 mt-1">{errors[field]}</p>
-      )}
-    </div>
-  );
-
-  const requiredLabel = isOptional ? '' : ' *';
+  };
 
   return (
     <Card className="border-jj-cyan-border">
       <CardContent className="p-6 space-y-8">
-        <div>
-          <Label htmlFor="cep" className="text-sm font-medium jj-blue-dark">
-            CEP de pernoite do veículo{requiredLabel}
-          </Label>
-          <div className="relative">
-            <Input
-              ref={cepInput.inputRef}
-              id="cep"
-              type="text"
-              value={cepInput.value}
-              onChange={cepInput.onChange}
-              onBlur={cepInput.onBlur}
-              className={`mt-1 ${(errors.cep || cepError) ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
-              placeholder={cepInput.placeholder}
-              maxLength={cepInput.maxLength}
-              autoComplete="postal-code"
-            />
-            {loading && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <Loader2 className="h-4 w-4 animate-spin text-primary" />
-              </div>
-            )}
-          </div>
-          {(errors.cep || cepError) && (
-            <p className="text-sm text-red-500 mt-1">{errors.cep || cepError}</p>
-          )}
-          <p className="text-xs text-muted-foreground mt-1">
-            Local onde o veículo fica durante a noite
-          </p>
-        </div>
+        <CEPInput
+          value={data.cep}
+          onChange={handleCepChange}
+          onBlur={handleCepBlur}
+          error={errors.cep || cepError}
+          loading={loading}
+          isOptional={isOptional}
+        />
 
-        {/* Campos de Endereço */}
-        <div className="bg-accent p-4 rounded-lg border border-jj-cyan-border">
-          <div className="flex items-center mb-3">
-            <MapPin className="h-4 w-4 text-primary mr-2" />
-            <h4 className="text-sm font-medium jj-blue-dark">Endereço Completo</h4>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="logradouro" className="text-xs font-medium text-muted-foreground mb-1 block">
-                Logradouro (Rua)
-              </Label>
-              <Input
-                id="logradouro"
-                type="text"
-                value={data.logradouro}
-                onChange={(e) => onChange('logradouro', e.target.value)}
-                className="h-8 text-xs bg-white"
-                placeholder="Rua, Avenida..."
-                readOnly
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="bairro" className="text-xs font-medium text-muted-foreground mb-1 block">
-                Bairro
-              </Label>
-              <Input
-                id="bairro"
-                type="text"
-                value={data.bairro}
-                onChange={(e) => onChange('bairro', e.target.value)}
-                className="h-8 text-xs bg-white"
-                placeholder="Bairro"
-                readOnly
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="localidade" className="text-xs font-medium text-muted-foreground mb-1 block">
-                Cidade
-              </Label>
-              <Input
-                id="localidade"
-                type="text"
-                value={data.localidade}
-                onChange={(e) => onChange('localidade', e.target.value)}
-                className="h-8 text-xs bg-white"
-                placeholder="Cidade"
-                readOnly
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="uf" className="text-xs font-medium text-muted-foreground mb-1 block">
-                Estado (UF)
-              </Label>
-              <Input
-                id="uf"
-                type="text"
-                value={data.uf}
-                onChange={(e) => onChange('uf', e.target.value)}
-                className="h-8 text-xs bg-white"
-                placeholder="UF"
-                readOnly
-              />
-            </div>
-          </div>
-          
-          <p className="text-muted-foreground text-xs mt-2">
-            📍 Endereço preenchido automaticamente com base no CEP
-          </p>
-        </div>
+        <AddressDisplay
+          data={{
+            logradouro: data.logradouro,
+            bairro: data.bairro,
+            localidade: data.localidade,
+            uf: data.uf
+          }}
+          onChange={onChange}
+        />
 
         <RadioQuestion
           title="Na garagem, o portão é automático ou manual?"
           field="garageType"
+          value={data.garageType}
+          onChange={(value) => onChange('garageType', value)}
+          error={errors.garageType}
+          isOptional={isOptional}
           options={[
             { value: 'automatico', label: 'Automático' },
             { value: 'manual', label: 'Manual' }
@@ -236,6 +104,10 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = memo(({
         <RadioQuestion
           title="Reside em casa ou apto?"
           field="residenceType"
+          value={data.residenceType}
+          onChange={(value) => onChange('residenceType', value)}
+          error={errors.residenceType}
+          isOptional={isOptional}
           options={[
             { value: 'casa', label: 'Casa' },
             { value: 'apto', label: 'Apartamento' }
@@ -246,6 +118,10 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = memo(({
           <RadioQuestion
             title="Utiliza o veículo para ir ao trabalho?"
             field="usesForWork"
+            value={data.usesForWork}
+            onChange={(value) => onChange('usesForWork', value)}
+            error={errors.usesForWork}
+            isOptional={isOptional}
           />
           
           {data.usesForWork === 'sim' && (
@@ -253,6 +129,10 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = memo(({
               <RadioQuestion
                 title="Se sim, ele fica em estacionamento fechado e exclusivo?"
                 field="workParking"
+                value={data.workParking}
+                onChange={(value) => onChange('workParking', value)}
+                error={errors.workParking}
+                isOptional={isOptional}
               />
             </div>
           )}
@@ -261,11 +141,19 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = memo(({
         <RadioQuestion
           title="Reside com pessoas entre 18 a 24 anos?"
           field="youngResidents"
+          value={data.youngResidents}
+          onChange={(value) => onChange('youngResidents', value)}
+          error={errors.youngResidents}
+          isOptional={isOptional}
         />
 
         <RadioQuestion
           title="Utiliza o veículo para trabalhar em transporte de passageiros por App (Uber e similares)?"
           field="rideshareWork"
+          value={data.rideshareWork}
+          onChange={(value) => onChange('rideshareWork', value)}
+          error={errors.rideshareWork}
+          isOptional={isOptional}
         />
       </CardContent>
     </Card>
