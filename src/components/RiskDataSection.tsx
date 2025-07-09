@@ -1,12 +1,11 @@
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Loader2, MapPin } from 'lucide-react';
 import { useViaCEP } from '@/hooks/useViaCEP';
-import InputMask from 'react-input-mask';
 
 interface RiskData {
   cep: string;
@@ -30,7 +29,7 @@ interface RiskDataSectionProps {
   isOptional?: boolean;
 }
 
-const RiskDataSection: React.FC<RiskDataSectionProps> = ({ 
+const RiskDataSection: React.FC<RiskDataSectionProps> = memo(({ 
   data, 
   onChange, 
   errors, 
@@ -40,11 +39,42 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
   const { fetchAddress, loading, error: cepError, clearError } = useViaCEP();
   const cepInputRef = useRef<HTMLInputElement>(null);
 
+  // Simple CEP formatting function that maintains cursor position
+  const formatCEP = useCallback((value: string, cursorPos: number) => {
+    const numbers = value.replace(/\D/g, '');
+    let formatted = '';
+    let newCursorPos = cursorPos;
+    
+    if (numbers.length <= 8) {
+      if (numbers.length > 5) {
+        formatted = `${numbers.slice(0, 5)}-${numbers.slice(5, 8)}`;
+        // Adjust cursor position for the dash
+        if (cursorPos > 5) {
+          newCursorPos = cursorPos + 1;
+        }
+      } else {
+        formatted = numbers;
+      }
+    }
+    
+    return { formatted, newCursorPos };
+  }, []);
+
   const handleCepChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    onChange('cep', value);
+    const input = e.target;
+    const cursorPos = input.selectionStart || 0;
+    const { formatted, newCursorPos } = formatCEP(e.target.value, cursorPos);
+    
+    onChange('cep', formatted);
     clearError();
-  }, [onChange, clearError]);
+    
+    // Maintain cursor position after formatting
+    setTimeout(() => {
+      if (cepInputRef.current) {
+        cepInputRef.current.setSelectionRange(newCursorPos, newCursorPos);
+      }
+    }, 0);
+  }, [formatCEP, onChange, clearError]);
 
   const handleCepBlur = useCallback(async (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -122,26 +152,18 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
             CEP de pernoite do veículo{requiredLabel}
           </Label>
           <div className="relative">
-            <InputMask
-              mask="99999-999"
+            <Input
+              ref={cepInputRef}
+              id="cep"
+              type="text"
               value={data.cep}
               onChange={handleCepChange}
               onBlur={handleCepBlur}
-              maskChar={null}
-              alwaysShowMask={false}
-            >
-              {(inputProps: any) => (
-                <Input
-                  {...inputProps}
-                  ref={cepInputRef}
-                  id="cep"
-                  type="text"
-                  className={`mt-1 ${(errors.cep || cepError) ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
-                  placeholder="00000-000"
-                  autoComplete="postal-code"
-                />
-              )}
-            </InputMask>
+              className={`mt-1 ${(errors.cep || cepError) ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
+              placeholder="00000-000"
+              maxLength={9}
+              autoComplete="postal-code"
+            />
             {loading && (
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -276,6 +298,8 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+RiskDataSection.displayName = 'RiskDataSection';
 
 export default RiskDataSection;
