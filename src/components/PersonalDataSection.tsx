@@ -1,9 +1,11 @@
+
 import React, { memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useInputMask, cpfMask, phoneMask, dateMask } from '@/hooks/useInputMask';
+import InputMask from 'react-input-mask';
+import { cn } from '@/lib/utils';
 
 interface PersonalData {
   fullName: string;
@@ -29,39 +31,6 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = memo(({
   onFieldBlur,
   isOptional = false
 }) => {
-  const cpfInput = useInputMask(
-    data.cpf,
-    (value) => onChange('cpf', value),
-    {
-      mask: cpfMask,
-      placeholder: '000.000.000-00',
-      maxLength: 14
-    },
-    (value) => onFieldBlur('cpf', value)
-  );
-
-  const phoneInput = useInputMask(
-    data.phone,
-    (value) => onChange('phone', value),
-    {
-      mask: phoneMask,
-      placeholder: '(00) 00000-0000',
-      maxLength: 15
-    },
-    (value) => onFieldBlur('phone', value)
-  );
-
-  const birthDateInput = useInputMask(
-    data.birthDate,
-    (value) => onChange('birthDate', value),
-    {
-      mask: dateMask,
-      placeholder: 'DD/MM/AAAA',
-      maxLength: 10
-    },
-    (value) => onFieldBlur('birthDate', value)
-  );
-
   const requiredLabel = isOptional ? '' : ' *';
 
   return (
@@ -97,21 +66,29 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = memo(({
             <Label htmlFor="cpf" className="text-sm font-medium jj-blue-dark">
               CPF{requiredLabel}
             </Label>
-            <Input
-              ref={cpfInput.inputRef}
-              id="cpf"
-              type="text"
-              value={cpfInput.value}
-              onChange={cpfInput.onChange}
-              onBlur={cpfInput.onBlur}
-              className={`mt-1 transition-all duration-200 ${
-                errors.cpf 
-                  ? 'border-red-500 bg-red-50 focus:border-red-500' 
-                  : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
-              }`}
-              placeholder={cpfInput.placeholder}
-              maxLength={cpfInput.maxLength}
-            />
+            <InputMask
+              mask="999.999.999-99"
+              value={data.cpf}
+              onChange={(e) => onChange('cpf', e.target.value)}
+              onBlur={(e) => onFieldBlur('cpf', e.target.value)}
+              maskChar={null}
+              alwaysShowMask={false}
+            >
+              {(inputProps: any) => (
+                <input
+                  {...inputProps}
+                  id="cpf"
+                  type="text"
+                  className={cn(
+                    "flex h-10 w-full rounded-md border bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm mt-1 transition-all duration-200",
+                    errors.cpf 
+                      ? 'border-red-500 bg-red-50 focus:border-red-500' 
+                      : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
+                  )}
+                  placeholder="000.000.000-00"
+                />
+              )}
+            </InputMask>
             {errors.cpf && (
               <p className="text-sm text-red-500 mt-1 flex items-center">
                 <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
@@ -126,21 +103,29 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = memo(({
             <Label htmlFor="birthDate" className="text-sm font-medium jj-blue-dark">
               Data de Nascimento{requiredLabel}
             </Label>
-            <Input
-              ref={birthDateInput.inputRef}
-              id="birthDate"
-              type="text"
-              value={birthDateInput.value}
-              onChange={birthDateInput.onChange}
-              onBlur={birthDateInput.onBlur}
-              className={`mt-1 transition-all duration-200 ${
-                errors.birthDate 
-                  ? 'border-red-500 bg-red-50 focus:border-red-500' 
-                  : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
-              }`}
-              placeholder={birthDateInput.placeholder}
-              maxLength={birthDateInput.maxLength}
-            />
+            <InputMask
+              mask="99/99/9999"
+              value={data.birthDate}
+              onChange={(e) => onChange('birthDate', e.target.value)}
+              onBlur={(e) => onFieldBlur('birthDate', e.target.value)}
+              maskChar={null}
+              alwaysShowMask={false}
+            >
+              {(inputProps: any) => (
+                <input
+                  {...inputProps}
+                  id="birthDate"
+                  type="text"
+                  className={cn(
+                    "flex h-10 w-full rounded-md border bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm mt-1 transition-all duration-200",
+                    errors.birthDate 
+                      ? 'border-red-500 bg-red-50 focus:border-red-500' 
+                      : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
+                  )}
+                  placeholder="DD/MM/AAAA"
+                />
+              )}
+            </InputMask>
             {errors.birthDate && (
               <p className="text-sm text-red-500 mt-1 flex items-center">
                 <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
@@ -208,21 +193,29 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = memo(({
             <Label htmlFor="phone" className="text-sm font-medium jj-blue-dark">
               Telefone (WhatsApp){requiredLabel}
             </Label>
-            <Input
-              ref={phoneInput.inputRef}
-              id="phone"
-              type="text"
-              value={phoneInput.value}
-              onChange={phoneInput.onChange}
-              onBlur={phoneInput.onBlur}
-              className={`mt-1 transition-all duration-200 ${
-                errors.phone 
-                  ? 'border-red-500 bg-red-50 focus:border-red-500' 
-                  : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
-              }`}
-              placeholder={phoneInput.placeholder}
-              maxLength={phoneInput.maxLength}
-            />
+            <InputMask
+              mask="(99) 99999-9999"
+              value={data.phone}
+              onChange={(e) => onChange('phone', e.target.value)}
+              onBlur={(e) => onFieldBlur('phone', e.target.value)}
+              maskChar={null}
+              alwaysShowMask={false}
+            >
+              {(inputProps: any) => (
+                <input
+                  {...inputProps}
+                  id="phone"
+                  type="text"
+                  className={cn(
+                    "flex h-10 w-full rounded-md border bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm mt-1 transition-all duration-200",
+                    errors.phone 
+                      ? 'border-red-500 bg-red-50 focus:border-red-500' 
+                      : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
+                  )}
+                  placeholder="(00) 00000-0000"
+                />
+              )}
+            </InputMask>
             {errors.phone && (
               <p className="text-sm text-red-500 mt-1 flex items-center">
                 <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>

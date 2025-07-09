@@ -1,9 +1,11 @@
+
 import React, { memo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Shield } from 'lucide-react';
-import { useInputMask, cpfMask, phoneMask } from '@/hooks/useInputMask';
+import InputMask from 'react-input-mask';
+import { cn } from '@/lib/utils';
 
 interface ContactData {
   fullName: string;
@@ -25,28 +27,6 @@ const InitialContactStep: React.FC<InitialContactStepProps> = memo(({
   errors, 
   onFieldBlur 
 }) => {
-  const cpfInput = useInputMask(
-    data.cpf,
-    (value) => onChange('cpf', value),
-    {
-      mask: cpfMask,
-      placeholder: '000.000.000-00',
-      maxLength: 14
-    },
-    (value) => onFieldBlur('cpf', value)
-  );
-
-  const phoneInput = useInputMask(
-    data.phone,
-    (value) => onChange('phone', value),
-    {
-      mask: phoneMask,
-      placeholder: '(00) 00000-0000',
-      maxLength: 15
-    },
-    (value) => onFieldBlur('phone', value)
-  );
-
   return (
     <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden">
       <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 pb-6">
@@ -94,21 +74,29 @@ const InitialContactStep: React.FC<InitialContactStepProps> = memo(({
               <Label htmlFor="cpf" className="text-base font-semibold text-gray-700 mb-2 block">
                 CPF <span className="text-blue-600">*</span>
               </Label>
-              <Input
-                ref={cpfInput.inputRef}
-                id="cpf"
-                type="text"
-                value={cpfInput.value}
-                onChange={cpfInput.onChange}
-                onBlur={cpfInput.onBlur}
-                className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                  errors.cpf 
-                    ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                    : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                }`}
-                placeholder={cpfInput.placeholder}
-                maxLength={cpfInput.maxLength}
-              />
+              <InputMask
+                mask="999.999.999-99"
+                value={data.cpf}
+                onChange={(e) => onChange('cpf', e.target.value)}
+                onBlur={(e) => onFieldBlur('cpf', e.target.value)}
+                maskChar={null}
+                alwaysShowMask={false}
+              >
+                {(inputProps: any) => (
+                  <input
+                    {...inputProps}
+                    id="cpf"
+                    type="text"
+                    className={cn(
+                      "flex h-12 w-full rounded-xl border-2 bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-base transition-all duration-200",
+                      errors.cpf 
+                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
+                        : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
+                    )}
+                    placeholder="000.000.000-00"
+                  />
+                )}
+              </InputMask>
               {errors.cpf && (
                 <p className="text-red-500 text-sm mt-2 flex items-center">
                   <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
@@ -122,21 +110,29 @@ const InitialContactStep: React.FC<InitialContactStepProps> = memo(({
               <Label htmlFor="phone" className="text-base font-semibold text-gray-700 mb-2 block">
                 Telefone (WhatsApp) <span className="text-blue-600">*</span>
               </Label>
-              <Input
-                ref={phoneInput.inputRef}
-                id="phone"
-                type="text"
-                value={phoneInput.value}
-                onChange={phoneInput.onChange}
-                onBlur={phoneInput.onBlur}
-                className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                  errors.phone 
-                    ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                    : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                }`}
-                placeholder={phoneInput.placeholder}
-                maxLength={phoneInput.maxLength}
-              />
+              <InputMask
+                mask="(99) 99999-9999"
+                value={data.phone}
+                onChange={(e) => onChange('phone', e.target.value)}
+                onBlur={(e) => onFieldBlur('phone', e.target.value)}
+                maskChar={null}
+                alwaysShowMask={false}
+              >
+                {(inputProps: any) => (
+                  <input
+                    {...inputProps}
+                    id="phone"
+                    type="text"
+                    className={cn(
+                      "flex h-12 w-full rounded-xl border-2 bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-base transition-all duration-200",
+                      errors.phone 
+                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
+                        : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
+                    )}
+                    placeholder="(00) 00000-0000"
+                  />
+                )}
+              </InputMask>
               {errors.phone && (
                 <p className="text-red-500 text-sm mt-2 flex items-center">
                   <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>

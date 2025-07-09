@@ -1,9 +1,11 @@
+
 import React, { memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useInputMask, plateMask } from '@/hooks/useInputMask';
+import InputMask from 'react-input-mask';
+import { cn } from '@/lib/utils';
 
 interface VehicleData {
   model: string;
@@ -28,17 +30,6 @@ const VehicleDataSection: React.FC<VehicleDataSectionProps> = memo(({
   onFieldBlur,
   isOptional = false
 }) => {
-  const plateInput = useInputMask(
-    data.plate,
-    (value) => onChange('plate', value),
-    {
-      mask: plateMask,
-      placeholder: 'ABC-1234 ou ABC1D23',
-      maxLength: 8
-    },
-    (value) => onFieldBlur('plate', value)
-  );
-
   const requiredLabel = isOptional ? '' : ' *';
 
   return (
@@ -67,17 +58,31 @@ const VehicleDataSection: React.FC<VehicleDataSectionProps> = memo(({
             <Label htmlFor="plate" className="text-sm font-medium jj-blue-dark">
               Placa{requiredLabel}
             </Label>
-            <Input
-              ref={plateInput.inputRef}
-              id="plate"
-              type="text"
-              value={plateInput.value}
-              onChange={plateInput.onChange}
-              onBlur={plateInput.onBlur}
-              className={`mt-1 ${errors.plate ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
-              placeholder={plateInput.placeholder}
-              maxLength={plateInput.maxLength}
-            />
+            <InputMask
+              mask="aaa-9999"
+              value={data.plate}
+              onChange={(e) => onChange('plate', e.target.value.toUpperCase())}
+              onBlur={(e) => onFieldBlur('plate', e.target.value)}
+              maskChar={null}
+              alwaysShowMask={false}
+              formatChars={{
+                'a': '[A-Za-z]',
+                '9': '[0-9]'
+              }}
+            >
+              {(inputProps: any) => (
+                <input
+                  {...inputProps}
+                  id="plate"
+                  type="text"
+                  className={cn(
+                    "flex h-10 w-full rounded-md border bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm mt-1",
+                    errors.plate ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'
+                  )}
+                  placeholder="ABC-1234"
+                />
+              )}
+            </InputMask>
             {errors.plate && (
               <p className="text-sm text-red-500 mt-1">{errors.plate}</p>
             )}

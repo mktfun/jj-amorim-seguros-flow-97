@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Car } from 'lucide-react';
+import InputMask from 'react-input-mask';
+import { cn } from '@/lib/utils';
 
 interface VehicleData {
   model: string;
@@ -27,29 +29,6 @@ const VehicleDataStep: React.FC<VehicleDataStepProps> = ({
   errors, 
   onFieldBlur 
 }) => {
-  const formatPlate = (value: string) => {
-    const cleaned = value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
-    
-    if (cleaned.length <= 7) {
-      if (cleaned.length >= 4) {
-        const letters = cleaned.substring(0, 3);
-        const numbers = cleaned.substring(3);
-        
-        if (numbers.length >= 2 && /[A-Z]/.test(numbers[1])) {
-          return `${letters}${numbers[0]}${numbers[1]}${numbers.substring(2)}`;
-        } else {
-          return `${letters}-${numbers}`;
-        }
-      }
-    }
-    return cleaned;
-  };
-
-  const handlePlateChange = (value: string) => {
-    const formatted = formatPlate(value);
-    onChange('plate', formatted);
-  };
-
   const currentYear = new Date().getFullYear();
 
   const CustomRadioOption = ({ value, label, field }: { value: string; label: string; field: string }) => (
@@ -115,20 +94,33 @@ const VehicleDataStep: React.FC<VehicleDataStepProps> = ({
               <Label htmlFor="plate" className="text-base font-semibold text-gray-700 mb-2 block">
                 Placa <span className="text-blue-600">*</span>
               </Label>
-              <Input
-                id="plate"
-                type="text"
+              <InputMask
+                mask="aaa-9999"
                 value={data.plate}
-                onChange={(e) => handlePlateChange(e.target.value)}
+                onChange={(e) => onChange('plate', e.target.value.toUpperCase())}
                 onBlur={(e) => onFieldBlur('plate', e.target.value)}
-                className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                  errors.plate 
-                    ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                    : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                }`}
-                placeholder="ABC-1234 ou ABC1D23"
-                maxLength={8}
-              />
+                maskChar={null}
+                alwaysShowMask={false}
+                formatChars={{
+                  'a': '[A-Za-z]',
+                  '9': '[0-9]'
+                }}
+              >
+                {(inputProps: any) => (
+                  <input
+                    {...inputProps}
+                    id="plate"
+                    type="text"
+                    className={cn(
+                      "flex h-12 w-full rounded-xl border-2 bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-base transition-all duration-200",
+                      errors.plate 
+                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
+                        : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
+                    )}
+                    placeholder="ABC-1234"
+                  />
+                )}
+              </InputMask>
               {errors.plate && (
                 <p className="text-red-500 text-sm mt-2 flex items-center">
                   <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
