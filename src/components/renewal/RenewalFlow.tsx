@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -39,6 +38,10 @@ interface EditableData {
   };
   riskData: {
     cep: string;
+    logradouro: string;
+    bairro: string;
+    localidade: string;
+    uf: string;
     garageType: string;
     residenceType: string;
     usesForWork: string;
@@ -76,6 +79,10 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
     },
     riskData: {
       cep: '',
+      logradouro: '',
+      bairro: '',
+      localidade: '',
+      uf: '',
       garageType: '',
       residenceType: '',
       usesForWork: '',
