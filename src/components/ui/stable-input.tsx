@@ -2,7 +2,7 @@
 import React, { forwardRef, useCallback, useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
-export interface StableInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+export interface StableInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'onBlur'> {
   value: string;
   onChange: (value: string) => void;
   onBlur?: (value: string) => void;
@@ -15,7 +15,8 @@ const StableInput = forwardRef<HTMLInputElement, StableInputProps>(
     
     // Sync internal value with external value only when not focused
     useEffect(() => {
-      if (document.activeElement !== ref && typeof ref === 'object' && ref?.current) {
+      const inputElement = ref && typeof ref === 'object' ? ref.current : null;
+      if (document.activeElement !== inputElement) {
         setInternalValue(value);
       }
     }, [value, ref]);

@@ -20,7 +20,8 @@ const StableMaskedInput = forwardRef<HTMLInputElement, StableMaskedInputProps>(
     
     // Sync internal value with external value only when not focused
     useEffect(() => {
-      if (document.activeElement !== ref && typeof ref === 'object' && ref?.current) {
+      const inputElement = ref && typeof ref === 'object' ? ref.current : null;
+      if (document.activeElement !== inputElement) {
         setInternalValue(value);
       }
     }, [value, ref]);
