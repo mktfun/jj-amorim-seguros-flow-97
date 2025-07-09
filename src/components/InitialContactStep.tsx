@@ -1,11 +1,8 @@
 
 import React, { memo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Shield } from 'lucide-react';
-import InputMask from 'react-input-mask';
-import { cn } from '@/lib/utils';
+import { StableFormField } from '@/components/ui/stable-form-field';
 
 interface ContactData {
   fullName: string;
@@ -27,6 +24,14 @@ const InitialContactStep: React.FC<InitialContactStepProps> = memo(({
   errors, 
   onFieldBlur 
 }) => {
+  const handleFieldChange = (field: keyof ContactData) => {
+    return (value: string) => onChange(field, value);
+  };
+
+  const handleFieldBlur = (field: string) => {
+    return (value: string) => onFieldBlur(field, value);
+  };
+
   return (
     <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden">
       <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 pb-6">
@@ -42,133 +47,55 @@ const InitialContactStep: React.FC<InitialContactStepProps> = memo(({
       </CardHeader>
       <CardContent className="p-8">
         <div className="space-y-8">
-          {/* Nome Completo */}
-          <div>
-            <Label htmlFor="fullName" className="text-base font-semibold text-gray-700 mb-2 block">
-              Nome Completo <span className="text-blue-600">*</span>
-            </Label>
-            <Input
-              id="fullName"
-              type="text"
-              value={data.fullName}
-              onChange={(e) => onChange('fullName', e.target.value)}
-              onBlur={(e) => onFieldBlur('fullName', e.target.value)}
-              className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                errors.fullName 
-                  ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                  : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-              }`}
-              placeholder="Seu nome completo"
-            />
-            {errors.fullName && (
-              <p className="text-red-500 text-sm mt-2 flex items-center">
-                <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                {errors.fullName}
-              </p>
-            )}
-          </div>
+          <StableFormField
+            id="fullName"
+            label="Nome Completo"
+            value={data.fullName}
+            onChange={handleFieldChange('fullName')}
+            onBlur={handleFieldBlur('fullName')}
+            error={errors.fullName}
+            placeholder="Seu nome completo"
+            required={true}
+          />
 
           <div className="grid gap-8 md:grid-cols-2">
-            {/* CPF */}
-            <div>
-              <Label htmlFor="cpf" className="text-base font-semibold text-gray-700 mb-2 block">
-                CPF <span className="text-blue-600">*</span>
-              </Label>
-              <InputMask
-                mask="999.999.999-99"
-                value={data.cpf}
-                onChange={(e) => onChange('cpf', e.target.value)}
-                onBlur={(e) => onFieldBlur('cpf', e.target.value)}
-                maskChar={null}
-                alwaysShowMask={false}
-              >
-                {(inputProps: any) => (
-                  <input
-                    {...inputProps}
-                    id="cpf"
-                    type="text"
-                    className={cn(
-                      "flex h-12 w-full rounded-xl border-2 bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-base transition-all duration-200",
-                      errors.cpf 
-                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                        : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                    )}
-                    placeholder="000.000.000-00"
-                  />
-                )}
-              </InputMask>
-              {errors.cpf && (
-                <p className="text-red-500 text-sm mt-2 flex items-center">
-                  <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                  {errors.cpf}
-                </p>
-              )}
-            </div>
-
-            {/* Telefone */}
-            <div>
-              <Label htmlFor="phone" className="text-base font-semibold text-gray-700 mb-2 block">
-                Telefone (WhatsApp) <span className="text-blue-600">*</span>
-              </Label>
-              <InputMask
-                mask="(99) 99999-9999"
-                value={data.phone}
-                onChange={(e) => onChange('phone', e.target.value)}
-                onBlur={(e) => onFieldBlur('phone', e.target.value)}
-                maskChar={null}
-                alwaysShowMask={false}
-              >
-                {(inputProps: any) => (
-                  <input
-                    {...inputProps}
-                    id="phone"
-                    type="text"
-                    className={cn(
-                      "flex h-12 w-full rounded-xl border-2 bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-base transition-all duration-200",
-                      errors.phone 
-                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                        : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                    )}
-                    placeholder="(00) 00000-0000"
-                  />
-                )}
-              </InputMask>
-              {errors.phone && (
-                <p className="text-red-500 text-sm mt-2 flex items-center">
-                  <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                  {errors.phone}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Email */}
-          <div>
-            <Label htmlFor="email" className="text-base font-semibold text-gray-700 mb-2 block">
-              Email <span className="text-blue-600">*</span>
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={data.email}
-              onChange={(e) => onChange('email', e.target.value)}
-              onBlur={(e) => onFieldBlur('email', e.target.value)}
-              className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                errors.email 
-                  ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                  : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-              }`}
-              placeholder="seu@email.com"
+            <StableFormField
+              id="cpf"
+              label="CPF"
+              value={data.cpf}
+              onChange={handleFieldChange('cpf')}
+              onBlur={handleFieldBlur('cpf')}
+              error={errors.cpf}
+              placeholder="000.000.000-00"
+              mask="999.999.999-99"
+              required={true}
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-2 flex items-center">
-                <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                {errors.email}
-              </p>
-            )}
+
+            <StableFormField
+              id="phone"
+              label="Telefone (WhatsApp)"
+              value={data.phone}
+              onChange={handleFieldChange('phone')}
+              onBlur={handleFieldBlur('phone')}
+              error={errors.phone}
+              placeholder="(00) 00000-0000"
+              mask="(99) 99999-9999"
+              required={true}
+            />
           </div>
 
-          {/* Texto informativo */}
+          <StableFormField
+            id="email"
+            label="Email"
+            value={data.email}
+            onChange={handleFieldChange('email')}
+            onBlur={handleFieldBlur('email')}
+            error={errors.email}
+            placeholder="seu@email.com"
+            type="email"
+            required={true}
+          />
+
           <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border-l-4 border-blue-500">
             <p className="text-gray-600 text-sm">
               <span className="font-medium text-blue-700">Próxima etapa:</span> Vamos verificar se houve alterações nos seus dados desde a última renovação.
