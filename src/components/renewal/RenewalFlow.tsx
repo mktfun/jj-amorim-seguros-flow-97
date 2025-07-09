@@ -39,10 +39,6 @@ interface EditableData {
   };
   riskData: {
     cep: string;
-    logradouro: string;
-    bairro: string;
-    localidade: string;
-    uf: string;
     garageType: string;
     residenceType: string;
     usesForWork: string;
@@ -80,10 +76,6 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
     },
     riskData: {
       cep: '',
-      logradouro: '',
-      bairro: '',
-      localidade: '',
-      uf: '',
       garageType: '',
       residenceType: '',
       usesForWork: '',
@@ -184,10 +176,6 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
         },
         riskData: {
           cep: '',
-          logradouro: '',
-          bairro: '',
-          localidade: '',
-          uf: '',
           garageType: '',
           residenceType: '',
           usesForWork: '',
@@ -195,7 +183,8 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
           youngResidents: '',
           rideshareWork: ''
         },
-        flowType: 'Renovacao Seguro Auto - Sem Alteracoes'
+        hasChanges: false,
+        flowType: 'Renovacao Seguro Auto'
       };
 
       await processAndSendData(unifiedData);
@@ -212,7 +201,8 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
         personalData: editableData.personalData,
         vehicleData: editableData.vehicleData,
         riskData: editableData.riskData,
-        flowType: 'Renovacao Seguro Auto - Com Alteracoes'
+        hasChanges: true,
+        flowType: 'Renovacao Seguro Auto'
       };
 
       await processAndSendData(unifiedData);
