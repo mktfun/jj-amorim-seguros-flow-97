@@ -13,6 +13,7 @@ export interface PersonalData {
   maritalStatus: string;
   email: string;
   phone: string;
+  profession: string;
 }
 
 export interface MainDriverData {
@@ -23,6 +24,7 @@ export interface MainDriverData {
   maritalStatus: string;
   email: string;
   phone: string;
+  profession: string;
 }
 
 export interface VehicleData {

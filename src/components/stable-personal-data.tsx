@@ -12,6 +12,7 @@ interface PersonalData {
   maritalStatus: string;
   email: string;
   phone: string;
+  profession: string;
 }
 
 interface StablePersonalDataProps {
@@ -110,6 +111,17 @@ const StablePersonalData = memo<StablePersonalDataProps>(({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <StableFormField
+            id="profession"
+            label="Profissão"
+            value={data.profession}
+            onChange={handleFieldChange('profession')}
+            onBlur={handleFieldBlur('profession')}
+            error={errors.profession}
+            placeholder="Digite sua profissão"
+            required={!isOptional}
+          />
+
+          <StableFormField
             id="email"
             label="Email"
             value={data.email}
@@ -120,7 +132,9 @@ const StablePersonalData = memo<StablePersonalDataProps>(({
             type="email"
             required={!isOptional}
           />
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <StableFormField
             id="phone"
             label="Telefone (WhatsApp)"

@@ -13,6 +13,7 @@ interface PersonalData {
   maritalStatus: string;
   email: string;
   phone: string;
+  profession: string;
 }
 
 interface PersonalDataConfirmationProps {
@@ -126,6 +127,18 @@ const PersonalDataConfirmation: React.FC<PersonalDataConfirmationProps> = memo((
 
           <div className="grid gap-8 md:grid-cols-2">
             <StableFormField
+              id="profession"
+              label="Profissão"
+              value={data.profession}
+              onChange={handleFieldChange('profession')}
+              onBlur={handleFieldBlur('profession')}
+              error={errors.profession}
+              placeholder="Digite sua profissão"
+              required={true}
+              className="space-y-3"
+            />
+
+            <StableFormField
               id="email"
               label="Email"
               value={data.email}
@@ -137,7 +150,9 @@ const PersonalDataConfirmation: React.FC<PersonalDataConfirmationProps> = memo((
               required={true}
               className="space-y-3"
             />
+          </div>
 
+          <div className="grid gap-8 md:grid-cols-1">
             <StableFormField
               id="phone"
               label="Telefone (WhatsApp)"
