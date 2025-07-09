@@ -8,7 +8,7 @@ import PersonalDataEdit from './PersonalDataEdit';
 import VehicleDataEdit from './VehicleDataEdit';
 import RiskDataEdit from './RiskDataEdit';
 
-interface EditableData {
+interface RenewalEditableData {
   personalData: {
     fullName: string;
     cpf: string;
@@ -20,7 +20,6 @@ interface EditableData {
   vehicleData: {
     model: string;
     plate: string;
-    chassis: string;
     year: string;
     isFinanced: string;
   };
@@ -30,18 +29,23 @@ interface EditableData {
     bairro: string;
     localidade: string;
     uf: string;
+    numero: string;
+    complemento: string;
     garageType: string;
     residenceType: string;
     usesForWork: string;
     workParking: string;
     youngResidents: string;
+    youngDriversUseVehicle: string;
+    youngDriverAge: string;
+    youngDriverGender: string;
     rideshareWork: string;
   };
 }
 
 interface EditDataStepProps {
-  data: EditableData;
-  onChange: (section: keyof EditableData, field: string, value: string) => void;
+  data: RenewalEditableData;
+  onChange: (section: keyof RenewalEditableData, field: string, value: string) => void;
   onSubmit: () => void;
 }
 
