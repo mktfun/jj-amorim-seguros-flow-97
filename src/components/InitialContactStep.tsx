@@ -1,9 +1,9 @@
-
-import React from 'react';
+import React, { memo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Shield } from 'lucide-react';
+import { useInputMask, cpfMask, phoneMask } from '@/hooks/useInputMask';
 
 interface ContactData {
   fullName: string;
@@ -19,37 +19,33 @@ interface InitialContactStepProps {
   onFieldBlur: (field: string, value: string) => void;
 }
 
-const InitialContactStep: React.FC<InitialContactStepProps> = ({ 
+const InitialContactStep: React.FC<InitialContactStepProps> = memo(({ 
   data, 
   onChange, 
   errors, 
   onFieldBlur 
 }) => {
-  const formatCPF = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 11) {
-      return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-    }
-    return value;
-  };
+  const cpfInput = useInputMask(
+    data.cpf,
+    (value) => onChange('cpf', value),
+    {
+      mask: cpfMask,
+      placeholder: '000.000.000-00',
+      maxLength: 14
+    },
+    (value) => onFieldBlur('cpf', value)
+  );
 
-  const formatPhone = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 11) {
-      return numbers.replace(/(\d{2})(\d{4,5})(\d{4})/, '($1) $2-$3');
-    }
-    return value;
-  };
-
-  const handleCpfChange = (value: string) => {
-    const formatted = formatCPF(value);
-    onChange('cpf', formatted);
-  };
-
-  const handlePhoneChange = (value: string) => {
-    const formatted = formatPhone(value);
-    onChange('phone', formatted);
-  };
+  const phoneInput = useInputMask(
+    data.phone,
+    (value) => onChange('phone', value),
+    {
+      mask: phoneMask,
+      placeholder: '(00) 00000-0000',
+      maxLength: 15
+    },
+    (value) => onFieldBlur('phone', value)
+  );
 
   return (
     <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden">
@@ -99,18 +95,19 @@ const InitialContactStep: React.FC<InitialContactStepProps> = ({
                 CPF <span className="text-blue-600">*</span>
               </Label>
               <Input
+                ref={cpfInput.inputRef}
                 id="cpf"
                 type="text"
-                value={data.cpf}
-                onChange={(e) => handleCpfChange(e.target.value)}
-                onBlur={(e) => onFieldBlur('cpf', e.target.value)}
+                value={cpfInput.value}
+                onChange={cpfInput.onChange}
+                onBlur={cpfInput.onBlur}
                 className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
                   errors.cpf 
                     ? 'border-red-400 focus:border-red-500 bg-red-50' 
                     : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
                 }`}
-                placeholder="000.000.000-00"
-                maxLength={14}
+                placeholder={cpfInput.placeholder}
+                maxLength={cpfInput.maxLength}
               />
               {errors.cpf && (
                 <p className="text-red-500 text-sm mt-2 flex items-center">
@@ -126,18 +123,19 @@ const InitialContactStep: React.FC<InitialContactStepProps> = ({
                 Telefone (WhatsApp) <span className="text-blue-600">*</span>
               </Label>
               <Input
+                ref={phoneInput.inputRef}
                 id="phone"
                 type="text"
-                value={data.phone}
-                onChange={(e) => handlePhoneChange(e.target.value)}
-                onBlur={(e) => onFieldBlur('phone', e.target.value)}
+                value={phoneInput.value}
+                onChange={phoneInput.onChange}
+                onBlur={phoneInput.onBlur}
                 className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
                   errors.phone 
                     ? 'border-red-400 focus:border-red-500 bg-red-50' 
                     : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
                 }`}
-                placeholder="(00) 00000-0000"
-                maxLength={15}
+                placeholder={phoneInput.placeholder}
+                maxLength={phoneInput.maxLength}
               />
               {errors.phone && (
                 <p className="text-red-500 text-sm mt-2 flex items-center">
@@ -184,6 +182,8 @@ const InitialContactStep: React.FC<InitialContactStepProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+InitialContactStep.displayName = 'InitialContactStep';
 
 export default InitialContactStep;

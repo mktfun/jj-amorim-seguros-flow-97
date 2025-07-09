@@ -1,9 +1,9 @@
-
-import React from 'react';
+import React, { memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useInputMask, cpfMask, phoneMask, dateMask } from '@/hooks/useInputMask';
 
 interface PersonalData {
   fullName: string;
@@ -22,51 +22,45 @@ interface PersonalDataSectionProps {
   isOptional?: boolean;
 }
 
-const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({ 
+const PersonalDataSection: React.FC<PersonalDataSectionProps> = memo(({ 
   data, 
   onChange, 
   errors, 
   onFieldBlur,
   isOptional = false
 }) => {
-  const formatCPF = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 11) {
-      return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-    }
-    return value;
-  };
+  const cpfInput = useInputMask(
+    data.cpf,
+    (value) => onChange('cpf', value),
+    {
+      mask: cpfMask,
+      placeholder: '000.000.000-00',
+      maxLength: 14
+    },
+    (value) => onFieldBlur('cpf', value)
+  );
 
-  const formatPhone = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 11) {
-      return numbers.replace(/(\d{2})(\d{4,5})(\d{4})/, '($1) $2-$3');
-    }
-    return value;
-  };
+  const phoneInput = useInputMask(
+    data.phone,
+    (value) => onChange('phone', value),
+    {
+      mask: phoneMask,
+      placeholder: '(00) 00000-0000',
+      maxLength: 15
+    },
+    (value) => onFieldBlur('phone', value)
+  );
 
-  const formatDate = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 8) {
-      return numbers.replace(/(\d{2})(\d{2})(\d{4})/, '$1/$2/$3');
-    }
-    return value;
-  };
-
-  const handleCpfChange = (value: string) => {
-    const formatted = formatCPF(value);
-    onChange('cpf', formatted);
-  };
-
-  const handlePhoneChange = (value: string) => {
-    const formatted = formatPhone(value);
-    onChange('phone', formatted);
-  };
-
-  const handleDateChange = (value: string) => {
-    const formatted = formatDate(value);
-    onChange('birthDate', formatted);
-  };
+  const birthDateInput = useInputMask(
+    data.birthDate,
+    (value) => onChange('birthDate', value),
+    {
+      mask: dateMask,
+      placeholder: 'DD/MM/AAAA',
+      maxLength: 10
+    },
+    (value) => onFieldBlur('birthDate', value)
+  );
 
   const requiredLabel = isOptional ? '' : ' *';
 
@@ -104,18 +98,19 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({
               CPF{requiredLabel}
             </Label>
             <Input
+              ref={cpfInput.inputRef}
               id="cpf"
               type="text"
-              value={data.cpf}
-              onChange={(e) => handleCpfChange(e.target.value)}
-              onBlur={(e) => onFieldBlur('cpf', e.target.value)}
+              value={cpfInput.value}
+              onChange={cpfInput.onChange}
+              onBlur={cpfInput.onBlur}
               className={`mt-1 transition-all duration-200 ${
                 errors.cpf 
                   ? 'border-red-500 bg-red-50 focus:border-red-500' 
                   : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
               }`}
-              placeholder="000.000.000-00"
-              maxLength={14}
+              placeholder={cpfInput.placeholder}
+              maxLength={cpfInput.maxLength}
             />
             {errors.cpf && (
               <p className="text-sm text-red-500 mt-1 flex items-center">
@@ -132,18 +127,19 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({
               Data de Nascimento{requiredLabel}
             </Label>
             <Input
+              ref={birthDateInput.inputRef}
               id="birthDate"
               type="text"
-              value={data.birthDate}
-              onChange={(e) => handleDateChange(e.target.value)}
-              onBlur={(e) => onFieldBlur('birthDate', e.target.value)}
+              value={birthDateInput.value}
+              onChange={birthDateInput.onChange}
+              onBlur={birthDateInput.onBlur}
               className={`mt-1 transition-all duration-200 ${
                 errors.birthDate 
                   ? 'border-red-500 bg-red-50 focus:border-red-500' 
                   : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
               }`}
-              placeholder="DD/MM/AAAA"
-              maxLength={10}
+              placeholder={birthDateInput.placeholder}
+              maxLength={birthDateInput.maxLength}
             />
             {errors.birthDate && (
               <p className="text-sm text-red-500 mt-1 flex items-center">
@@ -213,18 +209,19 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({
               Telefone (WhatsApp){requiredLabel}
             </Label>
             <Input
+              ref={phoneInput.inputRef}
               id="phone"
               type="text"
-              value={data.phone}
-              onChange={(e) => handlePhoneChange(e.target.value)}
-              onBlur={(e) => onFieldBlur('phone', e.target.value)}
+              value={phoneInput.value}
+              onChange={phoneInput.onChange}
+              onBlur={phoneInput.onBlur}
               className={`mt-1 transition-all duration-200 ${
                 errors.phone 
                   ? 'border-red-500 bg-red-50 focus:border-red-500' 
                   : 'border-jj-cyan-border focus:border-primary hover:border-gray-300'
               }`}
-              placeholder="(00) 00000-0000"
-              maxLength={15}
+              placeholder={phoneInput.placeholder}
+              maxLength={phoneInput.maxLength}
             />
             {errors.phone && (
               <p className="text-sm text-red-500 mt-1 flex items-center">
@@ -237,6 +234,8 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+PersonalDataSection.displayName = 'PersonalDataSection';
 
 export default PersonalDataSection;

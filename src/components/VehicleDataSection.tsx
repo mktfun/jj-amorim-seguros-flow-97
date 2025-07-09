@@ -1,9 +1,9 @@
-
-import React from 'react';
+import React, { memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useInputMask, plateMask } from '@/hooks/useInputMask';
 
 interface VehicleData {
   model: string;
@@ -21,35 +21,23 @@ interface VehicleDataSectionProps {
   isOptional?: boolean;
 }
 
-const VehicleDataSection: React.FC<VehicleDataSectionProps> = ({ 
+const VehicleDataSection: React.FC<VehicleDataSectionProps> = memo(({ 
   data, 
   onChange, 
   errors, 
   onFieldBlur,
   isOptional = false
 }) => {
-  const formatPlate = (value: string) => {
-    const cleaned = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-    if (cleaned.length <= 7) {
-      // Format for both old (ABC1234) and new (ABC1D23) formats
-      if (cleaned.length === 7) {
-        if (/^[A-Z]{3}[\dA-Z]\d{2}$/.test(cleaned)) {
-          // New format ABC1D23
-          return cleaned.replace(/^([A-Z]{3})(\d)([A-Z])(\d{2})$/, '$1$2$3$4');
-        } else {
-          // Old format ABC1234
-          return cleaned.replace(/^([A-Z]{3})(\d{4})$/, '$1-$2');
-        }
-      }
-      return cleaned;
-    }
-    return value;
-  };
-
-  const handlePlateChange = (value: string) => {
-    const formatted = formatPlate(value);
-    onChange('plate', formatted);
-  };
+  const plateInput = useInputMask(
+    data.plate,
+    (value) => onChange('plate', value),
+    {
+      mask: plateMask,
+      placeholder: 'ABC-1234 ou ABC1D23',
+      maxLength: 8
+    },
+    (value) => onFieldBlur('plate', value)
+  );
 
   const requiredLabel = isOptional ? '' : ' *';
 
@@ -80,14 +68,15 @@ const VehicleDataSection: React.FC<VehicleDataSectionProps> = ({
               Placa{requiredLabel}
             </Label>
             <Input
+              ref={plateInput.inputRef}
               id="plate"
               type="text"
-              value={data.plate}
-              onChange={(e) => handlePlateChange(e.target.value)}
-              onBlur={(e) => onFieldBlur('plate', e.target.value)}
+              value={plateInput.value}
+              onChange={plateInput.onChange}
+              onBlur={plateInput.onBlur}
               className={`mt-1 ${errors.plate ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
-              placeholder="ABC-1234 ou ABC1D23"
-              maxLength={8}
+              placeholder={plateInput.placeholder}
+              maxLength={plateInput.maxLength}
             />
             {errors.plate && (
               <p className="text-sm text-red-500 mt-1">{errors.plate}</p>
@@ -178,6 +167,8 @@ const VehicleDataSection: React.FC<VehicleDataSectionProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+VehicleDataSection.displayName = 'VehicleDataSection';
 
 export default VehicleDataSection;

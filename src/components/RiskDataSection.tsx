@@ -1,4 +1,3 @@
-
 import React, { useCallback, useRef, memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -6,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Loader2, MapPin } from 'lucide-react';
 import { useViaCEP } from '@/hooks/useViaCEP';
+import { useInputMask, cepMask } from '@/hooks/useInputMask';
 
 interface RiskData {
   cep: string;
@@ -37,70 +37,42 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = memo(({
   isOptional = false
 }) => {
   const { fetchAddress, loading, error: cepError, clearError } = useViaCEP();
-  const cepInputRef = useRef<HTMLInputElement>(null);
 
-  // Simple CEP formatting function that maintains cursor position
-  const formatCEP = useCallback((value: string, cursorPos: number) => {
-    const numbers = value.replace(/\D/g, '');
-    let formatted = '';
-    let newCursorPos = cursorPos;
-    
-    if (numbers.length <= 8) {
-      if (numbers.length > 5) {
-        formatted = `${numbers.slice(0, 5)}-${numbers.slice(5, 8)}`;
-        // Adjust cursor position for the dash
-        if (cursorPos > 5) {
-          newCursorPos = cursorPos + 1;
+  const cepInput = useInputMask(
+    data.cep,
+    (value) => {
+      onChange('cep', value);
+      clearError();
+    },
+    {
+      mask: cepMask,
+      placeholder: '00000-000',
+      maxLength: 9
+    },
+    async (value) => {
+      onFieldBlur('cep', value);
+      
+      // Only fetch address if CEP is complete (8 digits)
+      const cleanCep = value.replace(/\D/g, '');
+      if (cleanCep.length === 8) {
+        console.log('Buscando endereço para CEP:', cleanCep);
+        const addressData = await fetchAddress(cleanCep);
+        if (addressData) {
+          console.log('Endereço encontrado:', addressData);
+          onChange('logradouro', addressData.logradouro);
+          onChange('bairro', addressData.bairro);
+          onChange('localidade', addressData.localidade);
+          onChange('uf', addressData.uf);
+        } else {
+          console.log('CEP não encontrado, limpando campos de endereço');
+          onChange('logradouro', '');
+          onChange('bairro', '');
+          onChange('localidade', '');
+          onChange('uf', '');
         }
-      } else {
-        formatted = numbers;
       }
     }
-    
-    return { formatted, newCursorPos };
-  }, []);
-
-  const handleCepChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target;
-    const cursorPos = input.selectionStart || 0;
-    const { formatted, newCursorPos } = formatCEP(e.target.value, cursorPos);
-    
-    onChange('cep', formatted);
-    clearError();
-    
-    // Maintain cursor position after formatting
-    setTimeout(() => {
-      if (cepInputRef.current) {
-        cepInputRef.current.setSelectionRange(newCursorPos, newCursorPos);
-      }
-    }, 0);
-  }, [formatCEP, onChange, clearError]);
-
-  const handleCepBlur = useCallback(async (e: React.FocusEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    onFieldBlur('cep', value);
-    
-    // Only fetch address if CEP is complete (8 digits)
-    const cleanCep = value.replace(/\D/g, '');
-    if (cleanCep.length === 8) {
-      console.log('Buscando endereço para CEP:', cleanCep);
-      const addressData = await fetchAddress(cleanCep);
-      if (addressData) {
-        console.log('Endereço encontrado:', addressData);
-        onChange('logradouro', addressData.logradouro);
-        onChange('bairro', addressData.bairro);
-        onChange('localidade', addressData.localidade);
-        onChange('uf', addressData.uf);
-      } else {
-        console.log('CEP não encontrado, limpando campos de endereço');
-        // Clear address fields if CEP is invalid
-        onChange('logradouro', '');
-        onChange('bairro', '');
-        onChange('localidade', '');
-        onChange('uf', '');
-      }
-    }
-  }, [onFieldBlur, fetchAddress, onChange]);
+  );
 
   const RadioQuestion = ({ 
     title, 
@@ -153,15 +125,15 @@ const RiskDataSection: React.FC<RiskDataSectionProps> = memo(({
           </Label>
           <div className="relative">
             <Input
-              ref={cepInputRef}
+              ref={cepInput.inputRef}
               id="cep"
               type="text"
-              value={data.cep}
-              onChange={handleCepChange}
-              onBlur={handleCepBlur}
+              value={cepInput.value}
+              onChange={cepInput.onChange}
+              onBlur={cepInput.onBlur}
               className={`mt-1 ${(errors.cep || cepError) ? 'border-red-500' : 'border-jj-cyan-border focus:border-primary'}`}
-              placeholder="00000-000"
-              maxLength={9}
+              placeholder={cepInput.placeholder}
+              maxLength={cepInput.maxLength}
               autoComplete="postal-code"
             />
             {loading && (
