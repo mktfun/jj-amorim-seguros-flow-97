@@ -35,11 +35,20 @@ export interface VehicleData {
 
 export interface RiskData {
   cep: string;
+  logradouro: string;
+  bairro: string;
+  localidade: string;
+  uf: string;
+  numero: string;
+  complemento: string;
   garageType: string;
   residenceType: string;
   usesForWork: string;
   workParking: string;
   youngResidents: string;
+  youngDriversUseVehicle: string;
+  youngDriverAge: string;
+  youngDriverGender: string;
   rideshareWork: string;
 }
 
@@ -70,11 +79,14 @@ const translateValue = (field: string, value: string): string => {
     garageType: {
       'automatico': 'Automático',
       'manual': 'Manual',
-      'nao_tem': 'Não tem portão'
+      'garagem-fechada': 'Garagem fechada',
+      'garagem-aberta': 'Garagem aberta',
+      'na-rua': 'Na rua'
     },
     residenceType: {
       'casa': 'Casa',
       'apartamento': 'Apartamento',
+      'apto': 'Apartamento',
       'condominio': 'Condomínio'
     },
     usesForWork: {
@@ -85,11 +97,22 @@ const translateValue = (field: string, value: string): string => {
       'rua': 'Na rua',
       'estacionamento_pago': 'Estacionamento pago',
       'estacionamento_empresa': 'Estacionamento da empresa',
-      'garagem_fechada': 'Garagem fechada'
+      'garagem_fechada': 'Garagem fechada',
+      'garagem-fechada': 'Garagem fechada',
+      'estacionamento': 'Estacionamento',
+      'na-rua': 'Na rua'
     },
     youngResidents: {
       'sim': 'Sim',
       'nao': 'Não'
+    },
+    youngDriversUseVehicle: {
+      'sim': 'Sim',
+      'nao': 'Não'
+    },
+    youngDriverGender: {
+      'masculino': 'Masculino',
+      'feminino': 'Feminino'
     },
     rideshareWork: {
       'sim': 'Sim',
@@ -174,11 +197,20 @@ export const generateUnifiedJSON = (data: UnifiedData) => {
     if (data.riskData) {
       baseStructure.solicitacao.informacoes_auto_seguro.questionario_risco = {
         cep_pernoite: data.riskData.cep || "",
+        logradouro: data.riskData.logradouro || "",
+        bairro: data.riskData.bairro || "",
+        localidade: data.riskData.localidade || "",
+        uf: data.riskData.uf || "",
+        numero_endereco: data.riskData.numero || "",
+        complemento_endereco: data.riskData.complemento || "",
         portao_garagem: data.riskData.garageType || "",
         tipo_residencia: data.riskData.residenceType || "",
         usa_para_trabalho: data.riskData.usesForWork || "",
         estacionamento_trabalho: data.riskData.workParking || "",
         jovens_residentes: data.riskData.youngResidents || "",
+        jovens_utilizam_veiculo: data.riskData.youngDriversUseVehicle || "",
+        idade_jovem_condutor: data.riskData.youngDriverAge || "",
+        sexo_jovem_condutor: data.riskData.youngDriverGender || "",
         trabalho_aplicativo: data.riskData.rideshareWork || ""
       };
     }
@@ -219,11 +251,20 @@ export const generateUnifiedJSON = (data: UnifiedData) => {
     if (data.riskData) {
       const riskChanges: any = {};
       if (data.riskData.cep) riskChanges.cep_pernoite = data.riskData.cep;
+      if (data.riskData.logradouro) riskChanges.logradouro = data.riskData.logradouro;
+      if (data.riskData.bairro) riskChanges.bairro = data.riskData.bairro;
+      if (data.riskData.localidade) riskChanges.localidade = data.riskData.localidade;
+      if (data.riskData.uf) riskChanges.uf = data.riskData.uf;
+      if (data.riskData.numero) riskChanges.numero_endereco = data.riskData.numero;
+      if (data.riskData.complemento) riskChanges.complemento_endereco = data.riskData.complemento;
       if (data.riskData.garageType) riskChanges.portao_garagem = data.riskData.garageType;
       if (data.riskData.residenceType) riskChanges.tipo_residencia = data.riskData.residenceType;
       if (data.riskData.usesForWork) riskChanges.usa_para_trabalho = data.riskData.usesForWork;
       if (data.riskData.workParking) riskChanges.estacionamento_trabalho = data.riskData.workParking;
       if (data.riskData.youngResidents) riskChanges.jovens_residentes = data.riskData.youngResidents;
+      if (data.riskData.youngDriversUseVehicle) riskChanges.jovens_utilizam_veiculo = data.riskData.youngDriversUseVehicle;
+      if (data.riskData.youngDriverAge) riskChanges.idade_jovem_condutor = data.riskData.youngDriverAge;
+      if (data.riskData.youngDriverGender) riskChanges.sexo_jovem_condutor = data.riskData.youngDriverGender;
       if (data.riskData.rideshareWork) riskChanges.trabalho_aplicativo = data.riskData.rideshareWork;
       if (Object.keys(riskChanges).length > 0) {
         changedFields.questionario_risco = riskChanges;
@@ -305,6 +346,12 @@ export const generateWhatsAppMessage = (data: UnifiedData, jsonData: any): strin
         if (data.riskData.cep) {
           message += `• NOVO CEP de Pernoite: ${data.riskData.cep}\n`;
         }
+        if (data.riskData.numero) {
+          message += `• NOVO Número: ${data.riskData.numero}\n`;
+        }
+        if (data.riskData.complemento) {
+          message += `• NOVO Complemento: ${data.riskData.complemento}\n`;
+        }
         if (data.riskData.garageType) {
           message += `• Portão da Garagem ALTERADO para: ${translateValue('garageType', data.riskData.garageType)}\n`;
         }
@@ -319,6 +366,15 @@ export const generateWhatsAppMessage = (data: UnifiedData, jsonData: any): strin
         }
         if (data.riskData.youngResidents) {
           message += `• Jovens de 18-24 anos na residência: ${translateValue('youngResidents', data.riskData.youngResidents)}\n`;
+        }
+        if (data.riskData.youngDriversUseVehicle) {
+          message += `• Jovens utilizam o veículo: ${translateValue('youngDriversUseVehicle', data.riskData.youngDriversUseVehicle)}\n`;
+        }
+        if (data.riskData.youngDriverAge) {
+          message += `• Idade do jovem condutor: ${data.riskData.youngDriverAge} anos\n`;
+        }
+        if (data.riskData.youngDriverGender) {
+          message += `• Sexo do jovem condutor: ${translateValue('youngDriverGender', data.riskData.youngDriverGender)}\n`;
         }
         if (data.riskData.rideshareWork) {
           message += `• Trabalha com Aplicativo: ${translateValue('rideshareWork', data.riskData.rideshareWork)}\n`;
@@ -367,6 +423,15 @@ export const generateWhatsAppMessage = (data: UnifiedData, jsonData: any): strin
     if (data.riskData) {
       message += '🏠 Questionário de Risco:\n';
       message += `• CEP de Pernoite: ${data.riskData.cep}\n`;
+      if (data.riskData.logradouro) {
+        message += `• Endereço: ${data.riskData.logradouro}`;
+        if (data.riskData.numero) message += `, ${data.riskData.numero}`;
+        if (data.riskData.complemento) message += `, ${data.riskData.complemento}`;
+        message += '\n';
+      }
+      if (data.riskData.bairro) message += `• Bairro: ${data.riskData.bairro}\n`;
+      if (data.riskData.localidade) message += `• Cidade: ${data.riskData.localidade}\n`;
+      if (data.riskData.uf) message += `• Estado: ${data.riskData.uf}\n`;
       message += `• Portão da Garagem: ${translateValue('garageType', data.riskData.garageType)}\n`;
       message += `• Tipo de Residência: ${translateValue('residenceType', data.riskData.residenceType)}\n`;
       message += `• Usa para Trabalho: ${translateValue('usesForWork', data.riskData.usesForWork)}\n`;
@@ -374,6 +439,15 @@ export const generateWhatsAppMessage = (data: UnifiedData, jsonData: any): strin
         message += `• Estacionamento no Trabalho: ${translateValue('workParking', data.riskData.workParking)}\n`;
       }
       message += `• Jovens de 18-24 anos: ${translateValue('youngResidents', data.riskData.youngResidents)}\n`;
+      if (data.riskData.youngDriversUseVehicle) {
+        message += `• Jovens utilizam o veículo: ${translateValue('youngDriversUseVehicle', data.riskData.youngDriversUseVehicle)}\n`;
+        if (data.riskData.youngDriverAge) {
+          message += `• Idade do jovem condutor: ${data.riskData.youngDriverAge} anos\n`;
+        }
+        if (data.riskData.youngDriverGender) {
+          message += `• Sexo do jovem condutor: ${translateValue('youngDriverGender', data.riskData.youngDriverGender)}\n`;
+        }
+      }
       message += `• Trabalha com Aplicativo: ${translateValue('rideshareWork', data.riskData.rideshareWork)}\n\n`;
     }
   }
@@ -442,6 +516,12 @@ export const sendToRDStation = async (data: UnifiedData, jsonData: any): Promise
 
     if (data.riskData) {
       (rdStationData as any).cf_cep_pernoite = data.riskData.cep;
+      (rdStationData as any).cf_logradouro = data.riskData.logradouro;
+      (rdStationData as any).cf_bairro = data.riskData.bairro;
+      (rdStationData as any).cf_localidade = data.riskData.localidade;
+      (rdStationData as any).cf_uf = data.riskData.uf;
+      (rdStationData as any).cf_numero_endereco = data.riskData.numero;
+      (rdStationData as any).cf_complemento_endereco = data.riskData.complemento;
       (rdStationData as any).cf_portao_garagem = data.riskData.garageType;
       (rdStationData as any).cf_tipo_residencia = data.riskData.residenceType;
       (rdStationData as any).cf_usa_para_trabalho = data.riskData.usesForWork;
@@ -449,6 +529,9 @@ export const sendToRDStation = async (data: UnifiedData, jsonData: any): Promise
         (rdStationData as any).cf_estacionamento_trabalho = data.riskData.workParking;
       }
       (rdStationData as any).cf_jovens_residentes = data.riskData.youngResidents;
+      (rdStationData as any).cf_jovens_utilizam_veiculo = data.riskData.youngDriversUseVehicle;
+      (rdStationData as any).cf_idade_jovem_condutor = data.riskData.youngDriverAge;
+      (rdStationData as any).cf_sexo_jovem_condutor = data.riskData.youngDriverGender;
       (rdStationData as any).cf_trabalho_aplicativo = data.riskData.rideshareWork;
     }
 

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,11 +13,16 @@ interface RiskData {
   bairro: string;
   localidade: string;
   uf: string;
+  numero: string;
+  complemento: string;
   garageType: string;
   residenceType: string;
   usesForWork: string;
   workParking: string;
   youngResidents: string;
+  youngDriversUseVehicle: string;
+  youngDriverAge: string;
+  youngDriverGender: string;
   rideshareWork: string;
 }
 
@@ -214,6 +220,40 @@ const RiskQuestionnaireStep: React.FC<RiskQuestionnaireStepProps> = ({
               </div>
 
               <div>
+                <Label htmlFor="numero" className="text-sm font-medium text-gray-700 mb-2 block">
+                  Número <span className="text-blue-600">*</span>
+                </Label>
+                <Input
+                  id="numero"
+                  type="text"
+                  value={data.numero}
+                  onChange={(e) => onChange('numero', e.target.value)}
+                  onBlur={(e) => onFieldBlur('numero', e.target.value)}
+                  className={`h-10 text-sm border-2 rounded-lg bg-white ${
+                    errors.numero ? 'border-red-400' : 'border-gray-200'
+                  }`}
+                  placeholder="123"
+                />
+                {errors.numero && (
+                  <p className="text-red-500 text-xs mt-1">{errors.numero}</p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="complemento" className="text-sm font-medium text-gray-700 mb-2 block">
+                  Complemento (opcional)
+                </Label>
+                <Input
+                  id="complemento"
+                  type="text"
+                  value={data.complemento}
+                  onChange={(e) => onChange('complemento', e.target.value)}
+                  className="h-10 text-sm border-2 rounded-lg bg-white"
+                  placeholder="Apto 45, Bloco B..."
+                />
+              </div>
+
+              <div>
                 <Label htmlFor="localidade" className="text-sm font-medium text-gray-700 mb-2 block">
                   Cidade
                 </Label>
@@ -283,10 +323,74 @@ const RiskQuestionnaireStep: React.FC<RiskQuestionnaireStepProps> = ({
             )}
           </div>
 
-          <RadioQuestion
-            title="Reside com pessoas entre 18 a 24 anos?"
-            field="youngResidents"
-          />
+          <div className="space-y-6">
+            <RadioQuestion
+              title="Reside com pessoas entre 18 a 24 anos?"
+              field="youngResidents"
+            />
+            
+            {data.youngResidents === 'sim' && (
+              <div className="ml-6 p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl border-l-4 border-green-500">
+                <RadioQuestion
+                  title="Essa(s) pessoa(s) utiliza(m) o veículo?"
+                  field="youngDriversUseVehicle"
+                />
+                
+                {data.youngDriversUseVehicle === 'sim' && (
+                  <div className="mt-6 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <Label htmlFor="youngDriverAge" className="text-base font-semibold text-gray-700 mb-2 block">
+                          Idade do jovem condutor <span className="text-blue-600">*</span>
+                        </Label>
+                        <Input
+                          id="youngDriverAge"
+                          type="number"
+                          value={data.youngDriverAge}
+                          onChange={(e) => onChange('youngDriverAge', e.target.value)}
+                          onBlur={(e) => onFieldBlur('youngDriverAge', e.target.value)}
+                          className={`h-12 text-base border-2 rounded-xl ${
+                            errors.youngDriverAge ? 'border-red-400' : 'border-gray-200'
+                          }`}
+                          placeholder="Ex: 20"
+                          min="18"
+                          max="24"
+                        />
+                        {errors.youngDriverAge && (
+                          <p className="text-red-500 text-sm mt-1">{errors.youngDriverAge}</p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <Label className="text-base font-semibold text-gray-700 mb-4 block">
+                          Sexo do jovem condutor <span className="text-blue-600">*</span>
+                        </Label>
+                        <RadioGroup 
+                          value={data.youngDriverGender} 
+                          onValueChange={(value) => onChange('youngDriverGender', value)}
+                          className="grid grid-cols-1 gap-4"
+                        >
+                          <CustomRadioOption 
+                            value="masculino" 
+                            label="Masculino" 
+                            field="youngDriverGender"
+                          />
+                          <CustomRadioOption 
+                            value="feminino" 
+                            label="Feminino" 
+                            field="youngDriverGender"
+                          />
+                        </RadioGroup>
+                        {errors.youngDriverGender && (
+                          <p className="text-red-500 text-sm mt-1">{errors.youngDriverGender}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           <RadioQuestion
             title="Utiliza o veículo para trabalhar em transporte de passageiros por App (Uber e similares)?"

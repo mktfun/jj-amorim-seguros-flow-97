@@ -13,11 +13,16 @@ interface RiskData {
   bairro: string;
   localidade: string;
   uf: string;
+  numero: string;
+  complemento: string;
   garageType: string;
   residenceType: string;
   usesForWork: string;
   workParking: string;
   youngResidents: string;
+  youngDriversUseVehicle: string;
+  youngDriverAge: string;
+  youngDriverGender: string;
   rideshareWork: string;
 }
 
@@ -159,17 +164,42 @@ const StableRiskData = memo<StableRiskDataProps>(({
         </div>
 
         {(data.logradouro || data.bairro || data.localidade) && (
-          <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
-            <div className="flex items-center space-x-2 mb-2">
+          <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
+            <div className="flex items-center space-x-2 mb-4">
               <MapPin className="h-5 w-5 text-blue-600" />
               <span className="font-semibold text-blue-800">Endereço encontrado:</span>
             </div>
-            <p className="text-gray-700">
+            <p className="text-gray-700 mb-4">
               {data.logradouro && `${data.logradouro}, `}
               {data.bairro && `${data.bairro}, `}
               {data.localidade && `${data.localidade}`}
               {data.uf && ` - ${data.uf}`}
             </p>
+            
+            {/* Novos campos de endereço */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <StableFormField
+                id="numero"
+                label="Número"
+                value={data.numero}
+                onChange={handleFieldChange('numero')}
+                onBlur={handleFieldBlur('numero')}
+                error={errors.numero}
+                placeholder="123"
+                required={!isOptional}
+              />
+              
+              <StableFormField
+                id="complemento"
+                label="Complemento (opcional)"
+                value={data.complemento}
+                onChange={handleFieldChange('complemento')}
+                onBlur={handleFieldBlur('complemento')}
+                error={errors.complemento}
+                placeholder="Apto 45, Bloco B..."
+                required={false}
+              />
+            </div>
           </div>
         )}
 
@@ -226,6 +256,80 @@ const StableRiskData = memo<StableRiskDataProps>(({
           value={data.youngResidents}
           onValueChange={handleFieldChange('youngResidents')}
         />
+
+        {data.youngResidents === 'sim' && (
+          <div className="ml-6 p-6 bg-green-50 rounded-lg border border-green-200">
+            <RadioQuestion
+              field="youngDriversUseVehicle"
+              title="Essa(s) pessoa(s) utiliza(m) o veículo?"
+              value={data.youngDriversUseVehicle}
+              onValueChange={handleFieldChange('youngDriversUseVehicle')}
+            />
+            
+            {data.youngDriversUseVehicle === 'sim' && (
+              <div className="mt-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <StableFormField
+                    id="youngDriverAge"
+                    label="Idade do jovem condutor"
+                    value={data.youngDriverAge}
+                    onChange={handleFieldChange('youngDriverAge')}
+                    onBlur={handleFieldBlur('youngDriverAge')}
+                    error={errors.youngDriverAge}
+                    placeholder="Ex: 20"
+                    type="number"
+                    required={!isOptional}
+                  />
+                  
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-4 block">
+                      Sexo do jovem condutor
+                      {!isOptional && <span className="text-red-500 ml-1">*</span>}
+                    </Label>
+                    <RadioGroup 
+                      value={data.youngDriverGender} 
+                      onValueChange={handleFieldChange('youngDriverGender')}
+                      className="flex gap-6"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <RadioGroupItem 
+                          value="masculino" 
+                          id="gender-masculino"
+                          className="border-2 border-blue-500 w-5 h-5"
+                        />
+                        <Label 
+                          htmlFor="gender-masculino" 
+                          className="cursor-pointer text-gray-700 font-medium text-base"
+                        >
+                          Masculino
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <RadioGroupItem 
+                          value="feminino" 
+                          id="gender-feminino"
+                          className="border-2 border-blue-500 w-5 h-5"
+                        />
+                        <Label 
+                          htmlFor="gender-feminino" 
+                          className="cursor-pointer text-gray-700 font-medium text-base"
+                        >
+                          Feminino
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                    {errors.youngDriverGender && (
+                      <p className="text-red-500 text-sm mt-1 flex items-center">
+                        <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
+                        {errors.youngDriverGender}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         <RadioQuestion
           field="rideshareWork"
