@@ -6,12 +6,12 @@ import ComingSoon from '@/components/ComingSoon';
 import NewQuoteFlow from '@/components/NewQuoteFlow';
 import RenewalFlow from '@/components/RenewalFlow';
 
-type FlowType = 'new-quote' | 'renewal' | null;
+type FlowType = 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | null;
 
 const Index = () => {
   const [selectedFlow, setSelectedFlow] = useState<FlowType>(null);
 
-  const handleFlowSelect = (flow: 'new-quote' | 'renewal') => {
+  const handleFlowSelect = (flow: 'new-quote' | 'renewal' | 'second-invoice' | 'claim') => {
     console.log('Fluxo selecionado:', flow);
     setSelectedFlow(flow);
   };
@@ -29,8 +29,20 @@ const Index = () => {
         <FlowSelector onFlowSelect={handleFlowSelect} />
       ) : selectedFlow === 'new-quote' ? (
         <NewQuoteFlow onBack={handleBackToSelection} />
-      ) : (
+      ) : selectedFlow === 'renewal' ? (
         <RenewalFlow onBack={handleBackToSelection} />
+      ) : selectedFlow === 'second-invoice' ? (
+        <ComingSoon 
+          title="Segunda Via de Boleto" 
+          description="Esta funcionalidade estará disponível em breve."
+          onBack={handleBackToSelection}
+        />
+      ) : (
+        <ComingSoon 
+          title="Sinistro Segurado JJ&Amorim" 
+          description="Esta funcionalidade estará disponível em breve."
+          onBack={handleBackToSelection}
+        />
       )}
     </div>
   );
