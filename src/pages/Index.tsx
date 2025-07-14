@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import FlowSelector from '@/components/FlowSelector';
@@ -6,6 +5,8 @@ import NewQuoteFlow from '@/components/NewQuoteFlow';
 import RenewalFlow from '@/components/renewal/RenewalFlow';
 import ResidentialInsuranceFlow from '@/components/ResidentialInsuranceFlow';
 import ComingSoon from '@/components/ComingSoon';
+import BusinessInsuranceFlow from '@/components/BusinessInsuranceFlow';
+import LifeInsuranceFlow from '@/components/LifeInsuranceFlow';
 
 type FlowType = 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem' | null;
 
@@ -29,35 +30,23 @@ const Index = () => {
         return <RenewalFlow onBack={handleBack} />;
       case 'residencial':
         return <ResidentialInsuranceFlow onBack={handleBack} />;
-      case 'fianca':
-        return (
-          <ComingSoon
-            title="Seguro Fiança"
-            description="Garanta seu aluguel de forma segura e sem burocracia."
-            onBack={handleBack}
-          />
-        );
       case 'empresarial':
-        return (
-          <ComingSoon
-            title="Seguro Empresarial"
-            description="Proteja seu negócio e seus colaboradores."
-            onBack={handleBack}
-          />
-        );
+        return <BusinessInsuranceFlow onBack={handleBack} />;
       case 'vida':
-        return (
-          <ComingSoon
-            title="Seguro de Vida Individual"
-            description="Garanta a segurança financeira de quem você ama."
-            onBack={handleBack}
-          />
-        );
+        return <LifeInsuranceFlow onBack={handleBack} />;
       case 'viagem':
         return (
           <ComingSoon
             title="Seguro Viagem"
             description="Viaje tranquilo com cobertura para imprevistos."
+            onBack={handleBack}
+          />
+        );
+      case 'fianca':
+        return (
+          <ComingSoon
+            title="Seguro Fiança"
+            description="Garanta seu aluguel de forma segura e sem burocracia."
             onBack={handleBack}
           />
         );
