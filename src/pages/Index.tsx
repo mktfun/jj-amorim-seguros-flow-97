@@ -67,15 +67,6 @@ const Index = () => {
           <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
             <Header />
             <main className="container mx-auto px-4 py-12">
-              <div className="text-center mb-12">
-                <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-                  Bem-vindo à JJ & Amorim
-                </h1>
-                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                  Escolha o tipo de atendimento que você precisa para começar
-                </p>
-              </div>
-              
               <FlowSelector onFlowSelect={handleFlowSelect} />
             </main>
           </div>
