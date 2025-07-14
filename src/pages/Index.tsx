@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import FlowSelector from '@/components/FlowSelector';
@@ -7,6 +8,7 @@ import ResidentialInsuranceFlow from '@/components/ResidentialInsuranceFlow';
 import ComingSoon from '@/components/ComingSoon';
 import BusinessInsuranceFlow from '@/components/BusinessInsuranceFlow';
 import LifeInsuranceFlow from '@/components/LifeInsuranceFlow';
+import TravelInsuranceFlow from '@/components/TravelInsuranceFlow';
 
 type FlowType = 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem' | null;
 
@@ -35,13 +37,7 @@ const Index = () => {
       case 'vida':
         return <LifeInsuranceFlow onBack={handleBack} />;
       case 'viagem':
-        return (
-          <ComingSoon
-            title="Seguro Viagem"
-            description="Viaje tranquilo com cobertura para imprevistos."
-            onBack={handleBack}
-          />
-        );
+        return <TravelInsuranceFlow onBack={handleBack} />;
       case 'fianca':
         return (
           <ComingSoon
