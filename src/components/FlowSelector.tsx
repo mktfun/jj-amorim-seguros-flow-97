@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Car, Check, Shield, Clock, Lock, FileText, AlertTriangle } from 'lucide-react';
+import { ArrowRight, Car, Check, Shield, Clock, Lock, FileText, AlertTriangle, Home, Heart } from 'lucide-react';
 
 interface FlowSelectorProps {
-  onFlowSelect: (flow: 'new-quote' | 'renewal' | 'second-invoice' | 'claim') => void;
+  onFlowSelect: (flow: 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial') => void;
 }
 
 const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
@@ -13,7 +13,7 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
 
   const handleContinue = () => {
     if (selectedFlow) {
-      onFlowSelect(selectedFlow as 'new-quote' | 'renewal' | 'second-invoice' | 'claim');
+      onFlowSelect(selectedFlow as 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial');
     }
   };
 
@@ -204,6 +204,90 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
 
                 {/* Indicador de Seleção */}
                 {selectedFlow === 'claim' && (
+                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                )}
+              </Card>
+
+              {/* Card Seguro Fiança */}
+              <Card 
+                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
+                  selectedFlow === 'fianca' 
+                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
+                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
+                }`}
+                onClick={() => handleCardSelect('fianca')}
+              >
+                <div className="text-center">
+                  {/* Ícone */}
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    selectedFlow === 'fianca' 
+                      ? 'bg-jj-blue-medium' 
+                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
+                  }`}>
+                    <Lock className={`w-8 h-8 transition-colors duration-300 ${
+                      selectedFlow === 'fianca' 
+                        ? 'text-white' 
+                        : 'text-jj-blue-medium group-hover:text-white'
+                    }`} />
+                  </div>
+                  
+                  {/* Título */}
+                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
+                    Seguro Fiança
+                  </h3>
+                  
+                  {/* Descrição */}
+                  <p className="text-gray-600 leading-relaxed">
+                    Garanta seu aluguel de forma segura e sem burocracia.
+                  </p>
+                </div>
+
+                {/* Indicador de Seleção */}
+                {selectedFlow === 'fianca' && (
+                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                )}
+              </Card>
+
+              {/* Card Seguro Residencial */}
+              <Card 
+                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
+                  selectedFlow === 'residencial' 
+                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
+                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
+                }`}
+                onClick={() => handleCardSelect('residencial')}
+              >
+                <div className="text-center">
+                  {/* Ícone */}
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    selectedFlow === 'residencial' 
+                      ? 'bg-jj-blue-medium' 
+                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
+                  }`}>
+                    <Home className={`w-8 h-8 transition-colors duration-300 ${
+                      selectedFlow === 'residencial' 
+                        ? 'text-white' 
+                        : 'text-jj-blue-medium group-hover:text-white'
+                    }`} />
+                  </div>
+                  
+                  {/* Título */}
+                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
+                    Seguro Residencial
+                  </h3>
+                  
+                  {/* Descrição */}
+                  <p className="text-gray-600 leading-relaxed">
+                    Proteja seu lar e seus bens contra imprevistos.
+                  </p>
+                </div>
+
+                {/* Indicador de Seleção */}
+                {selectedFlow === 'residencial' && (
                   <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
                     <Check className="w-4 h-4 text-white" />
                   </div>
