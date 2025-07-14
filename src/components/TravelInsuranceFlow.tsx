@@ -54,8 +54,20 @@ const countries = [
   'Outros'
 ];
 
+const validationRules = {
+  nomeCompleto: { required: true, message: 'Nome completo é obrigatório' },
+  cpf: { required: true, customValidator: validateCPF, message: 'CPF inválido' },
+  dataNascimento: { required: true, message: 'Data de nascimento é obrigatória' },
+  email: { required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email inválido' },
+  telefone: { required: true, message: 'Telefone é obrigatório' },
+  profissao: { required: true, message: 'Profissão é obrigatória' },
+  paisDestino: { required: true, message: 'País de destino é obrigatório' },
+  numeroViajantes: { required: true, message: 'Número de viajantes é obrigatório' },
+  esportesRadicais: { required: true, message: 'Selecione uma opção' },
+};
+
 const TravelInsuranceFlow: React.FC<TravelInsuranceFlowProps> = ({ onBack }) => {
-  const { errors, validateField, validateForm } = useFormValidation<TravelInsuranceFormData>();
+  const { errors, validate, validateAll } = useFormValidation(validationRules);
   
   const form = useForm<TravelInsuranceFormData>({
     resolver: zodResolver(travelInsuranceSchema),
@@ -79,7 +91,7 @@ const TravelInsuranceFlow: React.FC<TravelInsuranceFlowProps> = ({ onBack }) => 
   const handleFieldChange = (field: keyof TravelInsuranceFormData, value: string) => {
     const newFormData = { ...formData, [field]: value };
     setFormData(newFormData);
-    validateField(field, value, travelInsuranceSchema);
+    validate(field, value);
     
     if (field === 'esportesRadicais') {
       setShowSportsDetails(value === 'sim');
