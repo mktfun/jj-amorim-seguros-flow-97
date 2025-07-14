@@ -1,28 +1,23 @@
-
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Car, Check, Shield, Clock, Lock, FileText, AlertTriangle, Home, Heart, Building, Plane, Luggage } from 'lucide-react';
-
 interface FlowSelectorProps {
   onFlowSelect: (flow: 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem') => void;
 }
-
-const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
+const FlowSelector: React.FC<FlowSelectorProps> = ({
+  onFlowSelect
+}) => {
   const [selectedFlow, setSelectedFlow] = useState<string>('');
-
   const handleContinue = () => {
     if (selectedFlow) {
       onFlowSelect(selectedFlow as 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem');
     }
   };
-
   const handleCardSelect = (flow: string) => {
     setSelectedFlow(flow);
   };
-
-  return (
-    <div className="min-h-screen bg-gray-50 py-16 px-4">
+  return <div className="min-h-screen bg-gray-50 py-16 px-4">
       <div className="w-full max-w-4xl mx-auto">
         {/* Container Principal */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
@@ -43,32 +38,15 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               
               {/* Card Nova Cotação */}
-              <Card 
-                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
-                  selectedFlow === 'new-quote' 
-                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
-                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
-                }`}
-                onClick={() => handleCardSelect('new-quote')}
-              >
+              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'new-quote' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('new-quote')}>
                 <div className="text-center">
                   {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    selectedFlow === 'new-quote' 
-                      ? 'bg-jj-blue-medium' 
-                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
-                  }`}>
-                    <Car className={`w-8 h-8 transition-colors duration-300 ${
-                      selectedFlow === 'new-quote' 
-                        ? 'text-white' 
-                        : 'text-jj-blue-medium group-hover:text-white'
-                    }`} />
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'new-quote' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
+                    <Car className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'new-quote' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
                   </div>
                   
                   {/* Título */}
-                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
-                    Quero uma nova cotação de seguro
-                  </h3>
+                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">Seguro Auto</h3>
                   
                   {/* Descrição */}
                   <p className="text-gray-600 leading-relaxed">
@@ -77,40 +55,21 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
                 </div>
 
                 {/* Indicador de Seleção */}
-                {selectedFlow === 'new-quote' && (
-                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                {selectedFlow === 'new-quote' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
                     <Check className="w-4 h-4 text-white" />
-                  </div>
-                )}
+                  </div>}
               </Card>
 
               {/* Card Renovação */}
-              <Card 
-                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
-                  selectedFlow === 'renewal' 
-                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
-                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
-                }`}
-                onClick={() => handleCardSelect('renewal')}
-              >
+              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'renewal' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('renewal')}>
                 <div className="text-center">
                   {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    selectedFlow === 'renewal' 
-                      ? 'bg-jj-blue-medium' 
-                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
-                  }`}>
-                    <Shield className={`w-8 h-8 transition-colors duration-300 ${
-                      selectedFlow === 'renewal' 
-                        ? 'text-white' 
-                        : 'text-jj-blue-medium group-hover:text-white'
-                    }`} />
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'renewal' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
+                    <Shield className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'renewal' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
                   </div>
                   
                   {/* Título */}
-                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
-                    Quero renovar meu seguro e confirmar meus dados
-                  </h3>
+                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">Renovação  e confirmação de dados</h3>
                   
                   {/* Descrição */}
                   <p className="text-gray-600 leading-relaxed">
@@ -119,34 +78,17 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
                 </div>
 
                 {/* Indicador de Seleção */}
-                {selectedFlow === 'renewal' && (
-                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                {selectedFlow === 'renewal' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
                     <Check className="w-4 h-4 text-white" />
-                  </div>
-                )}
+                  </div>}
               </Card>
 
               {/* Card Segunda Via de Boleto */}
-              <Card 
-                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
-                  selectedFlow === 'second-invoice' 
-                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
-                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
-                }`}
-                onClick={() => handleCardSelect('second-invoice')}
-              >
+              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'second-invoice' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('second-invoice')}>
                 <div className="text-center">
                   {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    selectedFlow === 'second-invoice' 
-                      ? 'bg-jj-blue-medium' 
-                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
-                  }`}>
-                    <FileText className={`w-8 h-8 transition-colors duration-300 ${
-                      selectedFlow === 'second-invoice' 
-                        ? 'text-white' 
-                        : 'text-jj-blue-medium group-hover:text-white'
-                    }`} />
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'second-invoice' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
+                    <FileText className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'second-invoice' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
                   </div>
                   
                   {/* Título */}
@@ -161,34 +103,17 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
                 </div>
 
                 {/* Indicador de Seleção */}
-                {selectedFlow === 'second-invoice' && (
-                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                {selectedFlow === 'second-invoice' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
                     <Check className="w-4 h-4 text-white" />
-                  </div>
-                )}
+                  </div>}
               </Card>
 
               {/* Card Sinistro Segurado */}
-              <Card 
-                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
-                  selectedFlow === 'claim' 
-                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
-                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
-                }`}
-                onClick={() => handleCardSelect('claim')}
-              >
+              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'claim' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('claim')}>
                 <div className="text-center">
                   {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    selectedFlow === 'claim' 
-                      ? 'bg-jj-blue-medium' 
-                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
-                  }`}>
-                    <AlertTriangle className={`w-8 h-8 transition-colors duration-300 ${
-                      selectedFlow === 'claim' 
-                        ? 'text-white' 
-                        : 'text-jj-blue-medium group-hover:text-white'
-                    }`} />
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'claim' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
+                    <AlertTriangle className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'claim' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
                   </div>
                   
                   {/* Título */}
@@ -203,34 +128,17 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
                 </div>
 
                 {/* Indicador de Seleção */}
-                {selectedFlow === 'claim' && (
-                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                {selectedFlow === 'claim' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
                     <Check className="w-4 h-4 text-white" />
-                  </div>
-                )}
+                  </div>}
               </Card>
 
               {/* Card Seguro Fiança */}
-              <Card 
-                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
-                  selectedFlow === 'fianca' 
-                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
-                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
-                }`}
-                onClick={() => handleCardSelect('fianca')}
-              >
+              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'fianca' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('fianca')}>
                 <div className="text-center">
                   {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    selectedFlow === 'fianca' 
-                      ? 'bg-jj-blue-medium' 
-                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
-                  }`}>
-                    <Lock className={`w-8 h-8 transition-colors duration-300 ${
-                      selectedFlow === 'fianca' 
-                        ? 'text-white' 
-                        : 'text-jj-blue-medium group-hover:text-white'
-                    }`} />
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'fianca' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
+                    <Lock className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'fianca' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
                   </div>
                   
                   {/* Título */}
@@ -245,34 +153,17 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
                 </div>
 
                 {/* Indicador de Seleção */}
-                {selectedFlow === 'fianca' && (
-                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                {selectedFlow === 'fianca' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
                     <Check className="w-4 h-4 text-white" />
-                  </div>
-                )}
+                  </div>}
               </Card>
 
               {/* Card Seguro Residencial */}
-              <Card 
-                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
-                  selectedFlow === 'residencial' 
-                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
-                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
-                }`}
-                onClick={() => handleCardSelect('residencial')}
-              >
+              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'residencial' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('residencial')}>
                 <div className="text-center">
                   {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    selectedFlow === 'residencial' 
-                      ? 'bg-jj-blue-medium' 
-                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
-                  }`}>
-                    <Home className={`w-8 h-8 transition-colors duration-300 ${
-                      selectedFlow === 'residencial' 
-                        ? 'text-white' 
-                        : 'text-jj-blue-medium group-hover:text-white'
-                    }`} />
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'residencial' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
+                    <Home className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'residencial' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
                   </div>
                   
                   {/* Título */}
@@ -287,34 +178,17 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
                 </div>
 
                 {/* Indicador de Seleção */}
-                {selectedFlow === 'residencial' && (
-                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                {selectedFlow === 'residencial' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
                     <Check className="w-4 h-4 text-white" />
-                  </div>
-                )}
+                  </div>}
               </Card>
 
               {/* Card Seguro Empresarial */}
-              <Card 
-                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
-                  selectedFlow === 'empresarial' 
-                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
-                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
-                }`}
-                onClick={() => handleCardSelect('empresarial')}
-              >
+              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'empresarial' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('empresarial')}>
                 <div className="text-center">
                   {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    selectedFlow === 'empresarial' 
-                      ? 'bg-jj-blue-medium' 
-                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
-                  }`}>
-                    <Building className={`w-8 h-8 transition-colors duration-300 ${
-                      selectedFlow === 'empresarial' 
-                        ? 'text-white' 
-                        : 'text-jj-blue-medium group-hover:text-white'
-                    }`} />
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'empresarial' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
+                    <Building className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'empresarial' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
                   </div>
                   
                   {/* Título */}
@@ -329,34 +203,17 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
                 </div>
 
                 {/* Indicador de Seleção */}
-                {selectedFlow === 'empresarial' && (
-                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                {selectedFlow === 'empresarial' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
                     <Check className="w-4 h-4 text-white" />
-                  </div>
-                )}
+                  </div>}
               </Card>
 
               {/* Card Seguro de Vida Individual */}
-              <Card 
-                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
-                  selectedFlow === 'vida' 
-                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
-                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
-                }`}
-                onClick={() => handleCardSelect('vida')}
-              >
+              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'vida' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('vida')}>
                 <div className="text-center">
                   {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    selectedFlow === 'vida' 
-                      ? 'bg-jj-blue-medium' 
-                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
-                  }`}>
-                    <Heart className={`w-8 h-8 transition-colors duration-300 ${
-                      selectedFlow === 'vida' 
-                        ? 'text-white' 
-                        : 'text-jj-blue-medium group-hover:text-white'
-                    }`} />
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'vida' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
+                    <Heart className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'vida' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
                   </div>
                   
                   {/* Título */}
@@ -371,34 +228,17 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
                 </div>
 
                 {/* Indicador de Seleção */}
-                {selectedFlow === 'vida' && (
-                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                {selectedFlow === 'vida' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
                     <Check className="w-4 h-4 text-white" />
-                  </div>
-                )}
+                  </div>}
               </Card>
 
               {/* Card Seguro Viagem */}
-              <Card 
-                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
-                  selectedFlow === 'viagem' 
-                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
-                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
-                }`}
-                onClick={() => handleCardSelect('viagem')}
-              >
+              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'viagem' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('viagem')}>
                 <div className="text-center">
                   {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    selectedFlow === 'viagem' 
-                      ? 'bg-jj-blue-medium' 
-                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
-                  }`}>
-                    <Plane className={`w-8 h-8 transition-colors duration-300 ${
-                      selectedFlow === 'viagem' 
-                        ? 'text-white' 
-                        : 'text-jj-blue-medium group-hover:text-white'
-                    }`} />
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'viagem' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
+                    <Plane className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'viagem' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
                   </div>
                   
                   {/* Título */}
@@ -413,26 +253,15 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
                 </div>
 
                 {/* Indicador de Seleção */}
-                {selectedFlow === 'viagem' && (
-                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                {selectedFlow === 'viagem' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
                     <Check className="w-4 h-4 text-white" />
-                  </div>
-                )}
+                  </div>}
               </Card>
             </div>
 
             {/* Botão Continuar */}
             <div className="text-center mb-8">
-              <Button
-                onClick={handleContinue}
-                disabled={!selectedFlow}
-                className={`px-12 py-4 text-lg font-semibold rounded-xl transition-all duration-300 ${
-                  selectedFlow 
-                    ? 'bg-jj-blue-dark hover:bg-jj-blue-dark/90 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02]' 
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
-                size="lg"
-              >
+              <Button onClick={handleContinue} disabled={!selectedFlow} className={`px-12 py-4 text-lg font-semibold rounded-xl transition-all duration-300 ${selectedFlow ? 'bg-jj-blue-dark hover:bg-jj-blue-dark/90 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02]' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`} size="lg">
                 Continuar
                 <ArrowRight className="ml-3 h-5 w-5" />
               </Button>
@@ -466,8 +295,6 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default FlowSelector;
