@@ -83,6 +83,10 @@ const FiancaDataStep: React.FC<FiancaDataStepProps> = ({
     }
   };
 
+  const handleAddressChange = (field: keyof typeof imovelData, value: string) => {
+    onImovelChange(field, value);
+  };
+
   return (
     <div className="space-y-8">
       <Card className="p-8 bg-white shadow-sm border border-gray-100 rounded-xl">
@@ -211,10 +215,13 @@ const FiancaDataStep: React.FC<FiancaDataStepProps> = ({
             {(imovelData.logradouro || imovelData.bairro || imovelData.localidade) && (
               <div className="md:col-span-2">
                 <AddressDisplay
-                  logradouro={imovelData.logradouro}
-                  bairro={imovelData.bairro}
-                  localidade={imovelData.localidade}
-                  uf={imovelData.uf}
+                  data={{
+                    logradouro: imovelData.logradouro,
+                    bairro: imovelData.bairro,
+                    localidade: imovelData.localidade,
+                    uf: imovelData.uf
+                  }}
+                  onChange={handleAddressChange}
                 />
               </div>
             )}
