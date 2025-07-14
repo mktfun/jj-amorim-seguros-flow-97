@@ -1,21 +1,16 @@
+
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Clock } from 'lucide-react';
-import RenewalFlow from './RenewalFlow';
 
 interface ComingSoonProps {
-  flowType: 'renewal';
+  title: string;
+  description: string;
   onBack: () => void;
 }
 
-const ComingSoon: React.FC<ComingSoonProps> = ({ flowType, onBack }) => {
-  // For renewal flow, directly show the RenewalFlow component
-  if (flowType === 'renewal') {
-    return <RenewalFlow onBack={onBack} />;
-  }
-
-  // This should not happen with current implementation, but keeping as fallback
+const ComingSoon: React.FC<ComingSoonProps> = ({ title, description, onBack }) => {
   return (
     <div className="min-h-screen bg-muted flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-2xl animate-fade-in">
@@ -25,10 +20,10 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ flowType, onBack }) => {
               <Clock className="h-24 w-24 jj-blue-medium" />
             </div>
             <CardTitle className="text-3xl md:text-4xl font-bold jj-blue-dark mb-4">
-              Em Breve!
+              {title}
             </CardTitle>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Esta funcionalidade está sendo desenvolvida pela nossa equipe e estará disponível em breve.
+              {description}
             </p>
           </CardHeader>
           <CardContent>
