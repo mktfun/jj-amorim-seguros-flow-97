@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -125,10 +126,10 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
   });
 
   const getStepTitles = () => {
-    const titles = ['Dados de Contato', 'Origem da Renovação'];
+    const titles = ['Origem da Renovação'];
     
     if (origin === 'outra_corretora') {
-      titles.push('Dados da Apólice Anterior');
+      titles.push('Dados de Contato', 'Dados da Apólice Anterior');
     }
     
     titles.push('Confirme seus Dados Pessoais', 'Confirme os Dados do Veículo', 'Confirme o Questionário de Risco', 'Confirmação Final');
@@ -246,52 +247,50 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
   };
 
   const getCurrentStepIndex = () => {
-    if (currentStep <= 2) return currentStep;
-    if (origin === 'outra_corretora') {
-      return currentStep;
-    } else {
-      return currentStep - 1; // Skip the previous policy step
-    }
+    return currentStep;
   };
 
   const getTotalSteps = () => {
-    return origin === 'outra_corretora' ? 7 : 6;
+    return origin === 'outra_corretora' ? 7 : 5;
   };
 
   const validateCurrentStep = (): boolean => {
     switch (currentStep) {
       case 1:
-        return contactValidation.validateAll(contactData as unknown as { [key: string]: string });
-      case 2:
         if (!origin) {
           alert('Por favor, selecione uma opção.');
           return false;
         }
         return true;
+      case 2:
+        if (origin === 'outra_corretora') {
+          return contactValidation.validateAll(contactData as unknown as { [key: string]: string });
+        } else {
+          return personalDataValidation.validateAll(personalData as unknown as { [key: string]: string });
+        }
       case 3:
         if (origin === 'outra_corretora') {
           return previousPolicyValidation.validateAll(previousPolicyData as unknown as { [key: string]: string });
         } else {
-          return personalDataValidation.validateAll(personalData as unknown as { [key: string]: string });
+          return vehicleDataValidation.validateAll(vehicleData as unknown as { [key: string]: string });
         }
       case 4:
         if (origin === 'outra_corretora') {
           return personalDataValidation.validateAll(personalData as unknown as { [key: string]: string });
         } else {
-          return vehicleDataValidation.validateAll(vehicleData as unknown as { [key: string]: string });
+          return riskDataValidation.validateAll(riskData as unknown as { [key: string]: string });
         }
       case 5:
         if (origin === 'outra_corretora') {
           return vehicleDataValidation.validateAll(vehicleData as unknown as { [key: string]: string });
         } else {
-          return riskDataValidation.validateAll(riskData as unknown as { [key: string]: string });
+          return true; // Final confirmation
         }
       case 6:
         if (origin === 'outra_corretora') {
           return riskDataValidation.validateAll(riskData as unknown as { [key: string]: string });
-        } else {
-          return true; // Final confirmation
         }
+        return true;
       case 7:
         return true; // Final confirmation for outra_corretora flow
       default:
@@ -301,9 +300,12 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
 
   const handleNext = () => {
     if (validateCurrentStep()) {
-      if (currentStep === 2 && origin === 'jj_amorim') {
-        // Skip step 3 (previous policy data) for JJ & Amorim
-        setCurrentStep(4);
+      if (currentStep === 1 && origin === 'jj_amorim') {
+        // Para clientes JJ & Amorim, pula direto para confirmação de dados pessoais (etapa 2 vira etapa 4 do fluxo original)
+        setCurrentStep(2);
+      } else if (currentStep === 1 && origin === 'outra_corretora') {
+        // Para outras corretoras, vai para coleta de dados de contato
+        setCurrentStep(2);
       } else {
         setCurrentStep(currentStep + 1);
       }
@@ -312,9 +314,9 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
 
   const handleBack = () => {
     if (currentStep > 1) {
-      if (currentStep === 4 && origin === 'jj_amorim') {
-        // Skip step 3 when going back for JJ & Amorim
-        setCurrentStep(2);
+      if (currentStep === 2 && origin === 'jj_amorim') {
+        // Volta para origem da renovação
+        setCurrentStep(1);
       } else {
         setCurrentStep(currentStep - 1);
       }
@@ -347,21 +349,33 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
     switch (currentStep) {
       case 1:
         return (
-          <ContactDataStep
-            data={contactData}
-            onChange={updateContactData}
-            errors={contactValidation.errors}
-            onFieldBlur={contactValidation.validate}
-          />
-        );
-      case 2:
-        return (
           <RenewalOriginQuestion
             origin={origin}
             onChange={setOrigin}
             error={!origin ? 'Por favor, selecione uma opção' : undefined}
           />
         );
+      case 2:
+        if (origin === 'outra_corretora') {
+          return (
+            <ContactDataStep
+              data={contactData}
+              onChange={updateContactData}
+              errors={contactValidation.errors}
+              onFieldBlur={contactValidation.validate}
+            />
+          );
+        } else {
+          // Cliente JJ & Amorim - vai direto para confirmação de dados pessoais
+          return (
+            <PersonalDataConfirmation
+              data={personalData}
+              onChange={updatePersonalData}
+              errors={personalDataValidation.errors}
+              onFieldBlur={personalDataValidation.validate}
+            />
+          );
+        }
       case 3:
         if (origin === 'outra_corretora') {
           return (
@@ -374,11 +388,11 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
           );
         } else {
           return (
-            <PersonalDataConfirmation
-              data={personalData}
-              onChange={updatePersonalData}
-              errors={personalDataValidation.errors}
-              onFieldBlur={personalDataValidation.validate}
+            <VehicleDataConfirmation
+              data={vehicleData}
+              onChange={updateVehicleData}
+              errors={vehicleDataValidation.errors}
+              onFieldBlur={vehicleDataValidation.validate}
             />
           );
         }
@@ -394,11 +408,11 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
           );
         } else {
           return (
-            <VehicleDataConfirmation
-              data={vehicleData}
-              onChange={updateVehicleData}
-              errors={vehicleDataValidation.errors}
-              onFieldBlur={vehicleDataValidation.validate}
+            <RiskDataConfirmation
+              data={riskData}
+              onChange={updateRiskData}
+              errors={riskDataValidation.errors}
+              onFieldBlur={riskDataValidation.validate}
             />
           );
         }
@@ -413,14 +427,7 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
             />
           );
         } else {
-          return (
-            <RiskDataConfirmation
-              data={riskData}
-              onChange={updateRiskData}
-              errors={riskDataValidation.errors}
-              onFieldBlur={riskDataValidation.validate}
-            />
-          );
+          return <FinalConfirmation onConfirm={handleFinalSubmit} />;
         }
       case 6:
         if (origin === 'outra_corretora') {
@@ -432,9 +439,8 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
               onFieldBlur={riskDataValidation.validate}
             />
           );
-        } else {
-          return <FinalConfirmation onConfirm={handleFinalSubmit} />;
         }
+        return null;
       case 7:
         return <FinalConfirmation onConfirm={handleFinalSubmit} />;
       default:
@@ -444,7 +450,7 @@ const RenewalFlow: React.FC<RenewalFlowProps> = ({ onBack }) => {
 
   const isLastStep = () => {
     return (origin === 'outra_corretora' && currentStep === 7) || 
-           (origin === 'jj_amorim' && currentStep === 6);
+           (origin === 'jj_amorim' && currentStep === 5);
   };
 
   return (
