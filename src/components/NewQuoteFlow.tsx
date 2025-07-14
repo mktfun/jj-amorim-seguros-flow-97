@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Send } from 'lucide-react';
@@ -140,6 +141,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       pattern: validationPatterns.phone, 
       message: 'Telefone deve estar no formato (00) 00000-0000' 
     },
+    profession: { required: true, message: 'Profissão é obrigatória' },
     // Validação condicional para o condutor principal
     isDifferentFromInsured: { required: true, message: 'Selecione uma opção sobre o principal condutor' },
     // Campos condicionais do condutor principal
@@ -161,7 +163,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       required: false, 
       pattern: validationPatterns.phone, 
       message: 'Telefone deve estar no formato (00) 00000-0000' 
-    }
+    },
+    mainDriverProfession: { required: false, message: 'Profissão do principal condutor é obrigatória' }
   });
 
   const vehicleDataValidation = useFormValidation({
@@ -268,6 +271,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
           maritalStatus: formData.personalData.maritalStatus,
           email: formData.personalData.email,
           phone: formData.personalData.phone,
+          profession: formData.personalData.profession,
           isDifferentFromInsured: formData.mainDriverData.isDifferentFromInsured
         };
         
@@ -292,7 +296,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
             mainDriverBirthDate: formData.mainDriverData.birthDate,
             mainDriverMaritalStatus: formData.mainDriverData.maritalStatus,
             mainDriverEmail: formData.mainDriverData.email,
-            mainDriverPhone: formData.mainDriverData.phone
+            mainDriverPhone: formData.mainDriverData.phone,
+            mainDriverProfession: formData.mainDriverData.profession
           };
           
           console.log('Dados do condutor principal:', mainDriverValidationData);

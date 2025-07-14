@@ -2,80 +2,87 @@
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import FlowSelector from '@/components/FlowSelector';
-import ComingSoon from '@/components/ComingSoon';
 import NewQuoteFlow from '@/components/NewQuoteFlow';
-import RenewalFlow from '@/components/RenewalFlow';
+import RenewalFlow from '@/components/renewal/RenewalFlow';
+import ResidentialInsuranceFlow from '@/components/ResidentialInsuranceFlow';
+import ComingSoon from '@/components/ComingSoon';
 
-type FlowType = 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem' | null;
+type FlowType = 'new' | 'renewal' | 'seguro-fianca' | 'seguro-residencial' | 'seguro-empresarial' | 'seguro-vida-individual' | 'seguro-viagem' | null;
 
 const Index = () => {
   const [selectedFlow, setSelectedFlow] = useState<FlowType>(null);
 
-  const handleFlowSelect = (flow: 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem') => {
-    console.log('Fluxo selecionado:', flow);
+  const handleFlowSelect = (flow: FlowType) => {
     setSelectedFlow(flow);
   };
 
-  const handleBackToSelection = () => {
-    console.log('Voltando para seleção de fluxo');
+  const handleBack = () => {
     setSelectedFlow(null);
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      
-      {selectedFlow === null ? (
-        <FlowSelector onFlowSelect={handleFlowSelect} />
-      ) : selectedFlow === 'new-quote' ? (
-        <NewQuoteFlow onBack={handleBackToSelection} />
-      ) : selectedFlow === 'renewal' ? (
-        <RenewalFlow onBack={handleBackToSelection} />
-      ) : selectedFlow === 'second-invoice' ? (
-        <ComingSoon 
-          title="Segunda Via de Boleto" 
-          description="Esta funcionalidade estará disponível em breve."
-          onBack={handleBackToSelection}
-        />
-      ) : selectedFlow === 'claim' ? (
-        <ComingSoon 
-          title="Sinistro Segurado JJ&Amorim" 
-          description="Esta funcionalidade estará disponível em breve."
-          onBack={handleBackToSelection}
-        />
-      ) : selectedFlow === 'fianca' ? (
-        <ComingSoon 
-          title="Seguro Fiança" 
-          description="Esta funcionalidade estará disponível em breve."
-          onBack={handleBackToSelection}
-        />
-      ) : selectedFlow === 'residencial' ? (
-        <ComingSoon 
-          title="Seguro Residencial" 
-          description="Esta funcionalidade estará disponível em breve."
-          onBack={handleBackToSelection}
-        />
-      ) : selectedFlow === 'empresarial' ? (
-        <ComingSoon 
-          title="Seguro Empresarial" 
-          description="Esta funcionalidade estará disponível em breve."
-          onBack={handleBackToSelection}
-        />
-      ) : selectedFlow === 'vida' ? (
-        <ComingSoon 
-          title="Seguro de Vida Individual" 
-          description="Esta funcionalidade estará disponível em breve."
-          onBack={handleBackToSelection}
-        />
-      ) : (
-        <ComingSoon 
-          title="Seguro Viagem" 
-          description="Esta funcionalidade estará disponível em breve."
-          onBack={handleBackToSelection}
-        />
-      )}
-    </div>
-  );
+  // Render the appropriate flow component
+  const renderFlow = () => {
+    switch (selectedFlow) {
+      case 'new':
+        return <NewQuoteFlow onBack={handleBack} />;
+      case 'renewal':
+        return <RenewalFlow onBack={handleBack} />;
+      case 'seguro-residencial':
+        return <ResidentialInsuranceFlow onBack={handleBack} />;
+      case 'seguro-fianca':
+        return (
+          <ComingSoon
+            title="Seguro Fiança"
+            description="Garanta seu aluguel de forma segura e sem burocracia."
+            onBack={handleBack}
+          />
+        );
+      case 'seguro-empresarial':
+        return (
+          <ComingSoon
+            title="Seguro Empresarial"
+            description="Proteja seu negócio e seus colaboradores."
+            onBack={handleBack}
+          />
+        );
+      case 'seguro-vida-individual':
+        return (
+          <ComingSoon
+            title="Seguro de Vida Individual"
+            description="Garanta a segurança financeira de quem você ama."
+            onBack={handleBack}
+          />
+        );
+      case 'seguro-viagem':
+        return (
+          <ComingSoon
+            title="Seguro Viagem"
+            description="Viaje tranquilo com cobertura para imprevistos."
+            onBack={handleBack}
+          />
+        );
+      default:
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+            <Header />
+            <main className="container mx-auto px-4 py-12">
+              <div className="text-center mb-12">
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+                  Bem-vindo à JJ & Amorim
+                </h1>
+                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                  Escolha o tipo de atendimento que você precisa para começar
+                </p>
+              </div>
+              
+              <FlowSelector onFlowSelect={handleFlowSelect} />
+            </main>
+          </div>
+        );
+    }
+  };
+
+  return renderFlow();
 };
 
 export default Index;

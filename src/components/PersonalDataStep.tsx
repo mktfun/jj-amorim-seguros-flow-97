@@ -14,6 +14,7 @@ interface PersonalData {
   maritalStatus: string;
   email: string;
   phone: string;
+  profession: string;
 }
 
 interface MainDriverData extends PersonalData {
@@ -86,6 +87,7 @@ const PersonalDataStep: React.FC<PersonalDataStepProps> = ({
       onMainDriverChange('maritalStatus', '');
       onMainDriverChange('email', '');
       onMainDriverChange('phone', '');
+      onMainDriverChange('profession', '');
     }
   };
 
@@ -246,31 +248,59 @@ const PersonalDataStep: React.FC<PersonalDataStepProps> = ({
               </div>
             </div>
 
-            {/* Telefone */}
-            <div>
-              <Label htmlFor="phone" className="text-base font-semibold text-gray-700 mb-2 block">
-                Telefone (WhatsApp) <span className="text-blue-600">*</span>
-              </Label>
-              <Input
-                id="phone"
-                type="text"
-                value={data.phone}
-                onChange={(e) => handlePhoneChange(e.target.value)}
-                onBlur={(e) => onFieldBlur('phone', e.target.value)}
-                className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                  errors.phone 
-                    ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                    : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                }`}
-                placeholder="(11) 99999-9999"
-                maxLength={15}
-              />
-              {errors.phone && (
-                <p className="text-red-500 text-sm mt-2 flex items-center">
-                  <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                  {errors.phone}
-                </p>
-              )}
+            <div className="grid gap-8 md:grid-cols-2">
+              {/* Telefone */}
+              <div>
+                <Label htmlFor="phone" className="text-base font-semibold text-gray-700 mb-2 block">
+                  Telefone (WhatsApp) <span className="text-blue-600">*</span>
+                </Label>
+                <Input
+                  id="phone"
+                  type="text"
+                  value={data.phone}
+                  onChange={(e) => handlePhoneChange(e.target.value)}
+                  onBlur={(e) => onFieldBlur('phone', e.target.value)}
+                  className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
+                    errors.phone 
+                      ? 'border-red-400 focus:border-red-500 bg-red-50' 
+                      : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
+                  }`}
+                  placeholder="(11) 99999-9999"
+                  maxLength={15}
+                />
+                {errors.phone && (
+                  <p className="text-red-500 text-sm mt-2 flex items-center">
+                    <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
+                    {errors.phone}
+                  </p>
+                )}
+              </div>
+
+              {/* Profissão */}
+              <div>
+                <Label htmlFor="profession" className="text-base font-semibold text-gray-700 mb-2 block">
+                  Profissão <span className="text-blue-600">*</span>
+                </Label>
+                <Input
+                  id="profession"
+                  type="text"
+                  value={data.profession}
+                  onChange={(e) => onChange('profession', e.target.value)}
+                  onBlur={(e) => onFieldBlur('profession', e.target.value)}
+                  className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
+                    errors.profession 
+                      ? 'border-red-400 focus:border-red-500 bg-red-50' 
+                      : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
+                  }`}
+                  placeholder="Digite sua profissão"
+                />
+                {errors.profession && (
+                  <p className="text-red-500 text-sm mt-2 flex items-center">
+                    <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
+                    {errors.profession}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Pergunta Condicional - Principal Condutor */}
@@ -463,31 +493,59 @@ const PersonalDataStep: React.FC<PersonalDataStepProps> = ({
                 </div>
               </div>
 
-              {/* Telefone do Principal Condutor */}
-              <div>
-                <Label htmlFor="mainDriverPhone" className="text-base font-semibold text-gray-700 mb-2 block">
-                  Telefone (WhatsApp) <span className="text-blue-600">*</span>
-                </Label>
-                <Input
-                  id="mainDriverPhone"
-                  type="text"
-                  value={mainDriverData.phone}
-                  onChange={(e) => handlePhoneChange(e.target.value, true)}
-                  onBlur={(e) => onFieldBlur('mainDriverPhone', e.target.value)}
-                  className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                    errors.mainDriverPhone 
-                      ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                      : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                  }`}
-                  placeholder="(11) 99999-9999"
-                  maxLength={15}
-                />
-                {errors.mainDriverPhone && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center">
-                    <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                    {errors.mainDriverPhone}
-                  </p>
-                )}
+              <div className="grid gap-8 md:grid-cols-2">
+                {/* Telefone do Principal Condutor */}
+                <div>
+                  <Label htmlFor="mainDriverPhone" className="text-base font-semibold text-gray-700 mb-2 block">
+                    Telefone (WhatsApp) <span className="text-blue-600">*</span>
+                  </Label>
+                  <Input
+                    id="mainDriverPhone"
+                    type="text"
+                    value={mainDriverData.phone}
+                    onChange={(e) => handlePhoneChange(e.target.value, true)}
+                    onBlur={(e) => onFieldBlur('mainDriverPhone', e.target.value)}
+                    className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
+                      errors.mainDriverPhone 
+                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
+                        : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
+                    }`}
+                    placeholder="(11) 99999-9999"
+                    maxLength={15}
+                  />
+                  {errors.mainDriverPhone && (
+                    <p className="text-red-500 text-sm mt-2 flex items-center">
+                      <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
+                      {errors.mainDriverPhone}
+                    </p>
+                  )}
+                </div>
+
+                {/* Profissão do Principal Condutor */}
+                <div>
+                  <Label htmlFor="mainDriverProfession" className="text-base font-semibold text-gray-700 mb-2 block">
+                    Profissão <span className="text-blue-600">*</span>
+                  </Label>
+                  <Input
+                    id="mainDriverProfession"
+                    type="text"
+                    value={mainDriverData.profession}
+                    onChange={(e) => onMainDriverChange('profession', e.target.value)}
+                    onBlur={(e) => onFieldBlur('mainDriverProfession', e.target.value)}
+                    className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
+                      errors.mainDriverProfession 
+                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
+                        : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
+                    }`}
+                    placeholder="Digite a profissão do principal condutor"
+                  />
+                  {errors.mainDriverProfession && (
+                    <p className="text-red-500 text-sm mt-2 flex items-center">
+                      <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
+                      {errors.mainDriverProfession}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>
