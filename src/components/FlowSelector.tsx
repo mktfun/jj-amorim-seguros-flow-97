@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Car, Check, Shield, Clock, Lock, FileText, AlertTriangle, Home, Heart } from 'lucide-react';
+import { ArrowRight, Car, Check, Shield, Clock, Lock, FileText, AlertTriangle, Home, Heart, Building, Plane, Luggage } from 'lucide-react';
 
 interface FlowSelectorProps {
-  onFlowSelect: (flow: 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial') => void;
+  onFlowSelect: (flow: 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem') => void;
 }
 
 const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
@@ -13,7 +13,7 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
 
   const handleContinue = () => {
     if (selectedFlow) {
-      onFlowSelect(selectedFlow as 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial');
+      onFlowSelect(selectedFlow as 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem');
     }
   };
 
@@ -40,7 +40,7 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
 
           {/* Cards de Seleção */}
           <div className="px-8 md:px-12 py-8">
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
               
               {/* Card Nova Cotação */}
               <Card 
@@ -288,6 +288,132 @@ const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
 
                 {/* Indicador de Seleção */}
                 {selectedFlow === 'residencial' && (
+                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                )}
+              </Card>
+
+              {/* Card Seguro Empresarial */}
+              <Card 
+                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
+                  selectedFlow === 'empresarial' 
+                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
+                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
+                }`}
+                onClick={() => handleCardSelect('empresarial')}
+              >
+                <div className="text-center">
+                  {/* Ícone */}
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    selectedFlow === 'empresarial' 
+                      ? 'bg-jj-blue-medium' 
+                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
+                  }`}>
+                    <Building className={`w-8 h-8 transition-colors duration-300 ${
+                      selectedFlow === 'empresarial' 
+                        ? 'text-white' 
+                        : 'text-jj-blue-medium group-hover:text-white'
+                    }`} />
+                  </div>
+                  
+                  {/* Título */}
+                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
+                    Seguro Empresarial
+                  </h3>
+                  
+                  {/* Descrição */}
+                  <p className="text-gray-600 leading-relaxed">
+                    Proteja seu negócio e seus colaboradores.
+                  </p>
+                </div>
+
+                {/* Indicador de Seleção */}
+                {selectedFlow === 'empresarial' && (
+                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                )}
+              </Card>
+
+              {/* Card Seguro de Vida Individual */}
+              <Card 
+                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
+                  selectedFlow === 'vida' 
+                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
+                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
+                }`}
+                onClick={() => handleCardSelect('vida')}
+              >
+                <div className="text-center">
+                  {/* Ícone */}
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    selectedFlow === 'vida' 
+                      ? 'bg-jj-blue-medium' 
+                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
+                  }`}>
+                    <Heart className={`w-8 h-8 transition-colors duration-300 ${
+                      selectedFlow === 'vida' 
+                        ? 'text-white' 
+                        : 'text-jj-blue-medium group-hover:text-white'
+                    }`} />
+                  </div>
+                  
+                  {/* Título */}
+                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
+                    Seguro de Vida Individual
+                  </h3>
+                  
+                  {/* Descrição */}
+                  <p className="text-gray-600 leading-relaxed">
+                    Garanta a segurança financeira de quem você ama.
+                  </p>
+                </div>
+
+                {/* Indicador de Seleção */}
+                {selectedFlow === 'vida' && (
+                  <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                )}
+              </Card>
+
+              {/* Card Seguro Viagem */}
+              <Card 
+                className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${
+                  selectedFlow === 'viagem' 
+                    ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' 
+                    : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'
+                }`}
+                onClick={() => handleCardSelect('viagem')}
+              >
+                <div className="text-center">
+                  {/* Ícone */}
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    selectedFlow === 'viagem' 
+                      ? 'bg-jj-blue-medium' 
+                      : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'
+                  }`}>
+                    <Plane className={`w-8 h-8 transition-colors duration-300 ${
+                      selectedFlow === 'viagem' 
+                        ? 'text-white' 
+                        : 'text-jj-blue-medium group-hover:text-white'
+                    }`} />
+                  </div>
+                  
+                  {/* Título */}
+                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
+                    Seguro Viagem
+                  </h3>
+                  
+                  {/* Descrição */}
+                  <p className="text-gray-600 leading-relaxed">
+                    Viaje tranquilo com cobertura para imprevistos.
+                  </p>
+                </div>
+
+                {/* Indicador de Seleção */}
+                {selectedFlow === 'viagem' && (
                   <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
                     <Check className="w-4 h-4 text-white" />
                   </div>

@@ -6,12 +6,12 @@ import ComingSoon from '@/components/ComingSoon';
 import NewQuoteFlow from '@/components/NewQuoteFlow';
 import RenewalFlow from '@/components/RenewalFlow';
 
-type FlowType = 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | null;
+type FlowType = 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem' | null;
 
 const Index = () => {
   const [selectedFlow, setSelectedFlow] = useState<FlowType>(null);
 
-  const handleFlowSelect = (flow: 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial') => {
+  const handleFlowSelect = (flow: 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem') => {
     console.log('Fluxo selecionado:', flow);
     setSelectedFlow(flow);
   };
@@ -49,9 +49,27 @@ const Index = () => {
           description="Esta funcionalidade estará disponível em breve."
           onBack={handleBackToSelection}
         />
-      ) : (
+      ) : selectedFlow === 'residencial' ? (
         <ComingSoon 
           title="Seguro Residencial" 
+          description="Esta funcionalidade estará disponível em breve."
+          onBack={handleBackToSelection}
+        />
+      ) : selectedFlow === 'empresarial' ? (
+        <ComingSoon 
+          title="Seguro Empresarial" 
+          description="Esta funcionalidade estará disponível em breve."
+          onBack={handleBackToSelection}
+        />
+      ) : selectedFlow === 'vida' ? (
+        <ComingSoon 
+          title="Seguro de Vida Individual" 
+          description="Esta funcionalidade estará disponível em breve."
+          onBack={handleBackToSelection}
+        />
+      ) : (
+        <ComingSoon 
+          title="Seguro Viagem" 
           description="Esta funcionalidade estará disponível em breve."
           onBack={handleBackToSelection}
         />
