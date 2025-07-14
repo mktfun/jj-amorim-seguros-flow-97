@@ -9,6 +9,7 @@ import ComingSoon from '@/components/ComingSoon';
 import BusinessInsuranceFlow from '@/components/BusinessInsuranceFlow';
 import LifeInsuranceFlow from '@/components/LifeInsuranceFlow';
 import TravelInsuranceFlow from '@/components/TravelInsuranceFlow';
+import FiancaInsuranceFlow from '@/components/FiancaInsuranceFlow';
 
 type FlowType = 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem' | null;
 
@@ -39,13 +40,7 @@ const Index = () => {
       case 'viagem':
         return <TravelInsuranceFlow onBack={handleBack} />;
       case 'fianca':
-        return (
-          <ComingSoon
-            title="Seguro Fiança"
-            description="Garanta seu aluguel de forma segura e sem burocracia."
-            onBack={handleBack}
-          />
-        );
+        return <FiancaInsuranceFlow onBack={handleBack} />;
       case 'second-invoice':
         return (
           <ComingSoon
