@@ -7,7 +7,7 @@ import RenewalFlow from '@/components/renewal/RenewalFlow';
 import ResidentialInsuranceFlow from '@/components/ResidentialInsuranceFlow';
 import ComingSoon from '@/components/ComingSoon';
 
-type FlowType = 'new' | 'renewal' | 'seguro-fianca' | 'seguro-residencial' | 'seguro-empresarial' | 'seguro-vida-individual' | 'seguro-viagem' | null;
+type FlowType = 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem' | null;
 
 const Index = () => {
   const [selectedFlow, setSelectedFlow] = useState<FlowType>(null);
@@ -23,13 +23,13 @@ const Index = () => {
   // Render the appropriate flow component
   const renderFlow = () => {
     switch (selectedFlow) {
-      case 'new':
+      case 'new-quote':
         return <NewQuoteFlow onBack={handleBack} />;
       case 'renewal':
         return <RenewalFlow onBack={handleBack} />;
-      case 'seguro-residencial':
+      case 'residencial':
         return <ResidentialInsuranceFlow onBack={handleBack} />;
-      case 'seguro-fianca':
+      case 'fianca':
         return (
           <ComingSoon
             title="Seguro Fiança"
@@ -37,7 +37,7 @@ const Index = () => {
             onBack={handleBack}
           />
         );
-      case 'seguro-empresarial':
+      case 'empresarial':
         return (
           <ComingSoon
             title="Seguro Empresarial"
@@ -45,7 +45,7 @@ const Index = () => {
             onBack={handleBack}
           />
         );
-      case 'seguro-vida-individual':
+      case 'vida':
         return (
           <ComingSoon
             title="Seguro de Vida Individual"
@@ -53,11 +53,27 @@ const Index = () => {
             onBack={handleBack}
           />
         );
-      case 'seguro-viagem':
+      case 'viagem':
         return (
           <ComingSoon
             title="Seguro Viagem"
             description="Viaje tranquilo com cobertura para imprevistos."
+            onBack={handleBack}
+          />
+        );
+      case 'second-invoice':
+        return (
+          <ComingSoon
+            title="Segunda Via de Boleto"
+            description="Acesse rapidamente o boleto da sua apólice."
+            onBack={handleBack}
+          />
+        );
+      case 'claim':
+        return (
+          <ComingSoon
+            title="Sinistro Segurado JJ&Amorim"
+            description="Comunique um sinistro envolvendo você ou um terceiro, de forma rápida."
             onBack={handleBack}
           />
         );
