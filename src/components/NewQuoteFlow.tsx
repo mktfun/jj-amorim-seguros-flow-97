@@ -8,6 +8,8 @@ import VehicleDataStep from './VehicleDataStep';
 import RiskQuestionnaireStep from './RiskQuestionnaireStep';
 import { useFormValidation, validationPatterns, validateCPF, validateCNPJ } from '@/hooks/useFormValidation';
 import { processAndSendData, UnifiedData } from '@/utils/dataProcessor';
+import VehicleZeroKmStep from './VehicleZeroKmStep';
+import VehicleDetailsStep from './VehicleDetailsStep';
 
 interface NewQuoteFlowProps {
   onBack: () => void;
@@ -35,6 +37,7 @@ interface FormData {
     profession: string;
   };
   vehicleData: {
+    isZeroKm: string;
     model: string;
     plate: string;
     year: string;
@@ -84,6 +87,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       profession: ''
     },
     vehicleData: {
+      isZeroKm: '',
       model: '',
       plate: '',
       year: '',
@@ -112,7 +116,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
   const stepTitles = [
     'Dados do Principal Condutor',
     'Dados Complementares',
-    'Dados do Veículo',
+    'Dados do Veículo - Zero Km',
+    'Detalhes do Veículo',
     'Questionário de Risco'
   ];
 
@@ -154,7 +159,11 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     profession: { required: true, message: 'Profissão é obrigatória' }
   });
 
-  const vehicleDataValidation = useFormValidation({
+  const vehicleZeroKmValidation = useFormValidation({
+    isZeroKm: { required: true, message: 'Selecione se o veículo é zero km' }
+  });
+
+  const vehicleDetailsValidation = useFormValidation({
     model: { required: true, message: 'Modelo do veículo é obrigatório' },
     plate: { 
       required: true, 
@@ -270,8 +279,16 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         };
         return complementaryDataValidation.validateAll(complementaryData as { [key: string]: string });
       case 3:
-        return vehicleDataValidation.validateAll(formData.vehicleData as { [key: string]: string });
+        return vehicleZeroKmValidation.validateAll({ isZeroKm: formData.vehicleData.isZeroKm });
       case 4:
+        const vehicleDetailsData = {
+          model: formData.vehicleData.model,
+          plate: formData.vehicleData.plate,
+          year: formData.vehicleData.year,
+          isFinanced: formData.vehicleData.isFinanced
+        };
+        return vehicleDetailsValidation.validateAll(vehicleDetailsData as { [key: string]: string });
+      case 5:
         const riskValidationData = { ...formData.riskData };
         // Only validate workParking if usesForWork is 'sim'
         if (formData.riskData.usesForWork !== 'sim') {
@@ -295,7 +312,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
   const handleNext = async () => {
     console.log('Clicou em próxima etapa');
     if (validateCurrentStep()) {
-      if (currentStep < 4) {
+      if (currentStep < 5) {
         setCurrentStep(currentStep + 1);
         console.log('Avançando para etapa:', currentStep + 1);
       } else {
@@ -357,8 +374,9 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     switch (currentStep) {
       case 1: return personalDataValidation;
       case 2: return complementaryDataValidation;
-      case 3: return vehicleDataValidation;
-      case 4: return riskDataValidation;
+      case 3: return vehicleZeroKmValidation;
+      case 4: return vehicleDetailsValidation;
+      case 5: return riskDataValidation;
       default: return personalDataValidation;
     }
   };
@@ -393,14 +411,27 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         );
       case 3:
         return (
-          <VehicleDataStep
-            data={formData.vehicleData}
+          <VehicleZeroKmStep
+            isZeroKm={formData.vehicleData.isZeroKm}
+            onChange={(value) => updateVehicleData('isZeroKm', value)}
+            error={validation.errors.isZeroKm}
+          />
+        );
+      case 4:
+        return (
+          <VehicleDetailsStep
+            data={{
+              model: formData.vehicleData.model,
+              plate: formData.vehicleData.plate,
+              year: formData.vehicleData.year,
+              isFinanced: formData.vehicleData.isFinanced
+            }}
             onChange={updateVehicleData}
             errors={validation.errors}
             onFieldBlur={validation.validate}
           />
         );
-      case 4:
+      case 5:
         return (
           <RiskQuestionnaireStep
             data={formData.riskData}
@@ -419,7 +450,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       <div className="w-full max-w-5xl mx-auto">
         <ProgressIndicator
           currentStep={currentStep}
-          totalSteps={4}
+          totalSteps={5}
           stepTitles={stepTitles}
         />
 
@@ -442,8 +473,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
             className="h-14 px-8 text-base font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all duration-200 rounded-xl flex items-center space-x-2 shadow-lg hover:shadow-xl"
             size="lg"
           >
-            <span>{currentStep === 4 ? 'Enviar Orçamento' : 'Próxima Etapa'}</span>
-            {currentStep === 4 ? (
+            <span>{currentStep === 5 ? 'Enviar Orçamento' : 'Próxima Etapa'}</span>
+            {currentStep === 5 ? (
               <Send className="h-5 w-5" />
             ) : (
               <ArrowRight className="h-5 w-5" />
