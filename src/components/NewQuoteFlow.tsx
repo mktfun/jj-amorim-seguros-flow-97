@@ -3,9 +3,10 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Send } from 'lucide-react';
 import ProgressIndicator from './ProgressIndicator';
 import PersonalDataStep from './PersonalDataStep';
+import ComplementaryDataStep from './ComplementaryDataStep';
 import VehicleDataStep from './VehicleDataStep';
 import RiskQuestionnaireStep from './RiskQuestionnaireStep';
-import { useFormValidation, validationPatterns, validateCPF } from '@/hooks/useFormValidation';
+import { useFormValidation, validationPatterns, validateCPF, validateCNPJ } from '@/hooks/useFormValidation';
 import { processAndSendData, UnifiedData } from '@/utils/dataProcessor';
 
 interface NewQuoteFlowProps {
@@ -59,13 +60,6 @@ interface FormData {
   };
 }
 
-interface VehicleData {
-  model: string;
-  plate: string;
-  year: string;
-  isFinanced: string;
-}
-
 const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
@@ -117,6 +111,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
 
   const stepTitles = [
     'Dados do Principal Condutor',
+    'Dados Complementares',
     'Dados do Veículo',
     'Questionário de Risco'
   ];
@@ -128,10 +123,10 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     cpf: { 
       required: true, 
       pattern: formData.personalData.personType === 'juridica' 
-        ? /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/ 
+        ? validationPatterns.cnpj 
         : validationPatterns.cpf,
       customValidator: formData.personalData.personType === 'juridica' 
-        ? undefined 
+        ? validateCNPJ 
         : validateCPF,
       message: formData.personalData.personType === 'juridica' 
         ? 'CNPJ inválido. Por favor, verifique o número.' 
@@ -147,6 +142,16 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       pattern: validationPatterns.phone, 
       message: 'Telefone deve estar no formato (00) 00000-0000' 
     }
+  });
+
+  const complementaryDataValidation = useFormValidation({
+    birthDate: { 
+      required: true, 
+      pattern: /^\d{2}\/\d{2}\/\d{4}$/, 
+      message: 'Data de nascimento deve estar no formato dd/mm/aaaa' 
+    },
+    maritalStatus: { required: true, message: 'Selecione o estado civil' },
+    profession: { required: true, message: 'Profissão é obrigatória' }
   });
 
   const vehicleDataValidation = useFormValidation({
@@ -257,8 +262,16 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         console.log('Validando dados básicos:', basicData);
         return personalDataValidation.validateAll(basicData as { [key: string]: string });
       case 2:
-        return vehicleDataValidation.validateAll(formData.vehicleData as { [key: string]: string });
+        // Validar dados complementares
+        const complementaryData = {
+          birthDate: formData.personalData.birthDate,
+          maritalStatus: formData.personalData.maritalStatus,
+          profession: formData.personalData.profession
+        };
+        return complementaryDataValidation.validateAll(complementaryData as { [key: string]: string });
       case 3:
+        return vehicleDataValidation.validateAll(formData.vehicleData as { [key: string]: string });
+      case 4:
         const riskValidationData = { ...formData.riskData };
         // Only validate workParking if usesForWork is 'sim'
         if (formData.riskData.usesForWork !== 'sim') {
@@ -282,7 +295,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
   const handleNext = async () => {
     console.log('Clicou em próxima etapa');
     if (validateCurrentStep()) {
-      if (currentStep < 3) {
+      if (currentStep < 4) {
         setCurrentStep(currentStep + 1);
         console.log('Avançando para etapa:', currentStep + 1);
       } else {
@@ -343,8 +356,9 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
   const getValidationForCurrentStep = () => {
     switch (currentStep) {
       case 1: return personalDataValidation;
-      case 2: return vehicleDataValidation;
-      case 3: return riskDataValidation;
+      case 2: return complementaryDataValidation;
+      case 3: return vehicleDataValidation;
+      case 4: return riskDataValidation;
       default: return personalDataValidation;
     }
   };
@@ -366,6 +380,19 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         );
       case 2:
         return (
+          <ComplementaryDataStep
+            data={{
+              birthDate: formData.personalData.birthDate,
+              maritalStatus: formData.personalData.maritalStatus,
+              profession: formData.personalData.profession
+            }}
+            onChange={updatePersonalData}
+            errors={validation.errors}
+            onFieldBlur={validation.validate}
+          />
+        );
+      case 3:
+        return (
           <VehicleDataStep
             data={formData.vehicleData}
             onChange={updateVehicleData}
@@ -373,7 +400,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
             onFieldBlur={validation.validate}
           />
         );
-      case 3:
+      case 4:
         return (
           <RiskQuestionnaireStep
             data={formData.riskData}
@@ -392,13 +419,13 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       <div className="w-full max-w-5xl mx-auto">
         <ProgressIndicator
           currentStep={currentStep}
-          totalSteps={3}
+          totalSteps={4}
           stepTitles={stepTitles}
         />
 
         {renderCurrentStep()}
 
-        {/* Botões de Navegação Redesenhados */}
+        {/* Botões de Navegação */}
         <div className="flex justify-between items-center mt-10">
           <Button
             onClick={handleBack}
@@ -415,8 +442,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
             className="h-14 px-8 text-base font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all duration-200 rounded-xl flex items-center space-x-2 shadow-lg hover:shadow-xl"
             size="lg"
           >
-            <span>{currentStep === 3 ? 'Enviar Orçamento' : 'Próxima Etapa'}</span>
-            {currentStep === 3 ? (
+            <span>{currentStep === 4 ? 'Enviar Orçamento' : 'Próxima Etapa'}</span>
+            {currentStep === 4 ? (
               <Send className="h-5 w-5" />
             ) : (
               <ArrowRight className="h-5 w-5" />
