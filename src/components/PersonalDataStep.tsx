@@ -1,575 +1,191 @@
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { StableFormField } from '@/components/ui/stable-form-field';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { User, Lightbulb, Users } from 'lucide-react';
-
-interface PersonalData {
-  fullName: string;
-  cpf: string;
-  birthDate: string;
-  maritalStatus: string;
-  email: string;
-  phone: string;
-  profession: string;
-}
-
-interface MainDriverData extends PersonalData {
-  isDifferentFromInsured: string;
-}
 
 interface PersonalDataStepProps {
-  data: PersonalData;
-  mainDriverData: MainDriverData;
-  onChange: (field: keyof PersonalData, value: string) => void;
-  onMainDriverChange: (field: keyof MainDriverData, value: string) => void;
+  data: {
+    personType?: string;
+    fullName: string;
+    cpf: string;
+    birthDate: string;
+    maritalStatus: string;
+    email: string;
+    phone: string;
+    profession: string;
+  };
+  mainDriverData: {
+    isDifferentFromInsured: string;
+    fullName: string;
+    cpf: string;
+    birthDate: string;
+    maritalStatus: string;
+    email: string;
+    phone: string;
+    profession: string;
+  };
+  onChange: (field: string, value: string) => void;
+  onMainDriverChange: (field: string, value: string) => void;
   errors: { [key: string]: string };
   onFieldBlur: (field: string, value: string) => void;
 }
 
-const PersonalDataStep: React.FC<PersonalDataStepProps> = ({ 
-  data, 
-  mainDriverData,
-  onChange, 
-  onMainDriverChange,
-  errors, 
-  onFieldBlur 
+const PersonalDataStep: React.FC<PersonalDataStepProps> = ({
+  data,
+  onChange,
+  errors,
+  onFieldBlur
 }) => {
-  const formatCPF = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 11) {
-      return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-    }
-    return value;
+  const personType = data.personType || '';
+  
+  const getDocumentMask = () => {
+    return personType === 'juridica' ? '99.999.999/9999-99' : '999.999.999-99';
   };
 
-  const formatPhone = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 11) {
-      if (numbers.length <= 10) {
-        return numbers.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-      } else {
-        return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-      }
-    }
-    return value;
+  const getDocumentLabel = () => {
+    return personType === 'juridica' ? 'CNPJ' : 'CPF';
   };
 
-  const handleCPFChange = (value: string, isMainDriver = false) => {
-    const formatted = formatCPF(value);
-    if (isMainDriver) {
-      onMainDriverChange('cpf', formatted);
-    } else {
-      onChange('cpf', formatted);
-    }
+  const getDocumentPlaceholder = () => {
+    return personType === 'juridica' ? '00.000.000/0000-00' : '000.000.000-00';
   };
 
-  const handlePhoneChange = (value: string, isMainDriver = false) => {
-    const formatted = formatPhone(value);
-    if (isMainDriver) {
-      onMainDriverChange('phone', formatted);
-    } else {
-      onChange('phone', formatted);
-    }
+  const getNameLabel = () => {
+    return personType === 'juridica' ? 'Razão Social' : 'Nome Completo';
   };
 
-  const handleMainDriverToggle = (value: string) => {
-    onMainDriverChange('isDifferentFromInsured', value);
-    
-    // Se mudou para "sim", limpar os dados do condutor principal
-    if (value === 'sim') {
-      onMainDriverChange('fullName', '');
-      onMainDriverChange('cpf', '');
-      onMainDriverChange('birthDate', '');
-      onMainDriverChange('maritalStatus', '');
-      onMainDriverChange('email', '');
-      onMainDriverChange('phone', '');
-      onMainDriverChange('profession', '');
-    }
+  const getNamePlaceholder = () => {
+    return personType === 'juridica' ? 'Informe a razão social da empresa' : 'Informe seu nome completo';
   };
 
   return (
     <div className="space-y-8">
-      {/* Card Principal - Dados do Segurado */}
-      <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 pb-6">
-          <CardTitle className="text-3xl font-bold text-gray-800 flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl flex items-center justify-center mr-4">
-              <User className="h-6 w-6 text-white" />
-            </div>
-            Dados Pessoais do Segurado
+      <Card className="p-8 bg-white shadow-sm border border-gray-100 rounded-xl">
+        <CardHeader className="text-center pb-6">
+          <CardTitle className="text-2xl font-bold text-gray-800 mb-2">
+            DADOS DO PRINCIPAL CONDUTOR
           </CardTitle>
-          <p className="text-gray-600 text-lg mt-2 ml-16">
-            Informações pessoais para identificação do segurado
-          </p>
         </CardHeader>
-        <CardContent className="p-8">
-          <div className="space-y-8">
-            {/* Nome Completo */}
-            <div>
-              <Label htmlFor="fullName" className="text-base font-semibold text-gray-700 mb-2 block">
-                Nome Completo <span className="text-blue-600">*</span>
-              </Label>
-              <Input
+        
+        <CardContent className="space-y-6">
+          {/* Tipo de Pessoa */}
+          <div className="space-y-4">
+            <Label className="text-sm font-medium text-gray-700 block">
+              Tipo de Pessoa
+              <span className="text-red-500 ml-1">*</span>
+            </Label>
+            
+            <RadioGroup
+              value={personType}
+              onValueChange={(value) => onChange('personType', value)}
+              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            >
+              <div className="flex items-center space-x-2">
+                <label className={`
+                  flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200
+                  ${personType === 'fisica' 
+                    ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                    : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
+                  }
+                `}>
+                  <div className="flex items-center space-x-3">
+                    <RadioGroupItem value="fisica" id="fisica" />
+                    <div>
+                      <div className="font-semibold">Pessoa Física</div>
+                      <div className="text-sm text-gray-500">CPF</div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <label className={`
+                  flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200
+                  ${personType === 'juridica' 
+                    ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                    : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
+                  }
+                `}>
+                  <div className="flex items-center space-x-3">
+                    <RadioGroupItem value="juridica" id="juridica" />
+                    <div>
+                      <div className="font-semibold">Pessoa Jurídica</div>
+                      <div className="text-sm text-gray-500">CNPJ</div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </RadioGroup>
+            
+            {errors.personType && (
+              <p className="text-red-500 text-sm mt-1 flex items-center">
+                <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
+                {errors.personType}
+              </p>
+            )}
+          </div>
+
+          {/* Formulário de Dados Básicos */}
+          {personType && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Nome/Razão Social */}
+              <StableFormField
                 id="fullName"
-                type="text"
+                label={getNameLabel()}
                 value={data.fullName}
-                onChange={(e) => onChange('fullName', e.target.value)}
-                onBlur={(e) => onFieldBlur('fullName', e.target.value)}
-                className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                  errors.fullName 
-                    ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                    : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                }`}
-                placeholder="Digite seu nome completo"
+                onChange={(value) => onChange('fullName', value)}
+                onBlur={(value) => onFieldBlur('fullName', value)}
+                error={errors.fullName}
+                placeholder={getNamePlaceholder()}
+                required
+                className="md:col-span-2"
               />
-              {errors.fullName && (
-                <p className="text-red-500 text-sm mt-2 flex items-center">
-                  <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                  {errors.fullName}
-                </p>
-              )}
-            </div>
 
-            <div className="grid gap-8 md:grid-cols-2">
-              {/* CPF */}
-              <div>
-                <Label htmlFor="cpf" className="text-base font-semibold text-gray-700 mb-2 block">
-                  CPF <span className="text-blue-600">*</span>
-                </Label>
-                <Input
-                  id="cpf"
-                  type="text"
-                  value={data.cpf}
-                  onChange={(e) => handleCPFChange(e.target.value)}
-                  onBlur={(e) => onFieldBlur('cpf', e.target.value)}
-                  className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                    errors.cpf 
-                      ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                      : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                  }`}
-                  placeholder="000.000.000-00"
-                  maxLength={14}
-                />
-                {errors.cpf && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center">
-                    <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                    {errors.cpf}
-                  </p>
-                )}
-              </div>
-
-              {/* Data de Nascimento */}
-              <div>
-                <Label htmlFor="birthDate" className="text-base font-semibold text-gray-700 mb-2 block">
-                  Data de Nascimento <span className="text-blue-600">*</span>
-                </Label>
-                <Input
-                  id="birthDate"
-                  type="date"
-                  value={data.birthDate}
-                  onChange={(e) => onChange('birthDate', e.target.value)}
-                  onBlur={(e) => onFieldBlur('birthDate', e.target.value)}
-                  className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                    errors.birthDate 
-                      ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                      : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                  }`}
-                />
-                {errors.birthDate && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center">
-                    <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                    {errors.birthDate}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="grid gap-8 md:grid-cols-2">
-              {/* Estado Civil */}
-              <div>
-                <Label className="text-base font-semibold text-gray-700 mb-2 block">
-                  Estado Civil <span className="text-blue-600">*</span>
-                </Label>
-                <Select 
-                  value={data.maritalStatus} 
-                  onValueChange={(value) => onChange('maritalStatus', value)}
-                >
-                  <SelectTrigger className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                    errors.maritalStatus 
-                      ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                      : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                  }`}>
-                    <SelectValue placeholder="Selecione seu estado civil" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white z-50 border-2 border-gray-200 rounded-xl shadow-xl">
-                    <SelectItem value="solteiro" className="text-base py-3 hover:bg-blue-50 rounded-lg">Solteiro</SelectItem>
-                    <SelectItem value="casado" className="text-base py-3 hover:bg-blue-50 rounded-lg">Casado</SelectItem>
-                    <SelectItem value="divorciado" className="text-base py-3 hover:bg-blue-50 rounded-lg">Divorciado</SelectItem>
-                    <SelectItem value="viuvo" className="text-base py-3 hover:bg-blue-50 rounded-lg">Viúvo</SelectItem>
-                    <SelectItem value="outro" className="text-base py-3 hover:bg-blue-50 rounded-lg">Outro</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.maritalStatus && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center">
-                    <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                    {errors.maritalStatus}
-                  </p>
-                )}
-              </div>
+              {/* CPF/CNPJ */}
+              <StableFormField
+                id="cpf"
+                label={getDocumentLabel()}
+                value={data.cpf}
+                onChange={(value) => onChange('cpf', value)}
+                onBlur={(value) => onFieldBlur('cpf', value)}
+                error={errors.cpf}
+                placeholder={getDocumentPlaceholder()}
+                mask={getDocumentMask()}
+                required
+              />
 
               {/* Email */}
-              <div>
-                <Label htmlFor="email" className="text-base font-semibold text-gray-700 mb-2 block">
-                  Email <span className="text-blue-600">*</span>
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={data.email}
-                  onChange={(e) => onChange('email', e.target.value)}
-                  onBlur={(e) => onFieldBlur('email', e.target.value)}
-                  className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                    errors.email 
-                      ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                      : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                  }`}
-                  placeholder="seu@email.com"
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center">
-                    <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-            </div>
+              <StableFormField
+                id="email"
+                label="Email"
+                type="email"
+                value={data.email}
+                onChange={(value) => onChange('email', value)}
+                onBlur={(value) => onFieldBlur('email', value)}
+                error={errors.email}
+                placeholder="exemplo@email.com"
+                required
+              />
 
-            <div className="grid gap-8 md:grid-cols-2">
-              {/* Telefone */}
-              <div>
-                <Label htmlFor="phone" className="text-base font-semibold text-gray-700 mb-2 block">
-                  Telefone (WhatsApp) <span className="text-blue-600">*</span>
-                </Label>
-                <Input
-                  id="phone"
-                  type="text"
-                  value={data.phone}
-                  onChange={(e) => handlePhoneChange(e.target.value)}
-                  onBlur={(e) => onFieldBlur('phone', e.target.value)}
-                  className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                    errors.phone 
-                      ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                      : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                  }`}
-                  placeholder="(11) 99999-9999"
-                  maxLength={15}
-                />
-                {errors.phone && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center">
-                    <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                    {errors.phone}
-                  </p>
-                )}
-              </div>
-
-              {/* Profissão */}
-              <div>
-                <Label htmlFor="profession" className="text-base font-semibold text-gray-700 mb-2 block">
-                  Profissão <span className="text-blue-600">*</span>
-                </Label>
-                <Input
-                  id="profession"
-                  type="text"
-                  value={data.profession}
-                  onChange={(e) => onChange('profession', e.target.value)}
-                  onBlur={(e) => onFieldBlur('profession', e.target.value)}
-                  className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                    errors.profession 
-                      ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                      : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                  }`}
-                  placeholder="Digite sua profissão"
-                />
-                {errors.profession && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center">
-                    <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                    {errors.profession}
-                  </p>
-                )}
-              </div>
+              {/* Celular */}
+              <StableFormField
+                id="phone"
+                label="Celular"
+                value={data.phone}
+                onChange={(value) => onChange('phone', value)}
+                onBlur={(value) => onFieldBlur('phone', value)}
+                error={errors.phone}
+                placeholder="(00) 00000-0000"
+                mask="(99) 99999-9999"
+                required
+                className="md:col-span-2"
+              />
             </div>
-
-            {/* Pergunta Condicional - Principal Condutor */}
-            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-xl border-l-4 border-blue-500">
-              <Label className="text-base font-semibold text-gray-700 mb-4 block">
-                Os dados informados acima são também do Principal Condutor do veículo? <span className="text-blue-600">*</span>
-              </Label>
-              <RadioGroup 
-                value={mainDriverData.isDifferentFromInsured} 
-                onValueChange={handleMainDriverToggle}
-                className="space-y-3"
-              >
-                <div className="flex items-center space-x-3">
-                  <RadioGroupItem value="sim" id="same-driver" className="border-2 border-blue-500 text-blue-600" />
-                  <Label htmlFor="same-driver" className="text-base text-gray-700 cursor-pointer">
-                    Sim, sou o Principal Condutor.
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <RadioGroupItem value="nao" id="different-driver" className="border-2 border-blue-500 text-blue-600" />
-                  <Label htmlFor="different-driver" className="text-base text-gray-700 cursor-pointer">
-                    Não, o Principal Condutor é outra pessoa.
-                  </Label>
-                </div>
-              </RadioGroup>
-              {errors.isDifferentFromInsured && (
-                <p className="text-red-500 text-sm mt-2 flex items-center">
-                  <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                  {errors.isDifferentFromInsured}
-                </p>
-              )}
-            </div>
-          </div>
+          )}
         </CardContent>
       </Card>
-
-      {/* Card Condicional - Dados do Principal Condutor */}
-      {mainDriverData.isDifferentFromInsured === 'nao' && (
-        <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50 pb-6">
-            <CardTitle className="text-3xl font-bold text-gray-800 flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl flex items-center justify-center mr-4">
-                <Users className="h-6 w-6 text-white" />
-              </div>
-              Dados do Principal Condutor (diferente do segurado)
-            </CardTitle>
-            <p className="text-gray-600 text-lg mt-2 ml-16">
-              Informações da pessoa que mais utiliza o veículo
-            </p>
-          </CardHeader>
-          <CardContent className="p-8">
-            <div className="space-y-8">
-              {/* Nome Completo do Principal Condutor */}
-              <div>
-                <Label htmlFor="mainDriverFullName" className="text-base font-semibold text-gray-700 mb-2 block">
-                  Nome Completo <span className="text-blue-600">*</span>
-                </Label>
-                <Input
-                  id="mainDriverFullName"
-                  type="text"
-                  value={mainDriverData.fullName}
-                  onChange={(e) => onMainDriverChange('fullName', e.target.value)}
-                  onBlur={(e) => onFieldBlur('mainDriverFullName', e.target.value)}
-                  className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                    errors.mainDriverFullName 
-                      ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                      : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                  }`}
-                  placeholder="Digite o nome completo do principal condutor"
-                />
-                {errors.mainDriverFullName && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center">
-                    <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                    {errors.mainDriverFullName}
-                  </p>
-                )}
-              </div>
-
-              <div className="grid gap-8 md:grid-cols-2">
-                {/* CPF do Principal Condutor */}
-                <div>
-                  <Label htmlFor="mainDriverCpf" className="text-base font-semibold text-gray-700 mb-2 block">
-                    CPF <span className="text-blue-600">*</span>
-                  </Label>
-                  <Input
-                    id="mainDriverCpf"
-                    type="text"
-                    value={mainDriverData.cpf}
-                    onChange={(e) => handleCPFChange(e.target.value, true)}
-                    onBlur={(e) => onFieldBlur('mainDriverCpf', e.target.value)}
-                    className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                      errors.mainDriverCpf 
-                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                        : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                    }`}
-                    placeholder="000.000.000-00"
-                    maxLength={14}
-                  />
-                  {errors.mainDriverCpf && (
-                    <p className="text-red-500 text-sm mt-2 flex items-center">
-                      <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                      {errors.mainDriverCpf}
-                    </p>
-                  )}
-                </div>
-
-                {/* Data de Nascimento do Principal Condutor */}
-                <div>
-                  <Label htmlFor="mainDriverBirthDate" className="text-base font-semibold text-gray-700 mb-2 block">
-                    Data de Nascimento <span className="text-blue-600">*</span>
-                  </Label>
-                  <Input
-                    id="mainDriverBirthDate"
-                    type="date"
-                    value={mainDriverData.birthDate}
-                    onChange={(e) => onMainDriverChange('birthDate', e.target.value)}
-                    onBlur={(e) => onFieldBlur('mainDriverBirthDate', e.target.value)}
-                    className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                      errors.mainDriverBirthDate 
-                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                        : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                    }`}
-                  />
-                  {errors.mainDriverBirthDate && (
-                    <p className="text-red-500 text-sm mt-2 flex items-center">
-                      <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                      {errors.mainDriverBirthDate}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid gap-8 md:grid-cols-2">
-                {/* Estado Civil do Principal Condutor */}
-                <div>
-                  <Label className="text-base font-semibold text-gray-700 mb-2 block">
-                    Estado Civil <span className="text-blue-600">*</span>
-                  </Label>
-                  <Select 
-                    value={mainDriverData.maritalStatus} 
-                    onValueChange={(value) => onMainDriverChange('maritalStatus', value)}
-                  >
-                    <SelectTrigger className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                      errors.mainDriverMaritalStatus 
-                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                        : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                    }`}>
-                      <SelectValue placeholder="Selecione o estado civil" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white z-50 border-2 border-gray-200 rounded-xl shadow-xl">
-                      <SelectItem value="solteiro" className="text-base py-3 hover:bg-blue-50 rounded-lg">Solteiro</SelectItem>
-                      <SelectItem value="casado" className="text-base py-3 hover:bg-blue-50 rounded-lg">Casado</SelectItem>
-                      <SelectItem value="divorciado" className="text-base py-3 hover:bg-blue-50 rounded-lg">Divorciado</SelectItem>
-                      <SelectItem value="viuvo" className="text-base py-3 hover:bg-blue-50 rounded-lg">Viúvo</SelectItem>
-                      <SelectItem value="outro" className="text-base py-3 hover:bg-blue-50 rounded-lg">Outro</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.mainDriverMaritalStatus && (
-                    <p className="text-red-500 text-sm mt-2 flex items-center">
-                      <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                      {errors.mainDriverMaritalStatus}
-                    </p>
-                  )}
-                </div>
-
-                {/* Email do Principal Condutor */}
-                <div>
-                  <Label htmlFor="mainDriverEmail" className="text-base font-semibold text-gray-700 mb-2 block">
-                    Email <span className="text-blue-600">*</span>
-                  </Label>
-                  <Input
-                    id="mainDriverEmail"
-                    type="email"
-                    value={mainDriverData.email}
-                    onChange={(e) => onMainDriverChange('email', e.target.value)}
-                    onBlur={(e) => onFieldBlur('mainDriverEmail', e.target.value)}
-                    className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                      errors.mainDriverEmail 
-                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                        : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                    }`}
-                    placeholder="email@exemplo.com"
-                  />
-                  {errors.mainDriverEmail && (
-                    <p className="text-red-500 text-sm mt-2 flex items-center">
-                      <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                      {errors.mainDriverEmail}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid gap-8 md:grid-cols-2">
-                {/* Telefone do Principal Condutor */}
-                <div>
-                  <Label htmlFor="mainDriverPhone" className="text-base font-semibold text-gray-700 mb-2 block">
-                    Telefone (WhatsApp) <span className="text-blue-600">*</span>
-                  </Label>
-                  <Input
-                    id="mainDriverPhone"
-                    type="text"
-                    value={mainDriverData.phone}
-                    onChange={(e) => handlePhoneChange(e.target.value, true)}
-                    onBlur={(e) => onFieldBlur('mainDriverPhone', e.target.value)}
-                    className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                      errors.mainDriverPhone 
-                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                        : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                    }`}
-                    placeholder="(11) 99999-9999"
-                    maxLength={15}
-                  />
-                  {errors.mainDriverPhone && (
-                    <p className="text-red-500 text-sm mt-2 flex items-center">
-                      <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                      {errors.mainDriverPhone}
-                    </p>
-                  )}
-                </div>
-
-                {/* Profissão do Principal Condutor */}
-                <div>
-                  <Label htmlFor="mainDriverProfession" className="text-base font-semibold text-gray-700 mb-2 block">
-                    Profissão <span className="text-blue-600">*</span>
-                  </Label>
-                  <Input
-                    id="mainDriverProfession"
-                    type="text"
-                    value={mainDriverData.profession}
-                    onChange={(e) => onMainDriverChange('profession', e.target.value)}
-                    onBlur={(e) => onFieldBlur('mainDriverProfession', e.target.value)}
-                    className={`h-12 text-base border-2 rounded-xl transition-all duration-200 ${
-                      errors.mainDriverProfession 
-                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                        : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
-                    }`}
-                    placeholder="Digite a profissão do principal condutor"
-                  />
-                  {errors.mainDriverProfession && (
-                    <p className="text-red-500 text-sm mt-2 flex items-center">
-                      <span className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs mr-2">!</span>
-                      {errors.mainDriverProfession}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Dica Atualizada */}
-      <div className="bg-gradient-to-r from-cyan-50 to-blue-50 p-6 rounded-xl border-l-4 border-blue-500">
-        <div className="flex items-start space-x-3">
-          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-            <Lightbulb className="h-4 w-4 text-white" />
-          </div>
-          <div>
-            <p className="text-gray-700 font-medium">Dica Importante</p>
-            <p className="text-gray-600 text-sm mt-1">
-              Para agilizar seu orçamento, você pode enviar uma foto da CNH e documento do veículo do{' '}
-              <strong>
-                {mainDriverData.isDifferentFromInsured === 'nao' ? 'Principal Condutor' : 'Principal Condutor (você mesmo)'}
-              </strong>{' '}
-              diretamente para o WhatsApp da corretora após finalizar.
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

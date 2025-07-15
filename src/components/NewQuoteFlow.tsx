@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Send } from 'lucide-react';
@@ -15,6 +14,7 @@ interface NewQuoteFlowProps {
 
 interface FormData {
   personalData: {
+    personType?: string;
     fullName: string;
     cpf: string;
     birthDate: string;
@@ -70,6 +70,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     personalData: {
+      personType: '',
       fullName: '',
       cpf: '',
       birthDate: '',
@@ -115,22 +116,27 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
   });
 
   const stepTitles = [
-    'Dados Pessoais do Principal Condutor',
+    'Dados do Principal Condutor',
     'Dados do Veículo',
     'Questionário de Risco'
   ];
 
   // Validation rules for each step
   const personalDataValidation = useFormValidation({
-    fullName: { required: true, message: 'Nome completo é obrigatório' },
+    personType: { required: true, message: 'Selecione o tipo de pessoa' },
+    fullName: { required: true, message: 'Nome/Razão Social é obrigatório' },
     cpf: { 
       required: true, 
-      pattern: validationPatterns.cpf,
-      customValidator: validateCPF,
-      message: 'CPF inválido. Por favor, verifique o número.' 
+      pattern: formData.personalData.personType === 'juridica' 
+        ? /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/ 
+        : validationPatterns.cpf,
+      customValidator: formData.personalData.personType === 'juridica' 
+        ? undefined 
+        : validateCPF,
+      message: formData.personalData.personType === 'juridica' 
+        ? 'CNPJ inválido. Por favor, verifique o número.' 
+        : 'CPF inválido. Por favor, verifique o número.' 
     },
-    birthDate: { required: true, message: 'Data de nascimento é obrigatória' },
-    maritalStatus: { required: true, message: 'Estado civil é obrigatório' },
     email: { 
       required: true, 
       pattern: validationPatterns.email, 
@@ -140,31 +146,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       required: true, 
       pattern: validationPatterns.phone, 
       message: 'Telefone deve estar no formato (00) 00000-0000' 
-    },
-    profession: { required: true, message: 'Profissão é obrigatória' },
-    // Validação condicional para o condutor principal
-    isDifferentFromInsured: { required: true, message: 'Selecione uma opção sobre o principal condutor' },
-    // Campos condicionais do condutor principal
-    mainDriverFullName: { required: false, message: 'Nome completo do principal condutor é obrigatório' },
-    mainDriverCpf: { 
-      required: false, 
-      pattern: validationPatterns.cpf,
-      customValidator: validateCPF,
-      message: 'CPF inválido. Por favor, verifique o número.' 
-    },
-    mainDriverBirthDate: { required: false, message: 'Data de nascimento do principal condutor é obrigatória' },
-    mainDriverMaritalStatus: { required: false, message: 'Estado civil do principal condutor é obrigatório' },
-    mainDriverEmail: { 
-      required: false, 
-      pattern: validationPatterns.email, 
-      message: 'Email deve ter um formato válido' 
-    },
-    mainDriverPhone: { 
-      required: false, 
-      pattern: validationPatterns.phone, 
-      message: 'Telefone deve estar no formato (00) 00000-0000' 
-    },
-    mainDriverProfession: { required: false, message: 'Profissão do principal condutor é obrigatória' }
+    }
   });
 
   const vehicleDataValidation = useFormValidation({
@@ -263,64 +245,17 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     
     switch (currentStep) {
       case 1:
-        // Validar dados pessoais básicos
+        // Validar apenas os dados básicos da primeira etapa
         const basicData = {
+          personType: formData.personalData.personType,
           fullName: formData.personalData.fullName,
           cpf: formData.personalData.cpf,
-          birthDate: formData.personalData.birthDate,
-          maritalStatus: formData.personalData.maritalStatus,
           email: formData.personalData.email,
-          phone: formData.personalData.phone,
-          profession: formData.personalData.profession,
-          isDifferentFromInsured: formData.mainDriverData.isDifferentFromInsured
+          phone: formData.personalData.phone
         };
         
         console.log('Validando dados básicos:', basicData);
-        
-        // Validar campos básicos primeiro
-        let isBasicValid = true;
-        Object.entries(basicData).forEach(([key, value]) => {
-          if (!personalDataValidation.validate(key, value)) {
-            isBasicValid = false;
-          }
-        });
-        
-        console.log('Dados básicos válidos:', isBasicValid);
-        
-        // Se o principal condutor é diferente, validar também os dados dele
-        if (formData.mainDriverData.isDifferentFromInsured === 'nao') {
-          console.log('Validando dados do condutor principal diferente');
-          const mainDriverValidationData = {
-            mainDriverFullName: formData.mainDriverData.fullName,
-            mainDriverCpf: formData.mainDriverData.cpf,
-            mainDriverBirthDate: formData.mainDriverData.birthDate,
-            mainDriverMaritalStatus: formData.mainDriverData.maritalStatus,
-            mainDriverEmail: formData.mainDriverData.email,
-            mainDriverPhone: formData.mainDriverData.phone,
-            mainDriverProfession: formData.mainDriverData.profession
-          };
-          
-          console.log('Dados do condutor principal:', mainDriverValidationData);
-          
-          // Validar cada campo do condutor principal
-          let isMainDriverValid = true;
-          Object.entries(mainDriverValidationData).forEach(([key, value]) => {
-            if (!value || value.trim() === '') {
-              console.log(`Campo ${key} está vazio`);
-              personalDataValidation.validate(key, value);
-              isMainDriverValid = false;
-            } else {
-              if (!personalDataValidation.validate(key, value)) {
-                isMainDriverValid = false;
-              }
-            }
-          });
-          
-          console.log('Dados do condutor principal válidos:', isMainDriverValid);
-          return isBasicValid && isMainDriverValid;
-        }
-        
-        return isBasicValid;
+        return personalDataValidation.validateAll(basicData as { [key: string]: string });
       case 2:
         return vehicleDataValidation.validateAll(formData.vehicleData as { [key: string]: string });
       case 3:

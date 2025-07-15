@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 
 export interface ValidationRule {
@@ -50,6 +49,50 @@ export const validateCPF = (cpf: string): boolean => {
   
   // Verifica o segundo dígito verificador
   return parseInt(cleanCpf.charAt(10)) === secondDigit;
+};
+
+// Função para validar CNPJ
+export const validateCNPJ = (cnpj: string): boolean => {
+  // Remove pontos, traços e barras
+  const cleanCnpj = cnpj.replace(/\D/g, '');
+  
+  // Verifica se tem 14 dígitos
+  if (cleanCnpj.length !== 14) {
+    return false;
+  }
+  
+  // Verifica se todos os dígitos são iguais (CNPJs inválidos)
+  if (/^(\d)\1{13}$/.test(cleanCnpj)) {
+    return false;
+  }
+  
+  // Calcula o primeiro dígito verificador
+  let sum = 0;
+  let weight = 5;
+  for (let i = 0; i < 12; i++) {
+    sum += parseInt(cleanCnpj.charAt(i)) * weight;
+    weight = weight === 2 ? 9 : weight - 1;
+  }
+  let remainder = sum % 11;
+  const firstDigit = remainder < 2 ? 0 : 11 - remainder;
+  
+  // Verifica o primeiro dígito verificador
+  if (parseInt(cleanCnpj.charAt(12)) !== firstDigit) {
+    return false;
+  }
+  
+  // Calcula o segundo dígito verificador
+  sum = 0;
+  weight = 6;
+  for (let i = 0; i < 13; i++) {
+    sum += parseInt(cleanCnpj.charAt(i)) * weight;
+    weight = weight === 2 ? 9 : weight - 1;
+  }
+  remainder = sum % 11;
+  const secondDigit = remainder < 2 ? 0 : 11 - remainder;
+  
+  // Verifica o segundo dígito verificador
+  return parseInt(cleanCnpj.charAt(13)) === secondDigit;
 };
 
 export const useFormValidation = (rules: ValidationRules) => {
@@ -130,6 +173,7 @@ export const useFormValidation = (rules: ValidationRules) => {
 
 export const validationPatterns = {
   cpf: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
+  cnpj: /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   phone: /^\(\d{2}\)\s\d{4,5}-\d{4}$/,
   plate: /^[A-Z]{3}-?\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$/,
