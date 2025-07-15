@@ -10,6 +10,8 @@ import { useFormValidation, validationPatterns, validateCPF, validateCNPJ } from
 import { processAndSendData, UnifiedData } from '@/utils/dataProcessor';
 import VehicleZeroKmStep from './VehicleZeroKmStep';
 import VehicleDetailsStep from './VehicleDetailsStep';
+import ResidenceTypeStep from './ResidenceTypeStep';
+import AddressStep from './AddressStep';
 
 interface NewQuoteFlowProps {
   onBack: () => void;
@@ -44,6 +46,7 @@ interface FormData {
     isFinanced: string;
   };
   riskData: {
+    residenceType: string;
     cep: string;
     logradouro: string;
     bairro: string;
@@ -52,7 +55,6 @@ interface FormData {
     numero: string;
     complemento: string;
     garageType: string;
-    residenceType: string;
     usesForWork: string;
     workParking: string;
     youngResidents: string;
@@ -94,6 +96,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       isFinanced: ''
     },
     riskData: {
+      residenceType: '',
       cep: '',
       logradouro: '',
       bairro: '',
@@ -102,7 +105,6 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       numero: '',
       complemento: '',
       garageType: '',
-      residenceType: '',
       usesForWork: '',
       workParking: '',
       youngResidents: '',
@@ -118,7 +120,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     'Dados Complementares',
     'Dados do Veículo - Zero Km',
     'Detalhes do Veículo',
-    'Questionário de Risco'
+    'Questionário de Risco',
+    'CEP de Pernoite'
   ];
 
   // Validation rules for each step
@@ -174,18 +177,17 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     isFinanced: { required: true, message: 'Selecione se o veículo está financiado' }
   });
 
-  const riskDataValidation = useFormValidation({
+  const residenceTypeValidation = useFormValidation({
+    residenceType: { required: true, message: 'Selecione o tipo de residência' }
+  });
+
+  const addressValidation = useFormValidation({
     cep: { 
       required: true, 
       pattern: validationPatterns.cep, 
       message: 'CEP deve estar no formato 00000-000' 
     },
-    numero: { required: true, message: 'Número do endereço é obrigatório' },
-    garageType: { required: true, message: 'Selecione o tipo de portão' },
-    residenceType: { required: true, message: 'Selecione o tipo de residência' },
-    usesForWork: { required: true, message: 'Selecione se usa o veículo para trabalho' },
-    youngResidents: { required: true, message: 'Selecione se reside com jovens de 18-24 anos' },
-    rideshareWork: { required: true, message: 'Selecione se trabalha com transporte por app' }
+    numero: { required: true, message: 'Número do endereço é obrigatório' }
   });
 
   const updatePersonalData = (field: keyof FormData['personalData'], value: string) => {
@@ -218,39 +220,6 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       ...prev,
       riskData: { ...prev.riskData, [field]: value }
     }));
-    
-    // Clear workParking if usesForWork is 'nao'
-    if (field === 'usesForWork' && value === 'nao') {
-      setFormData(prev => ({
-        ...prev,
-        riskData: { ...prev.riskData, workParking: '' }
-      }));
-    }
-
-    // Clear young driver fields if youngResidents is 'nao'
-    if (field === 'youngResidents' && value === 'nao') {
-      setFormData(prev => ({
-        ...prev,
-        riskData: { 
-          ...prev.riskData, 
-          youngDriversUseVehicle: '',
-          youngDriverAge: '',
-          youngDriverGender: ''
-        }
-      }));
-    }
-
-    // Clear young driver details if they don't use vehicle
-    if (field === 'youngDriversUseVehicle' && value === 'nao') {
-      setFormData(prev => ({
-        ...prev,
-        riskData: { 
-          ...prev.riskData, 
-          youngDriverAge: '',
-          youngDriverGender: ''
-        }
-      }));
-    }
   };
 
   const validateCurrentStep = (): boolean => {
@@ -289,21 +258,13 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         };
         return vehicleDetailsValidation.validateAll(vehicleDetailsData as { [key: string]: string });
       case 5:
-        const riskValidationData = { ...formData.riskData };
-        // Only validate workParking if usesForWork is 'sim'
-        if (formData.riskData.usesForWork !== 'sim') {
-          delete riskValidationData.workParking;
-        }
-        // Only validate young driver fields if applicable
-        if (formData.riskData.youngResidents !== 'sim') {
-          delete riskValidationData.youngDriversUseVehicle;
-          delete riskValidationData.youngDriverAge;
-          delete riskValidationData.youngDriverGender;
-        } else if (formData.riskData.youngDriversUseVehicle !== 'sim') {
-          delete riskValidationData.youngDriverAge;
-          delete riskValidationData.youngDriverGender;
-        }
-        return riskDataValidation.validateAll(riskValidationData as { [key: string]: string });
+        return residenceTypeValidation.validateAll({ residenceType: formData.riskData.residenceType });
+      case 6:
+        const addressData = {
+          cep: formData.riskData.cep,
+          numero: formData.riskData.numero
+        };
+        return addressValidation.validateAll(addressData as { [key: string]: string });
       default:
         return true;
     }
@@ -312,7 +273,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
   const handleNext = async () => {
     console.log('Clicou em próxima etapa');
     if (validateCurrentStep()) {
-      if (currentStep < 5) {
+      if (currentStep < 6) {
         setCurrentStep(currentStep + 1);
         console.log('Avançando para etapa:', currentStep + 1);
       } else {
@@ -376,7 +337,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       case 2: return complementaryDataValidation;
       case 3: return vehicleZeroKmValidation;
       case 4: return vehicleDetailsValidation;
-      case 5: return riskDataValidation;
+      case 5: return residenceTypeValidation;
+      case 6: return addressValidation;
       default: return personalDataValidation;
     }
   };
@@ -433,8 +395,24 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         );
       case 5:
         return (
-          <RiskQuestionnaireStep
-            data={formData.riskData}
+          <ResidenceTypeStep
+            residenceType={formData.riskData.residenceType}
+            onChange={(value) => updateRiskData('residenceType', value)}
+            error={validation.errors.residenceType}
+          />
+        );
+      case 6:
+        return (
+          <AddressStep
+            data={{
+              cep: formData.riskData.cep,
+              logradouro: formData.riskData.logradouro,
+              bairro: formData.riskData.bairro,
+              localidade: formData.riskData.localidade,
+              uf: formData.riskData.uf,
+              numero: formData.riskData.numero,
+              complemento: formData.riskData.complemento
+            }}
             onChange={updateRiskData}
             errors={validation.errors}
             onFieldBlur={validation.validate}
@@ -450,7 +428,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       <div className="w-full max-w-5xl mx-auto">
         <ProgressIndicator
           currentStep={currentStep}
-          totalSteps={5}
+          totalSteps={6}
           stepTitles={stepTitles}
         />
 
@@ -473,8 +451,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
             className="h-14 px-8 text-base font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all duration-200 rounded-xl flex items-center space-x-2 shadow-lg hover:shadow-xl"
             size="lg"
           >
-            <span>{currentStep === 5 ? 'Enviar Orçamento' : 'Próxima Etapa'}</span>
-            {currentStep === 5 ? (
+            <span>{currentStep === 6 ? 'Enviar Orçamento' : 'Próxima Etapa'}</span>
+            {currentStep === 6 ? (
               <Send className="h-5 w-5" />
             ) : (
               <ArrowRight className="h-5 w-5" />
