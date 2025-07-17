@@ -38,7 +38,6 @@ interface FormData {
     email: string;
     phone: string;
     profession: string;
-    profession: string;
   };
   vehicleData: {
     isZeroKm: string;
