@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Clock } from 'lucide-react';
+import FlowHeader from './FlowHeader';
 
 interface ComingSoonProps {
   title: string;
@@ -12,49 +12,40 @@ interface ComingSoonProps {
 
 const ComingSoon: React.FC<ComingSoonProps> = ({ title, description, onBack }) => {
   return (
-    <div className="min-h-screen bg-muted flex items-center justify-center py-12 px-4">
-      <div className="w-full max-w-2xl animate-fade-in">
-        <Card className="p-8 md:p-12 shadow-xl border-jj-cyan-border">
-          <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <Clock className="h-24 w-24 jj-blue-medium" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      <FlowHeader />
+      <div className="w-full max-w-5xl mx-auto px-4 py-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+          <div className="text-center py-16">
+            <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Clock className="h-12 w-12 text-white" />
             </div>
-            <CardTitle className="text-3xl md:text-4xl font-bold jj-blue-dark mb-4">
+            
+            <h1 className="text-3xl font-bold text-gray-800 mb-4">
               {title}
-            </CardTitle>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            </h1>
+            
+            <p className="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
               {description}
             </p>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center space-y-6">
-              <div className="bg-jj-cyan-light p-6 rounded-lg border border-jj-cyan-border">
-                <h3 className="text-lg font-semibold jj-blue-dark mb-2">
-                  O que está por vir?
-                </h3>
-                <p className="text-muted-foreground">
-                  Estamos trabalhando para trazer uma experiência ainda mais completa e intuitiva para você.
-                </p>
-              </div>
-              
-              <Button
-                onClick={onBack}
-                variant="outline"
-                className="border-primary jj-blue-medium hover:bg-accent transition-all-smooth"
-                size="lg"
-              >
-                <ArrowLeft className="mr-2 h-5 w-5" />
-                Voltar à seleção
-              </Button>
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-border text-center">
-              <p className="text-sm text-muted-foreground">
-                📧 Quer ser notificado? Entre em contato conosco • 📞 JJ & Amorim Corretora
+            
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mb-8 max-w-2xl mx-auto">
+              <p className="text-blue-800 font-medium">
+                Esta funcionalidade está em desenvolvimento e estará disponível em breve.
               </p>
             </div>
-          </CardContent>
-        </Card>
+
+            <Button
+              onClick={onBack}
+              variant="outline"
+              className="h-14 px-8 text-base font-semibold border-2 border-blue-600 text-blue-600 hover:bg-blue-50 hover:border-blue-700 transition-all duration-200 rounded-xl flex items-center space-x-2"
+              size="lg"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span>Voltar à seleção</span>
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
