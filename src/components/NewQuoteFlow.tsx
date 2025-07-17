@@ -38,6 +38,7 @@ interface FormData {
     maritalStatus: string;
     email: string;
     phone: string;
+    profession: string;
   };
   vehicleData: {
     isZeroKm: string;
@@ -86,7 +87,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       birthDate: '',
       maritalStatus: '',
       email: '',
-      phone: ''
+      phone: '',
+      profession: ''
     },
     vehicleData: {
       isZeroKm: '',
