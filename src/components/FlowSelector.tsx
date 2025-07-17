@@ -1,300 +1,149 @@
-import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Car, Check, Shield, Clock, Lock, FileText, AlertTriangle, Home, Heart, Building, Plane, Luggage } from 'lucide-react';
+
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { 
+  Car, 
+  RefreshCw, 
+  FileText, 
+  AlertTriangle, 
+  Shield,
+  Home,
+  Building,
+  Heart,
+  Plane
+} from 'lucide-react';
+
 interface FlowSelectorProps {
-  onFlowSelect: (flow: 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem') => void;
+  onFlowSelect: (flow: string) => void;
 }
-const FlowSelector: React.FC<FlowSelectorProps> = ({
-  onFlowSelect
-}) => {
-  const [selectedFlow, setSelectedFlow] = useState<string>('');
-  const handleContinue = () => {
-    if (selectedFlow) {
-      onFlowSelect(selectedFlow as 'new-quote' | 'renewal' | 'second-invoice' | 'claim' | 'fianca' | 'residencial' | 'empresarial' | 'vida' | 'viagem');
+
+const FlowSelector: React.FC<FlowSelectorProps> = ({ onFlowSelect }) => {
+  const flows = [
+    {
+      id: 'new-quote',
+      title: 'Seguro Auto Novo',
+      description: 'Faça uma nova cotação de seguro auto',
+      icon: Car,
+      color: 'bg-blue-500',
+      hoverColor: 'hover:bg-blue-600'
+    },
+    {
+      id: 'renewal',
+      title: 'Renovação',
+      description: 'Renove seu seguro auto',
+      icon: RefreshCw,
+      color: 'bg-green-500',
+      hoverColor: 'hover:bg-green-600'
+    },
+    {
+      id: 'second-invoice',
+      title: 'Segunda Via de Boleto',
+      description: 'Acesse rapidamente o boleto da sua apólice',
+      icon: FileText,
+      color: 'bg-purple-500',
+      hoverColor: 'hover:bg-purple-600'
+    },
+    {
+      id: 'claim',
+      title: 'Sinistro Segurado JJ&Amorim',
+      description: 'Comunique um sinistro de forma rápida',
+      icon: AlertTriangle,
+      color: 'bg-red-500',
+      hoverColor: 'hover:bg-red-600'
+    },
+    {
+      id: 'fianca',
+      title: 'Seguro Fiança',
+      description: 'Proteja sua locação com seguro fiança',
+      icon: Shield,
+      color: 'bg-indigo-500',
+      hoverColor: 'hover:bg-indigo-600'
+    },
+    {
+      id: 'residencial',
+      title: 'Seguro Residencial',
+      description: 'Proteja sua casa e seus bens',
+      icon: Home,
+      color: 'bg-teal-500',
+      hoverColor: 'hover:bg-teal-600'
+    },
+    {
+      id: 'empresarial',
+      title: 'Seguro Empresarial',
+      description: 'Proteção completa para sua empresa',
+      icon: Building,
+      color: 'bg-orange-500',
+      hoverColor: 'hover:bg-orange-600'
+    },
+    {
+      id: 'vida',
+      title: 'Seguro de Vida Individual',
+      description: 'Proteção para você e sua família',
+      icon: Heart,
+      color: 'bg-pink-500',
+      hoverColor: 'hover:bg-pink-600'
+    },
+    {
+      id: 'viagem',
+      title: 'Seguro Viagem',
+      description: 'Viaje com tranquilidade e segurança',
+      icon: Plane,
+      color: 'bg-cyan-500',
+      hoverColor: 'hover:bg-cyan-600'
     }
-  };
-  const handleCardSelect = (flow: string) => {
-    setSelectedFlow(flow);
-  };
-  return <div className="min-h-screen bg-gray-50 py-16 px-4">
-      <div className="w-full max-w-4xl mx-auto">
-        {/* Container Principal */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-          
-          {/* Seção do Título */}
-          <div className="px-8 md:px-12 pt-12 pb-8 text-center bg-gradient-to-b from-white to-gray-50/30">
-            <h1 className="text-4xl md:text-5xl font-bold text-jj-blue-dark mb-6 leading-tight">
-              Bem-vindo ao Questionário
-              <span className="block text-jj-blue-medium">JJ & Amorim!</span>
-            </h1>
-            <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
-              Para iniciarmos, por favor, selecione qual o seu objetivo com este questionário:
-            </p>
+  ];
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      <Card className="mb-8 bg-white shadow-lg">
+        <CardHeader className="text-center pb-6">
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/lovable-uploads/563b889c-fc42-4e1c-bb40-3e7333ba4c19.png" 
+              alt="JJ & Amorim Logo" 
+              className="h-20 w-auto object-contain"
+            />
           </div>
+          <CardTitle className="text-3xl font-bold text-blue-600 mb-2">
+            Bem-vindo ao Questionário
+          </CardTitle>
+          <CardTitle className="text-3xl font-bold text-cyan-500 mb-4">
+            JJ & Amorim!
+          </CardTitle>
+          <p className="text-gray-600 text-lg">
+            Para iniciarmos, por favor, selecione qual o seu objetivo com este questionário:
+          </p>
+        </CardHeader>
+      </Card>
 
-          {/* Cards de Seleção */}
-          <div className="px-8 md:px-12 py-8">
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              
-              {/* Card Nova Cotação */}
-              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'new-quote' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('new-quote')}>
-                <div className="text-center">
-                  {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'new-quote' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
-                    <Car className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'new-quote' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {flows.map((flow) => {
+          const IconComponent = flow.icon;
+          return (
+            <Card 
+              key={flow.id}
+              className="cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-105 bg-white border-2 border-gray-100 hover:border-blue-200"
+              onClick={() => onFlowSelect(flow.id)}
+            >
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className={`${flow.color} ${flow.hoverColor} p-4 rounded-full transition-colors duration-300`}>
+                    <IconComponent className="w-8 h-8 text-white" />
                   </div>
-                  
-                  {/* Título */}
-                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">Seguro Auto</h3>
-                  
-                  {/* Descrição */}
-                  <p className="text-gray-600 leading-relaxed">
-                    Vou fazer algumas perguntas sobre você e seu veículo para encontrar a melhor opção de seguro.
-                  </p>
-                </div>
-
-                {/* Indicador de Seleção */}
-                {selectedFlow === 'new-quote' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>}
-              </Card>
-
-              {/* Card Renovação */}
-              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'renewal' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('renewal')}>
-                <div className="text-center">
-                  {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'renewal' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
-                    <Shield className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'renewal' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
-                  </div>
-                  
-                  {/* Título */}
-                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">Renovação  e confirmação de dados</h3>
-                  
-                  {/* Descrição */}
-                  <p className="text-gray-600 leading-relaxed">
-                    Vou verificar seus dados atuais e fazer as atualizações necessárias para sua renovação.
-                  </p>
-                </div>
-
-                {/* Indicador de Seleção */}
-                {selectedFlow === 'renewal' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>}
-              </Card>
-
-              {/* Card Segunda Via de Boleto */}
-              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'second-invoice' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('second-invoice')}>
-                <div className="text-center">
-                  {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'second-invoice' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
-                    <FileText className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'second-invoice' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
-                  </div>
-                  
-                  {/* Título */}
-                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
-                    Segunda Via de Boleto
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    {flow.title}
                   </h3>
-                  
-                  {/* Descrição */}
-                  <p className="text-gray-600 leading-relaxed">
-                    Acesse rapidamente o boleto da sua apólice.
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {flow.description}
                   </p>
                 </div>
-
-                {/* Indicador de Seleção */}
-                {selectedFlow === 'second-invoice' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>}
-              </Card>
-
-              {/* Card Sinistro Segurado */}
-              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'claim' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('claim')}>
-                <div className="text-center">
-                  {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'claim' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
-                    <AlertTriangle className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'claim' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
-                  </div>
-                  
-                  {/* Título */}
-                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
-                    Sinistro Segurado JJ&Amorim
-                  </h3>
-                  
-                  {/* Descrição */}
-                  <p className="text-gray-600 leading-relaxed">
-                    Comunique um sinistro envolvendo você ou um terceiro, de forma rápida.
-                  </p>
-                </div>
-
-                {/* Indicador de Seleção */}
-                {selectedFlow === 'claim' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>}
-              </Card>
-
-              {/* Card Seguro Fiança */}
-              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'fianca' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('fianca')}>
-                <div className="text-center">
-                  {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'fianca' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
-                    <Lock className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'fianca' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
-                  </div>
-                  
-                  {/* Título */}
-                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
-                    Seguro Fiança
-                  </h3>
-                  
-                  {/* Descrição */}
-                  <p className="text-gray-600 leading-relaxed">
-                    Garanta seu aluguel de forma segura e sem burocracia.
-                  </p>
-                </div>
-
-                {/* Indicador de Seleção */}
-                {selectedFlow === 'fianca' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>}
-              </Card>
-
-              {/* Card Seguro Residencial */}
-              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'residencial' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('residencial')}>
-                <div className="text-center">
-                  {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'residencial' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
-                    <Home className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'residencial' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
-                  </div>
-                  
-                  {/* Título */}
-                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
-                    Seguro Residencial
-                  </h3>
-                  
-                  {/* Descrição */}
-                  <p className="text-gray-600 leading-relaxed">
-                    Proteja seu lar e seus bens contra imprevistos.
-                  </p>
-                </div>
-
-                {/* Indicador de Seleção */}
-                {selectedFlow === 'residencial' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>}
-              </Card>
-
-              {/* Card Seguro Empresarial */}
-              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'empresarial' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('empresarial')}>
-                <div className="text-center">
-                  {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'empresarial' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
-                    <Building className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'empresarial' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
-                  </div>
-                  
-                  {/* Título */}
-                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
-                    Seguro Empresarial
-                  </h3>
-                  
-                  {/* Descrição */}
-                  <p className="text-gray-600 leading-relaxed">
-                    Proteja seu negócio e seus colaboradores.
-                  </p>
-                </div>
-
-                {/* Indicador de Seleção */}
-                {selectedFlow === 'empresarial' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>}
-              </Card>
-
-              {/* Card Seguro de Vida Individual */}
-              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'vida' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('vida')}>
-                <div className="text-center">
-                  {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'vida' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
-                    <Heart className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'vida' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
-                  </div>
-                  
-                  {/* Título */}
-                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
-                    Seguro de Vida Individual
-                  </h3>
-                  
-                  {/* Descrição */}
-                  <p className="text-gray-600 leading-relaxed">
-                    Garanta a segurança financeira de quem você ama.
-                  </p>
-                </div>
-
-                {/* Indicador de Seleção */}
-                {selectedFlow === 'vida' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>}
-              </Card>
-
-              {/* Card Seguro Viagem */}
-              <Card className={`relative p-8 cursor-pointer transition-all duration-300 border-2 hover:shadow-xl group ${selectedFlow === 'viagem' ? 'border-jj-blue-medium bg-jj-cyan-light shadow-md scale-[1.02]' : 'border-gray-200 hover:border-jj-blue-medium hover:scale-[1.01]'}`} onClick={() => handleCardSelect('viagem')}>
-                <div className="text-center">
-                  {/* Ícone */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 ${selectedFlow === 'viagem' ? 'bg-jj-blue-medium' : 'bg-jj-cyan-light group-hover:bg-jj-blue-medium'}`}>
-                    <Plane className={`w-8 h-8 transition-colors duration-300 ${selectedFlow === 'viagem' ? 'text-white' : 'text-jj-blue-medium group-hover:text-white'}`} />
-                  </div>
-                  
-                  {/* Título */}
-                  <h3 className="text-xl font-bold text-jj-blue-dark mb-4">
-                    Seguro Viagem
-                  </h3>
-                  
-                  {/* Descrição */}
-                  <p className="text-gray-600 leading-relaxed">
-                    Viaje tranquilo com cobertura para imprevistos.
-                  </p>
-                </div>
-
-                {/* Indicador de Seleção */}
-                {selectedFlow === 'viagem' && <div className="absolute top-4 right-4 w-6 h-6 bg-jj-blue-medium rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>}
-              </Card>
-            </div>
-
-            {/* Botão Continuar */}
-            <div className="text-center mb-8">
-              <Button onClick={handleContinue} disabled={!selectedFlow} className={`px-12 py-4 text-lg font-semibold rounded-xl transition-all duration-300 ${selectedFlow ? 'bg-jj-blue-dark hover:bg-jj-blue-dark/90 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02]' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`} size="lg">
-                Continuar
-                <ArrowRight className="ml-3 h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Rodapé com Benefícios */}
-          <div className="px-8 md:px-12 py-8 bg-gray-50/50 border-t border-gray-100">
-            <div className="flex flex-wrap justify-center items-center gap-8 text-center">
-              <div className="flex items-center space-x-2 text-gray-600">
-                <div className="w-8 h-8 bg-jj-cyan-light rounded-full flex items-center justify-center">
-                  <Clock className="w-4 h-4 text-jj-blue-medium" />
-                </div>
-                <span className="text-sm font-medium">Processo rápido e seguro</span>
-              </div>
-              
-              <div className="flex items-center space-x-2 text-gray-600">
-                <div className="w-8 h-8 bg-jj-cyan-light rounded-full flex items-center justify-center">
-                  <Shield className="w-4 h-4 text-jj-blue-medium" />
-                </div>
-                <span className="text-sm font-medium">100% online</span>
-              </div>
-              
-              <div className="flex items-center space-x-2 text-gray-600">
-                <div className="w-8 h-8 bg-jj-cyan-light rounded-full flex items-center justify-center">
-                  <Lock className="w-4 h-4 text-jj-blue-medium" />
-                </div>
-                <span className="text-sm font-medium">Seus dados protegidos</span>
-              </div>
-            </div>
-          </div>
-        </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default FlowSelector;
