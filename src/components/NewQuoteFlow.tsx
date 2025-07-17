@@ -1,17 +1,17 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Send } from 'lucide-react';
+import { ArrowLeft, Send } from 'lucide-react';
 import ProgressIndicator from './ProgressIndicator';
 import FlowHeader from './FlowHeader';
-import PersonTypeStep from './PersonTypeStep';
+import PersonTypeSelectionStep from './PersonTypeSelectionStep';
 import IdentificationDataStep from './IdentificationDataStep';
-import MaritalStatusStep from './MaritalStatusStep';
+import MaritalStatusSelectionStep from './MaritalStatusSelectionStep';
 import ComplementaryDataStep from './ComplementaryDataStep';
-import VehicleZeroKmStep from './VehicleZeroKmStep';
+import VehicleZeroKmSelectionStep from './VehicleZeroKmSelectionStep';
 import VehicleDetailsStep from './VehicleDetailsStep';
-import VehicleFinancingStep from './VehicleFinancingStep';
-import ResidenceTypeStep from './ResidenceTypeStep';
+import VehicleFinancingSelectionStep from './VehicleFinancingSelectionStep';
+import ResidenceTypeSelectionStep from './ResidenceTypeSelectionStep';
 import AddressStep from './AddressStep';
 import { useFormValidation, validationPatterns, validateCPF, validateCNPJ } from '@/hooks/useFormValidation';
 import { processAndSendData, UnifiedData } from '@/utils/dataProcessor';
@@ -123,16 +123,12 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     'Dados de Identificação',
     'Estado Civil',
     'Dados Complementares',
-    'Dados do Veículo - Zero Km',
+    'Veículo Zero Km',
     'Detalhes do Veículo',
     'Situação do Veículo',
     'Tipo de Residência',
     'CEP de Pernoite'
   ];
-
-  const personTypeValidation = useFormValidation({
-    personType: { required: true, message: 'Selecione o tipo de pessoa' }
-  });
 
   const identificationValidation = useFormValidation({
     fullName: { required: true, message: 'Nome/Razão Social é obrigatório' },
@@ -160,10 +156,6 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     }
   });
 
-  const maritalStatusValidation = useFormValidation({
-    maritalStatus: { required: true, message: 'Selecione o estado civil' }
-  });
-
   const complementaryDataValidation = useFormValidation({
     birthDate: { 
       required: true, 
@@ -171,10 +163,6 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       message: 'Data de nascimento deve estar no formato dd/mm/aaaa' 
     },
     profession: { required: true, message: 'Profissão é obrigatória' }
-  });
-
-  const vehicleZeroKmValidation = useFormValidation({
-    isZeroKm: { required: true, message: 'Selecione se o veículo é zero km' }
   });
 
   const vehicleDetailsValidation = useFormValidation({
@@ -185,14 +173,6 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       message: 'Placa deve estar no formato ABC-1234 ou ABC1D23' 
     },
     year: { required: true, message: 'Ano/modelo é obrigatório' }
-  });
-
-  const vehicleFinancingValidation = useFormValidation({
-    isFinanced: { required: true, message: 'Selecione se o veículo está financiado' }
-  });
-
-  const residenceTypeValidation = useFormValidation({
-    residenceType: { required: true, message: 'Selecione o tipo de residência' }
   });
 
   const addressValidation = useFormValidation({
@@ -212,14 +192,6 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     }));
   };
 
-  const updateMainDriverData = (field: keyof FormData['mainDriverData'], value: string) => {
-    console.log('Atualizando dados do condutor principal:', field, value);
-    setFormData(prev => ({
-      ...prev,
-      mainDriverData: { ...prev.mainDriverData, [field]: value }
-    }));
-  };
-
   const updateVehicleData = (field: keyof FormData['vehicleData'], value: string) => {
     console.log('Atualizando dados do veículo:', field, value);
     setFormData(prev => ({
@@ -236,13 +208,14 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     }));
   };
 
+  const handleAutoAdvance = () => {
+    setCurrentStep(currentStep + 1);
+  };
+
   const validateCurrentStep = (): boolean => {
     console.log('Validando etapa atual:', currentStep);
-    console.log('Dados atuais do formulário:', formData);
     
     switch (currentStep) {
-      case 1:
-        return personTypeValidation.validateAll({ personType: formData.personalData.personType || '' });
       case 2:
         const identificationData = {
           fullName: formData.personalData.fullName,
@@ -251,16 +224,12 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
           phone: formData.personalData.phone
         };
         return identificationValidation.validateAll(identificationData as { [key: string]: string });
-      case 3:
-        return maritalStatusValidation.validateAll({ maritalStatus: formData.personalData.maritalStatus });
       case 4:
         const complementaryData = {
           birthDate: formData.personalData.birthDate,
           profession: formData.personalData.profession
         };
         return complementaryDataValidation.validateAll(complementaryData as { [key: string]: string });
-      case 5:
-        return vehicleZeroKmValidation.validateAll({ isZeroKm: formData.vehicleData.isZeroKm });
       case 6:
         const vehicleDetailsData = {
           model: formData.vehicleData.model,
@@ -268,10 +237,6 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
           year: formData.vehicleData.year
         };
         return vehicleDetailsValidation.validateAll(vehicleDetailsData as { [key: string]: string });
-      case 7:
-        return vehicleFinancingValidation.validateAll({ isFinanced: formData.vehicleData.isFinanced });
-      case 8:
-        return residenceTypeValidation.validateAll({ residenceType: formData.riskData.residenceType });
       case 9:
         const addressData = {
           cep: formData.riskData.cep,
@@ -294,9 +259,6 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         try {
           console.log('Dados coletados completos:', formData);
           
-          // Estruturar dados com base no tipo de condutor
-          const isMainDriverDifferent = formData.mainDriverData.isDifferentFromInsured === 'nao';
-          
           const unifiedData: UnifiedData = {
             contactData: {
               fullName: formData.personalData.fullName,
@@ -307,11 +269,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
             personalData: formData.personalData,
             vehicleData: formData.vehicleData,
             riskData: formData.riskData,
-            mainDriverData: isMainDriverDifferent ? {
-              isDifferentFromInsured: formData.mainDriverData.isDifferentFromInsured,
-              ...formData.mainDriverData
-            } : {
-              isDifferentFromInsured: formData.mainDriverData.isDifferentFromInsured,
+            mainDriverData: {
+              isDifferentFromInsured: 'nao',
               fullName: formData.personalData.fullName,
               cpf: formData.personalData.cpf,
               birthDate: formData.personalData.birthDate,
@@ -330,15 +289,12 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
           alert('Erro ao processar os dados. Por favor, tente novamente.');
         }
       }
-    } else {
-      console.log('Validação falhou - botão não deve avançar');
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
-      console.log('Voltando para etapa:', currentStep - 1);
     } else {
       onBack();
     }
@@ -346,16 +302,11 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
 
   const getValidationForCurrentStep = () => {
     switch (currentStep) {
-      case 1: return personTypeValidation;
       case 2: return identificationValidation;
-      case 3: return maritalStatusValidation;
       case 4: return complementaryDataValidation;
-      case 5: return vehicleZeroKmValidation;
       case 6: return vehicleDetailsValidation;
-      case 7: return vehicleFinancingValidation;
-      case 8: return residenceTypeValidation;
       case 9: return addressValidation;
-      default: return personTypeValidation;
+      default: return identificationValidation;
     }
   };
 
@@ -365,10 +316,12 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     switch (currentStep) {
       case 1:
         return (
-          <PersonTypeStep
+          <PersonTypeSelectionStep
             personType={formData.personalData.personType || ''}
-            onChange={(value) => updatePersonalData('personType', value)}
-            error={validation.errors.personType}
+            onSelect={(value) => {
+              updatePersonalData('personType', value);
+              handleAutoAdvance();
+            }}
           />
         );
       case 2:
@@ -388,10 +341,12 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         );
       case 3:
         return (
-          <MaritalStatusStep
+          <MaritalStatusSelectionStep
             maritalStatus={formData.personalData.maritalStatus}
-            onChange={(value) => updatePersonalData('maritalStatus', value)}
-            error={validation.errors.maritalStatus}
+            onSelect={(value) => {
+              updatePersonalData('maritalStatus', value);
+              handleAutoAdvance();
+            }}
           />
         );
       case 4:
@@ -408,10 +363,12 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         );
       case 5:
         return (
-          <VehicleZeroKmStep
+          <VehicleZeroKmSelectionStep
             isZeroKm={formData.vehicleData.isZeroKm}
-            onChange={(value) => updateVehicleData('isZeroKm', value)}
-            error={validation.errors.isZeroKm}
+            onSelect={(value) => {
+              updateVehicleData('isZeroKm', value);
+              handleAutoAdvance();
+            }}
           />
         );
       case 6:
@@ -429,18 +386,22 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         );
       case 7:
         return (
-          <VehicleFinancingStep
+          <VehicleFinancingSelectionStep
             isFinanced={formData.vehicleData.isFinanced}
-            onChange={(value) => updateVehicleData('isFinanced', value)}
-            error={validation.errors.isFinanced}
+            onSelect={(value) => {
+              updateVehicleData('isFinanced', value);
+              handleAutoAdvance();
+            }}
           />
         );
       case 8:
         return (
-          <ResidenceTypeStep
+          <ResidenceTypeSelectionStep
             residenceType={formData.riskData.residenceType}
-            onChange={(value) => updateRiskData('residenceType', value)}
-            error={validation.errors.residenceType}
+            onSelect={(value) => {
+              updateRiskData('residenceType', value);
+              handleAutoAdvance();
+            }}
           />
         );
       case 9:
@@ -463,6 +424,10 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       default:
         return null;
     }
+  };
+
+  const shouldShowNextButton = () => {
+    return [2, 4, 6, 9].includes(currentStep);
   };
 
   return (
@@ -489,19 +454,16 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
             <span>{currentStep === 1 ? 'Voltar à seleção' : 'Voltar'}</span>
           </Button>
 
-          <Button
-            onClick={handleNext}
-            disabled={currentStep === 1 && !formData.personalData.personType}
-            className="h-14 px-8 text-base font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all duration-200 rounded-xl flex items-center space-x-2 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-            size="lg"
-          >
-            <span>{currentStep === 9 ? 'Enviar Orçamento' : 'Próxima Etapa'}</span>
-            {currentStep === 9 ? (
+          {shouldShowNextButton() && (
+            <Button
+              onClick={handleNext}
+              className="h-14 px-8 text-base font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all duration-200 rounded-xl flex items-center space-x-2 shadow-lg hover:shadow-xl"
+              size="lg"
+            >
+              <span>{currentStep === 9 ? 'Enviar Orçamento' : 'Próxima Etapa'}</span>
               <Send className="h-5 w-5" />
-            ) : (
-              <ArrowRight className="h-5 w-5" />
-            )}
-          </Button>
+            </Button>
+          )}
         </div>
 
         {/* Rodapé */}

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Card } from '@/components/ui/card';
 import { StableFormField } from '@/components/ui/stable-form-field';
 
 interface ComplementaryDataStepProps {
@@ -19,17 +20,14 @@ const ComplementaryDataStep: React.FC<ComplementaryDataStepProps> = ({
   onFieldBlur
 }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 max-w-4xl mx-auto">
+    <Card className="p-8 bg-white shadow-sm border border-gray-100 rounded-xl">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">
           Seus Dados Complementares
-        </h2>
-        <p className="text-gray-600">
-          Complete as informações necessárias
-        </p>
+        </h1>
       </div>
 
-      <div className="grid gap-6 max-w-2xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
         <StableFormField
           id="birthDate"
           label="Data de Nascimento"
@@ -37,8 +35,8 @@ const ComplementaryDataStep: React.FC<ComplementaryDataStepProps> = ({
           onChange={(value) => onChange('birthDate', value)}
           onBlur={(value) => onFieldBlur('birthDate', value)}
           error={errors.birthDate}
-          placeholder="dd/mm/aaaa"
           mask="99/99/9999"
+          placeholder="dd/mm/aaaa"
           required
         />
 
@@ -53,7 +51,7 @@ const ComplementaryDataStep: React.FC<ComplementaryDataStepProps> = ({
           required
         />
       </div>
-    </div>
+    </Card>
   );
 };
 

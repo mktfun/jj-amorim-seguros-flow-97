@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Card } from '@/components/ui/card';
 import { StableFormField } from '@/components/ui/stable-form-field';
 
 interface VehicleDetailsStepProps {
@@ -20,17 +21,14 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({
   onFieldBlur
 }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 max-w-4xl mx-auto">
+    <Card className="p-8 bg-white shadow-sm border border-gray-100 rounded-xl">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">
           Detalhes do Veículo
-        </h2>
-        <p className="text-gray-600">
-          Informe os dados do seu veículo
-        </p>
+        </h1>
       </div>
 
-      <div className="grid gap-6 max-w-2xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
         <StableFormField
           id="model"
           label="Qual é o Modelo do Veículo?"
@@ -40,6 +38,7 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({
           error={errors.model}
           placeholder="Ex: Honda Civic, Toyota Corolla"
           required
+          className="md:col-span-2"
         />
 
         <StableFormField
@@ -49,7 +48,7 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({
           onChange={(value) => onChange('plate', value)}
           onBlur={(value) => onFieldBlur('plate', value)}
           error={errors.plate}
-          placeholder="AAA-0000 ou AAA0A00"
+          placeholder="Ex: ABC-1234 ou ABC1D23"
           required
         />
 
@@ -60,11 +59,12 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({
           onChange={(value) => onChange('year', value)}
           onBlur={(value) => onFieldBlur('year', value)}
           error={errors.year}
-          placeholder="Ex: 2023/2024"
+          placeholder="Ex: 2020/2021"
           required
+          maxLength={9}
         />
       </div>
-    </div>
+    </Card>
   );
 };
 
