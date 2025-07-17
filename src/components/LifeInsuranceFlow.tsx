@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Send } from 'lucide-react';
@@ -57,10 +58,6 @@ const LifeInsuranceFlow: React.FC<LifeInsuranceFlowProps> = ({ onBack }) => {
       try {
         const unifiedData: UnifiedData = {
           contactData: contactData,
-          personalData: {},
-          vehicleData: {},
-          riskData: {},
-          mainDriverData: {},
           flowType: 'Seguro de Vida Individual'
         };
 

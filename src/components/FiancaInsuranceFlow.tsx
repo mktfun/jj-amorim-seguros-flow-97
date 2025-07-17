@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Send } from 'lucide-react';
@@ -76,14 +77,6 @@ const FiancaInsuranceFlow: React.FC<FiancaInsuranceFlowProps> = ({ onBack }) => 
     try {
       const unifiedData: UnifiedData = {
         contactData: contactData,
-        personalData: {
-          fullName: contactData.fullName,
-          cpf: contactData.cpf,
-          email: contactData.email,
-          phone: contactData.phone,
-        } as any, // Adjust as necessary
-        vehicleData: {} as any, // Adjust as necessary
-        riskData: {} as any, // Adjust as necessary
         fiancaData: fiancaData,
         flowType: 'Seguro Fiança',
       };
@@ -120,7 +113,10 @@ const FiancaInsuranceFlow: React.FC<FiancaInsuranceFlowProps> = ({ onBack }) => 
 
           {currentStep === 2 && (
             <FiancaDataStep
-              data={fiancaData}
+              propertyType={fiancaData.propertyType}
+              propertyAddress={fiancaData.propertyAddress}
+              propertyValue={fiancaData.propertyValue}
+              rentValue={fiancaData.rentValue}
               onChange={updateFiancaData}
               errors={errors}
               onFieldBlur={validateField}

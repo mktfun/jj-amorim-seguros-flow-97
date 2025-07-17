@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Send } from 'lucide-react';
@@ -93,55 +94,8 @@ const TravelInsuranceFlow: React.FC<TravelInsuranceFlowProps> = ({ onBack }) => 
     try {
       const unifiedData: UnifiedData = {
         contactData: {
-          fullName: contactData.fullName,
-          email: contactData.email,
-          phone: contactData.phone,
-          cpf: '', // CPF não é necessário para este fluxo
-        },
-        personalData: {
-          personType: '',
-          fullName: '',
-          cpf: '',
-          birthDate: '',
-          maritalStatus: '',
-          email: '',
-          phone: '',
-          profession: ''
-        },
-        vehicleData: {
-          isZeroKm: '',
-          model: '',
-          plate: '',
-          year: '',
-          isFinanced: ''
-        },
-        riskData: {
-          residenceType: '',
-          cep: '',
-          logradouro: '',
-          bairro: '',
-          localidade: '',
-          uf: '',
-          numero: '',
-          complemento: '',
-          garageType: '',
-          usesForWork: '',
-          workParking: '',
-          youngResidents: '',
-          youngDriversUseVehicle: '',
-          youngDriverAge: '',
-          youngDriverGender: '',
-          rideshareWork: ''
-        },
-        mainDriverData: {
-          isDifferentFromInsured: '',
-          fullName: '',
-          cpf: '',
-          birthDate: '',
-          maritalStatus: '',
-          email: '',
-          phone: '',
-          profession: ''
+          ...contactData,
+          cpf: '', // CPF not required for travel insurance
         },
         flowType: 'Seguro Viagem',
       };

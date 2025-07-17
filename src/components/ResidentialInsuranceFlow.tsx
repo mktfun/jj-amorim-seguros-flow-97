@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Send } from 'lucide-react';
@@ -44,51 +45,9 @@ const ResidentialInsuranceFlow: React.FC<ResidentialInsuranceFlowProps> = ({ onB
     if (validation.validateAll(contactData as { [key: string]: string })) {
       try {
         const unifiedData: UnifiedData = {
-          contactData: contactData,
-          personalData: {
-            personType: '',
-            fullName: '',
-            cpf: '',
-            birthDate: '',
-            maritalStatus: '',
-            email: '',
-            phone: '',
-            profession: ''
-          },
-          vehicleData: {
-            isZeroKm: '',
-            model: '',
-            plate: '',
-            year: '',
-            isFinanced: ''
-          },
-          riskData: {
-            residenceType: '',
-            cep: '',
-            logradouro: '',
-            bairro: '',
-            localidade: '',
-            uf: '',
-            numero: '',
-            complemento: '',
-            garageType: '',
-            usesForWork: '',
-            workParking: '',
-            youngResidents: '',
-            youngDriversUseVehicle: '',
-            youngDriverAge: '',
-            youngDriverGender: '',
-            rideshareWork: ''
-          },
-          mainDriverData: {
-            isDifferentFromInsured: '',
-            fullName: '',
-            cpf: '',
-            birthDate: '',
-            maritalStatus: '',
-            email: '',
-            phone: '',
-            profession: ''
+          contactData: {
+            ...contactData,
+            cpf: '', // CPF not required for residential insurance
           },
           flowType: 'Seguro Residencial'
         };

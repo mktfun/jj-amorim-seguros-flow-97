@@ -1,12 +1,14 @@
+
 // Tipos para os dados coletados
 export interface ContactData {
   fullName: string;
-  cpf: string;
+  cpf?: string; // Made optional for flows that don't collect CPF
   email: string;
   phone: string;
 }
 
 export interface PersonalData {
+  personType?: string;
   fullName: string;
   cpf: string;
   birthDate: string;
@@ -28,6 +30,7 @@ export interface MainDriverData {
 }
 
 export interface VehicleData {
+  isZeroKm?: string;
   model: string;
   plate: string;
   chassis?: string; // Made optional since not collected in current flows
@@ -54,14 +57,22 @@ export interface RiskData {
   rideshareWork: string;
 }
 
+export interface FiancaData {
+  propertyType: string;
+  propertyAddress: string;
+  propertyValue: string;
+  rentValue: string;
+}
+
 export interface UnifiedData {
   contactData: ContactData;
   personalData?: PersonalData;
   mainDriverData?: MainDriverData;
   vehicleData?: VehicleData;
   riskData?: RiskData;
+  fiancaData?: FiancaData;
   hasChanges?: boolean;
-  flowType: 'Nova Cotacao de Seguro' | 'Renovacao Seguro Auto';
+  flowType: 'Nova Cotacao de Seguro' | 'Renovacao Seguro Auto' | 'Seguro Residencial' | 'Seguro Empresarial' | 'Seguro de Vida Individual' | 'Seguro Viagem' | 'Seguro Fiança';
   origem_renovacao?: string;
   dados_apolice_anterior?: any;
 }

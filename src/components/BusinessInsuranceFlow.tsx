@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Send } from 'lucide-react';
@@ -44,7 +45,10 @@ const BusinessInsuranceFlow: React.FC<BusinessInsuranceFlowProps> = ({ onBack })
     if (validation.validateAll(contactData as { [key: string]: string })) {
       try {
         const unifiedData: UnifiedData = {
-          contactData: contactData,
+          contactData: {
+            ...contactData,
+            cpf: '', // CPF not required for business insurance
+          },
           flowType: 'Seguro Empresarial',
         };
         await processAndSendData(unifiedData);
