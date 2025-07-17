@@ -15,6 +15,8 @@ interface ContactData {
   fullName: string;
   email: string;
   phone: string;
+  cpf: string;
+  [key: string]: string;
 }
 
 const BusinessInsuranceFlow: React.FC<BusinessInsuranceFlowProps> = ({ onBack }) => {
@@ -22,6 +24,7 @@ const BusinessInsuranceFlow: React.FC<BusinessInsuranceFlowProps> = ({ onBack })
     fullName: '',
     email: '',
     phone: '',
+    cpf: '',
   });
 
   const validation = useFormValidation({
@@ -42,12 +45,12 @@ const BusinessInsuranceFlow: React.FC<BusinessInsuranceFlowProps> = ({ onBack })
   };
 
   const handleSubmit = async () => {
-    if (validation.validateAll(contactData as { [key: string]: string })) {
+    if (validation.validateAll(contactData)) {
       try {
         const unifiedData: UnifiedData = {
           contactData: {
             ...contactData,
-            cpf: '', // CPF not required for business insurance
+            cpf: contactData.cpf || '', // Ensure cpf is always a string
           },
           flowType: 'Seguro Empresarial',
         };

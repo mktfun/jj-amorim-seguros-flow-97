@@ -14,6 +14,8 @@ interface ContactData {
   fullName: string;
   email: string;
   phone: string;
+  cpf: string;
+  [key: string]: string;
 }
 
 const TravelInsuranceFlow: React.FC<TravelInsuranceFlowProps> = ({ onBack }) => {
@@ -21,6 +23,7 @@ const TravelInsuranceFlow: React.FC<TravelInsuranceFlowProps> = ({ onBack }) => 
     fullName: '',
     email: '',
     phone: '',
+    cpf: '',
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -95,7 +98,7 @@ const TravelInsuranceFlow: React.FC<TravelInsuranceFlowProps> = ({ onBack }) => 
       const unifiedData: UnifiedData = {
         contactData: {
           ...contactData,
-          cpf: '', // CPF not required for travel insurance
+          cpf: contactData.cpf || '', // Ensure cpf is always a string
         },
         flowType: 'Seguro Viagem',
       };

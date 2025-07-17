@@ -15,13 +15,16 @@ interface ContactData {
   fullName: string;
   email: string;
   phone: string;
+  cpf: string;
+  [key: string]: string;
 }
 
 const ResidentialInsuranceFlow: React.FC<ResidentialInsuranceFlowProps> = ({ onBack }) => {
   const [contactData, setContactData] = useState<ContactData>({
     fullName: '',
     email: '',
-    phone: ''
+    phone: '',
+    cpf: ''
   });
 
   const validation = useFormValidation({
@@ -42,12 +45,12 @@ const ResidentialInsuranceFlow: React.FC<ResidentialInsuranceFlowProps> = ({ onB
   };
 
   const handleSubmit = async () => {
-    if (validation.validateAll(contactData as { [key: string]: string })) {
+    if (validation.validateAll(contactData)) {
       try {
         const unifiedData: UnifiedData = {
           contactData: {
             ...contactData,
-            cpf: '', // CPF not required for residential insurance
+            cpf: contactData.cpf || '', // Ensure cpf is always a string
           },
           flowType: 'Seguro Residencial'
         };

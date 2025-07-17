@@ -16,6 +16,7 @@ interface ContactData {
   cpf: string;
   email: string;
   phone: string;
+  [key: string]: string;
 }
 
 interface FiancaData {
@@ -33,20 +34,45 @@ const FiancaInsuranceFlow: React.FC<FiancaInsuranceFlowProps> = ({ onBack }) => 
     email: '',
     phone: '',
   });
-  const [fiancaData, setFiancaData] = useState<FiancaData>({
-    propertyType: '',
-    propertyAddress: '',
-    propertyValue: '',
-    rentValue: '',
+
+  // Updated state structure to match FiancaDataStep props
+  const [seguradoData, setSeguradoData] = useState({
+    nomeCompleto: '',
+    cpf: '',
+    dataNascimento: '',
+    email: '',
+    telefone: '',
+    profissao: '',
+    rendaBrutaMensal: '',
   });
+
+  const [imovelData, setImovelData] = useState({
+    cep: '',
+    logradouro: '',
+    bairro: '',
+    localidade: '',
+    uf: '',
+    numero: '',
+    complemento: '',
+    valorAluguel: '',
+    valorCondominio: '',
+    valorIPTU: '',
+    tipoImovel: '',
+    finalidadeImovel: '',
+  });
+
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const updateContactData = (field: keyof ContactData, value: string) => {
     setContactData(prev => ({ ...prev, [field]: value }));
   };
 
-  const updateFiancaData = (field: keyof FiancaData, value: string) => {
-    setFiancaData(prev => ({ ...prev, [field]: value }));
+  const updateSeguradoData = (field: string, value: string) => {
+    setSeguradoData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const updateImovelData = (field: string, value: string) => {
+    setImovelData(prev => ({ ...prev, [field]: value }));
   };
 
   const validateField = (field: string, value: string) => {
@@ -64,11 +90,8 @@ const FiancaInsuranceFlow: React.FC<FiancaInsuranceFlowProps> = ({ onBack }) => 
     const isContactValid = Object.keys(contactData).every(field =>
       validateField(field, contactData[field as keyof ContactData])
     );
-    const isFiancaValid = Object.keys(fiancaData).every(field =>
-      validateField(field, fiancaData[field as keyof FiancaData])
-    );
 
-    if (!isContactValid || !isFiancaValid) {
+    if (!isContactValid) {
       alert('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
@@ -77,7 +100,12 @@ const FiancaInsuranceFlow: React.FC<FiancaInsuranceFlowProps> = ({ onBack }) => 
     try {
       const unifiedData: UnifiedData = {
         contactData: contactData,
-        fiancaData: fiancaData,
+        fiancaData: {
+          propertyType: imovelData.tipoImovel,
+          propertyAddress: `${imovelData.logradouro}, ${imovelData.numero}`,
+          propertyValue: imovelData.valorAluguel,
+          rentValue: imovelData.valorAluguel,
+        },
         flowType: 'Seguro Fiança',
       };
       await processAndSendData(unifiedData);
@@ -113,11 +141,10 @@ const FiancaInsuranceFlow: React.FC<FiancaInsuranceFlowProps> = ({ onBack }) => 
 
           {currentStep === 2 && (
             <FiancaDataStep
-              propertyType={fiancaData.propertyType}
-              propertyAddress={fiancaData.propertyAddress}
-              propertyValue={fiancaData.propertyValue}
-              rentValue={fiancaData.rentValue}
-              onChange={updateFiancaData}
+              seguradoData={seguradoData}
+              imovelData={imovelData}
+              onSeguradoChange={updateSeguradoData}
+              onImovelChange={updateImovelData}
               errors={errors}
               onFieldBlur={validateField}
             />
