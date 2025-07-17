@@ -16,7 +16,7 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   return (
-    <Card className="p-6 mb-8 bg-white shadow-sm border border-gray-100 rounded-xl">
+    <Card className="p-6 mb-6 bg-white shadow-sm border border-gray-100 rounded-xl">
       <div className="space-y-5">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">

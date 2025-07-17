@@ -1,7 +1,9 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Send } from 'lucide-react';
 import ProgressIndicator from './ProgressIndicator';
+import FlowHeader from './FlowHeader';
 import PersonTypeStep from './PersonTypeStep';
 import IdentificationDataStep from './IdentificationDataStep';
 import MaritalStatusStep from './MaritalStatusStep';
@@ -464,8 +466,9 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12 px-4">
-      <div className="w-full max-w-5xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      <FlowHeader />
+      <div className="w-full max-w-5xl mx-auto px-4 py-6">
         <ProgressIndicator
           currentStep={currentStep}
           totalSteps={9}
