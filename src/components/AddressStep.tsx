@@ -25,13 +25,13 @@ const AddressStep: React.FC<AddressStepProps> = ({
   errors,
   onFieldBlur
 }) => {
-  const { fetchAddressByCEP } = useViaCEP();
+  const { fetchAddress } = useViaCEP();
 
   const handleCEPChange = async (cep: string) => {
     onChange('cep', cep);
     
     if (cep.replace(/\D/g, '').length === 8) {
-      const addressData = await fetchAddressByCEP(cep);
+      const addressData = await fetchAddress(cep);
       if (addressData) {
         onChange('logradouro', addressData.logradouro);
         onChange('bairro', addressData.bairro);
