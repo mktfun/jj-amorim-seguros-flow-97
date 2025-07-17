@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Send } from 'lucide-react';
@@ -9,11 +8,11 @@ import MaritalStatusStep from './MaritalStatusStep';
 import ComplementaryDataStep from './ComplementaryDataStep';
 import VehicleZeroKmStep from './VehicleZeroKmStep';
 import VehicleDetailsStep from './VehicleDetailsStep';
-import RiskQuestionnaireStep from './RiskQuestionnaireStep';
-import { useFormValidation, validationPatterns, validateCPF, validateCNPJ } from '@/hooks/useFormValidation';
-import { processAndSendData, UnifiedData } from '@/utils/dataProcessor';
+import VehicleFinancingStep from './VehicleFinancingStep';
 import ResidenceTypeStep from './ResidenceTypeStep';
 import AddressStep from './AddressStep';
+import { useFormValidation, validationPatterns, validateCPF, validateCNPJ } from '@/hooks/useFormValidation';
+import { processAndSendData, UnifiedData } from '@/utils/dataProcessor';
 
 interface NewQuoteFlowProps {
   onBack: () => void;
@@ -124,11 +123,11 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
     'Dados Complementares',
     'Dados do Veículo - Zero Km',
     'Detalhes do Veículo',
-    'Questionário de Risco',
+    'Situação do Veículo',
+    'Tipo de Residência',
     'CEP de Pernoite'
   ];
 
-  // Validation rules for each step
   const personTypeValidation = useFormValidation({
     personType: { required: true, message: 'Selecione o tipo de pessoa' }
   });
@@ -184,6 +183,10 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       message: 'Placa deve estar no formato ABC-1234 ou ABC1D23' 
     },
     year: { required: true, message: 'Ano/modelo é obrigatório' }
+  });
+
+  const vehicleFinancingValidation = useFormValidation({
+    isFinanced: { required: true, message: 'Selecione se o veículo está financiado' }
   });
 
   const residenceTypeValidation = useFormValidation({
@@ -264,8 +267,10 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         };
         return vehicleDetailsValidation.validateAll(vehicleDetailsData as { [key: string]: string });
       case 7:
-        return residenceTypeValidation.validateAll({ residenceType: formData.riskData.residenceType });
+        return vehicleFinancingValidation.validateAll({ isFinanced: formData.vehicleData.isFinanced });
       case 8:
+        return residenceTypeValidation.validateAll({ residenceType: formData.riskData.residenceType });
+      case 9:
         const addressData = {
           cep: formData.riskData.cep,
           numero: formData.riskData.numero
@@ -279,7 +284,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
   const handleNext = async () => {
     console.log('Clicou em próxima etapa');
     if (validateCurrentStep()) {
-      if (currentStep < 8) {
+      if (currentStep < 9) {
         setCurrentStep(currentStep + 1);
         console.log('Avançando para etapa:', currentStep + 1);
       } else {
@@ -345,8 +350,9 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       case 4: return complementaryDataValidation;
       case 5: return vehicleZeroKmValidation;
       case 6: return vehicleDetailsValidation;
-      case 7: return residenceTypeValidation;
-      case 8: return addressValidation;
+      case 7: return vehicleFinancingValidation;
+      case 8: return residenceTypeValidation;
+      case 9: return addressValidation;
       default: return personTypeValidation;
     }
   };
@@ -421,13 +427,21 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
         );
       case 7:
         return (
+          <VehicleFinancingStep
+            isFinanced={formData.vehicleData.isFinanced}
+            onChange={(value) => updateVehicleData('isFinanced', value)}
+            error={validation.errors.isFinanced}
+          />
+        );
+      case 8:
+        return (
           <ResidenceTypeStep
             residenceType={formData.riskData.residenceType}
             onChange={(value) => updateRiskData('residenceType', value)}
             error={validation.errors.residenceType}
           />
         );
-      case 8:
+      case 9:
         return (
           <AddressStep
             data={{
@@ -454,7 +468,7 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
       <div className="w-full max-w-5xl mx-auto">
         <ProgressIndicator
           currentStep={currentStep}
-          totalSteps={8}
+          totalSteps={9}
           stepTitles={stepTitles}
         />
 
@@ -478,8 +492,8 @@ const NewQuoteFlow: React.FC<NewQuoteFlowProps> = ({ onBack }) => {
             className="h-14 px-8 text-base font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all duration-200 rounded-xl flex items-center space-x-2 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             size="lg"
           >
-            <span>{currentStep === 8 ? 'Enviar Orçamento' : 'Próxima Etapa'}</span>
-            {currentStep === 8 ? (
+            <span>{currentStep === 9 ? 'Enviar Orçamento' : 'Próxima Etapa'}</span>
+            {currentStep === 9 ? (
               <Send className="h-5 w-5" />
             ) : (
               <ArrowRight className="h-5 w-5" />
